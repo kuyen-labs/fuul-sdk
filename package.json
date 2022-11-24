@@ -1,0 +1,15 @@
+{
+  "name": "fuul-sdk",
+  "version": "1.0.0",
+  "description": "https://github.com/plausible/analytics/blob/75fcd8d611a75c9ea248fb4f02545469cf6dc6ce/tracker/src/plausible.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
