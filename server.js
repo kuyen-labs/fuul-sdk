@@ -8,10 +8,7 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 
-app.get('/index.js', function(req, res) {
-  res.sendFile(path.join(__dirname, '/index.js'));
-});
-
+app.use(express.static('dest'))
 
 app.listen(port);
 console.log('Server started at http://localhost:' + port);
