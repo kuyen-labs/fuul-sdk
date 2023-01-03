@@ -29,14 +29,11 @@
   window.fuul = sendEvent;
 
   function onLoad() {
-    {{#unless local}}
-    if (!document.referrer.match(/^https?:\/\/([^\/]+\.)?fuul\.xyz(\/|$)/i)) return;
-    {{/unless}}
-    var urlParams = new URLSearchParams(window.location.search);
-    var sessionId = urlParams.get('s');
-    if (sessionId) {
-      localStorage.setItem(sessionIdKey, sessionId)
-    }
+    let sessionId = localStorage.getItem(sessionIdKey);
+    if (sessionId) return;
+    sessionId = 'random';
+    localStorage.setItem(sessionIdKey, sessionId);
+    fuul('session_start');
   }
   window.onload = onLoad;
 })();
