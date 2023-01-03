@@ -29,8 +29,6 @@
   window.fuul = sendEvent;
 
   function onLoad() {
-    let sessionId = localStorage.getItem(sessionIdKey);
-    if (sessionId) return;
     sessionId = 'random';
     localStorage.setItem(sessionIdKey, sessionId);
     fuul('session_start');
