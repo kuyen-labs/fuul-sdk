@@ -1,18 +1,12 @@
-type EventParamsType = {
-    name: string;
-    project_id: string;
-    event_args?: {
-        address?: string;
-        message?: string;
-    };
-};
+import { EventArgsType, EventType } from "./types/types";
 export declare class Fuul {
-    projectId: string;
-    serverUrl: string;
-    constructor(projectId: string, serverUrl: string);
-    generateSessionId(): string;
-    sendEvent(params: EventParamsType): Promise<unknown>;
-    saveSessionId(): void;
+    project_id: string;
+    private BASE_API_URL;
+    constructor(projectId: string);
+    private generateRandomId;
+    sendEvent(name: EventType, args?: EventArgsType): Promise<unknown>;
+    private saveSessionId;
+    private saveTrackingId;
 }
 declare const _default: {
     Fuul: typeof Fuul;
