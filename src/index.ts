@@ -30,7 +30,7 @@ export class Fuul {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
 
-    if (!(session_id || tracking_id)) {
+    if (!tracking_id) {
       return;
     }
 
@@ -71,7 +71,7 @@ export class Fuul {
 
     const queryParams = new URLSearchParams(window.location.search);
 
-    if (!(queryParams.has('c') || queryParams.has('r'))) return;
+    if (!queryParams.has('c') || !queryParams.has('r')) return;
 
     localStorage.setItem(TRACKING_ID_KEY, await this.generateRandomId());
 

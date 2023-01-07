@@ -1,6 +1,6 @@
 {
   "name": "fuul-sdk",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "Fuul sdk for sending tracking events",
   "types": "./lib/esm/types/index.d.ts",
   "main": "./lib/esm/index.mjs",
