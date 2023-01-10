@@ -69,12 +69,7 @@ export class Fuul {
 
     const queryParams = new URLSearchParams(window.location.search);
 
-    if (
-      !queryParams.has("c") ||
-      !queryParams.has("r") ||
-      !queryParams.has("origin")
-    )
-      return;
+    if (!queryParams.has("c") || !queryParams.has("origin")) return;
 
     const isFuulOrigin = queryParams.get("origin") === "fuul";
 
