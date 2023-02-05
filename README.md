@@ -15,17 +15,11 @@ The files are generated in the `lib/` folder.
 
 ```javascript
 import { Fuul } from "fuul-sdk";
-const fuul = new Fuul("{project_id}", "{server_url}");
+const fuul = new Fuul("{project_id}");
 ```
 
 Send an event:
 
 ```javascript
-fuul.sendEvent({
-    name: "connect_wallet",
-    project_id: "testprojectid",
-    event_args: {
-    address: "test",
-  },
-});
+fuul.sendEvent('connect_wallet');
 ```
