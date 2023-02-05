@@ -1,5 +1,5 @@
 export type EventArgsType = {
-    event_args?: {};
+  event_args?: Record<string, string>;
 };
 
-export type EventType = 'connect_wallet' | 'pageview';
+export type EventType = "connect_wallet" | "pageview";

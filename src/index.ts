@@ -9,17 +9,9 @@ const getSessionId = () => localStorage.getItem(SESSION_ID_KEY);
 const getTrackingId = () => localStorage.getItem(TRACKING_ID_KEY);
 
 export class Fuul {
-  public project_id: string;
-<<<<<<< HEAD
-  private BASE_API_URL: string = "https://api.fuul.xyz/api/v1";
-=======
-  private BASE_API_URL: string =
-    "http://fuul-server-production-lb-1150554069.us-east-1.elb.amazonaws.com/api/v1";
->>>>>>> 735dc38dda0217fab3b50002e32f6e462fd20c15
+  static BASE_API_URL: string = "https://api.fuul.xyz/api/v1";
 
-  constructor(projectId: string) {
-    this.project_id = projectId;
-
+  constructor() {
     this.saveSessionId();
     this.saveTrackingId();
   }
@@ -30,7 +22,11 @@ export class Fuul {
     return nanoid();
   }
 
-  async sendEvent(name: EventType, args?: EventArgsType) {
+  static async sendEvent(
+    name: EventType,
+    projectId: string,
+    args?: EventArgsType
+  ) {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
 
@@ -41,7 +37,7 @@ export class Fuul {
     const reqBody = {
       name,
       session_id,
-      project_id: this.project_id,
+      project_id: projectId,
       event_args: {
         ...args,
         tracking_id,
@@ -53,7 +49,7 @@ export class Fuul {
     try {
       const response = await axios.post(url, reqBody);
 
-      return response;
+      return response.data;
     } catch (error) {
       return error;
     }
@@ -71,15 +67,18 @@ export class Fuul {
 
     const queryParams = new URLSearchParams(window.location.search);
 
-    if (!queryParams.has("c") || !queryParams.has("origin")) return;
+    if (
+      !queryParams.has("c") ||
+      !queryParams.has("origin") ||
+      !queryParams.has("r")
+    )
+      return;
 
     const isFuulOrigin = queryParams.get("origin") === "fuul";
 
     if (!isFuulOrigin) return;
 
     localStorage.setItem(TRACKING_ID_KEY, await this.generateRandomId());
-
-    this.sendEvent("pageview");
   }
 }
 

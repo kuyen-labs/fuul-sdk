@@ -13,13 +13,11 @@ The files are generated in the `lib/` folder.
 
 ## How to use the SDK in any project
 
-```javascript
-import { Fuul } from "fuul-sdk";
-const fuul = new Fuul("{project_id}");
-```
-
 Send an event:
 
 ```javascript
-fuul.sendEvent('connect_wallet');
+import { Fuul } from "fuul-sdk";
+
+Fuul.sendEvent('connect_wallet', projectId);
+Fuul.sendEvent('pageview', projectId);
 ```
