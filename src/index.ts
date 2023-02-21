@@ -13,9 +13,12 @@ const getCampaignId = () => localStorage.getItem(CAMPAIGN_ID_KEY);
 const getReferrerId = () => localStorage.getItem(REFERRER_ID_KEY);
 
 export class Fuul {
-  static BASE_API_URL: string = "https://api.fuul.xyz/api/v1";
+  private projectId: string;
+  private BASE_API_URL: string = "https://api.fuul.xyz/api/v1";
 
-  constructor() {
+  constructor(projectId: string) {
+    this.projectId = projectId;
+
     this.saveSessionId();
     this.saveTrackingId();
   }
@@ -26,11 +29,7 @@ export class Fuul {
     return nanoid();
   }
 
-  static async sendEvent(
-    name: EventType,
-    projectId: string,
-    args?: EventArgsType
-  ) {
+  async sendEvent(name: EventType, args?: EventArgsType) {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
     const campaign_id = getCampaignId();
@@ -43,7 +42,7 @@ export class Fuul {
     const reqBody = {
       name,
       session_id,
-      project_id: projectId,
+      project_id: this.projectId,
       event_args: {
         ...args,
         campaign_id,

@@ -18,6 +18,8 @@ Send an event:
 ```javascript
 import { Fuul } from "fuul-sdk";
 
-Fuul.sendEvent('connect_wallet', projectId);
-Fuul.sendEvent('pageview', projectId);
+const fuul = new Fuul('YOUR_PROJECT_ID')
+
+fuul.sendEvent('pageview');
+fuul.sendEvent('connect_wallet');
 ```
