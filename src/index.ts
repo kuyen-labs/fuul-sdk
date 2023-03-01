@@ -13,10 +13,10 @@ const getCampaignId = () => localStorage.getItem(CAMPAIGN_ID_KEY);
 const getReferrerId = () => localStorage.getItem(REFERRER_ID_KEY);
 
 export class Fuul {
-  private projectId: string;
+  private projectId: string | undefined;
   private BASE_API_URL: string = "https://api.fuul.xyz/api/v1";
 
-  constructor(projectId: string) {
+  constructor(projectId?: string) {
     this.projectId = projectId;
 
     this.saveSessionId();
@@ -42,7 +42,7 @@ export class Fuul {
     const reqBody = {
       name,
       session_id,
-      project_id: this.projectId,
+      project_id: this.projectId ?? args?.project_id,
       event_args: {
         ...args,
         campaign_id,
@@ -85,7 +85,9 @@ export class Fuul {
 
     if (!isFuulOrigin) return;
 
-    localStorage.setItem(TRACKING_ID_KEY, await this.generateRandomId());
+    if (!getTrackingId()) {
+      localStorage.setItem(TRACKING_ID_KEY, await this.generateRandomId());
+    }
 
     localStorage.setItem(CAMPAIGN_ID_KEY, queryParams.get("c") ?? "");
     localStorage.setItem(REFERRER_ID_KEY, queryParams.get("r") ?? "");
