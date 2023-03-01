@@ -1,11 +1,14 @@
 import axios from "axios";
+import { nanoid } from "nanoid";
 
-import { EventArgsType, EventType } from "./types/types";
+import { EventArgsType, EventType, SentEventParams } from "./types/types.js";
+import { datesAreOnSameDay } from "./utils/date.js";
 
 const SESSION_ID_KEY = "fuul.session_id";
 const TRACKING_ID_KEY = "fuul.tracking_id";
 const CAMPAIGN_ID_KEY = "fuul.campaign_id";
 const REFERRER_ID_KEY = "fuul.referrer_id";
+const SENT_EVENT_ID_KEY = "fuul.sent";
 
 const getSessionId = () => localStorage.getItem(SESSION_ID_KEY);
 const getTrackingId = () => localStorage.getItem(TRACKING_ID_KEY);
@@ -23,9 +26,7 @@ export class Fuul {
     this.saveTrackingId();
   }
 
-  private async generateRandomId() {
-    const { nanoid } = await import("nanoid");
-
+  private generateRandomId() {
     return nanoid();
   }
 
@@ -35,7 +36,17 @@ export class Fuul {
     const campaign_id = getCampaignId();
     const referrer_id = getReferrerId();
 
-    if (!tracking_id) {
+    if (!tracking_id || !campaign_id || !referrer_id) {
+      return;
+    }
+
+    const params: SentEventParams = {
+      tracking_id,
+      referrer_id,
+      campaign_id,
+    };
+
+    if (this.isEventAlreadySentAndInValidTimestamp(name, params)) {
       return;
     }
 
@@ -45,16 +56,24 @@ export class Fuul {
       project_id: this.projectId ?? args?.project_id,
       event_args: {
         ...args,
-        campaign_id,
         referrer: referrer_id,
         tracking_id,
       },
     };
 
+    if (name !== "connect_wallet") {
+      Object.defineProperty(reqBody.event_args, "campaign_id", {
+        value: campaign_id,
+        enumerable: true,
+      });
+    }
+
     const url = `${this.BASE_API_URL}/events`;
 
     try {
       const response = await axios.post(url, reqBody);
+
+      this.saveSentEvent(name, params);
 
       return response.data;
     } catch (error) {
@@ -62,13 +81,53 @@ export class Fuul {
     }
   }
 
-  private async saveSessionId(): Promise<void> {
-    if (typeof window === "undefined") return;
+  private isEventAlreadySentAndInValidTimestamp(
+    eventName: string,
+    params: SentEventParams
+  ): boolean {
+    const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
+    const storedEvent = localStorage.getItem(SENT_EVENT_KEY);
 
-    localStorage.setItem(SESSION_ID_KEY, await this.generateRandomId());
+    if (!storedEvent) return false;
+
+    const parsedEvent = JSON.parse(storedEvent);
+
+    const isSameDay = datesAreOnSameDay(
+      new Date(Date.now()),
+      new Date(parsedEvent.timestamp)
+    );
+
+    if (
+      parsedEvent["tracking_id"] === params.tracking_id &&
+      parsedEvent["campaign_id"] === params.campaign_id &&
+      parsedEvent["referrer_id"] === params.referrer_id
+    ) {
+      if (isSameDay) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    return false;
   }
 
-  private async saveTrackingId(): Promise<void> {
+  private saveSentEvent(eventName: string, params: SentEventParams): void {
+    const timestamp = Date.now();
+
+    const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
+    const eventParams = { ...params, timestamp };
+
+    localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
+  }
+
+  private saveSessionId(): void {
+    if (typeof window === "undefined") return;
+
+    localStorage.setItem(SESSION_ID_KEY, this.generateRandomId());
+  }
+
+  private saveTrackingId(): void {
     if (typeof window === "undefined" || typeof document === "undefined")
       return;
 
@@ -86,7 +145,7 @@ export class Fuul {
     if (!isFuulOrigin) return;
 
     if (!getTrackingId()) {
-      localStorage.setItem(TRACKING_ID_KEY, await this.generateRandomId());
+      localStorage.setItem(TRACKING_ID_KEY, this.generateRandomId());
     }
 
     localStorage.setItem(CAMPAIGN_ID_KEY, queryParams.get("c") ?? "");
