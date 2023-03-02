@@ -36,37 +36,45 @@ export class Fuul {
     const campaign_id = getCampaignId();
     const referrer_id = getReferrerId();
 
-    if (!tracking_id || !campaign_id || !referrer_id) {
-      return;
-    }
+    if (!tracking_id) return;
 
-    const params: SentEventParams = {
+    let params: SentEventParams = {
       tracking_id,
-      referrer_id,
-      campaign_id,
     };
 
-    if (this.isEventAlreadySentAndInValidTimestamp(name, params)) {
-      return;
+    let reqBody = {};
+
+    if (name === "connect_wallet") {
+      reqBody = {
+        name,
+        event_args: {
+          ...args,
+          tracking_id,
+        },
+      };
+    } else {
+      if (!campaign_id || !referrer_id) return;
+
+      params = {
+        ...params,
+        referrer_id,
+        campaign_id,
+      };
+
+      reqBody = {
+        name,
+        session_id,
+        project_id: this.projectId ?? args?.project_id,
+        event_args: {
+          ...args,
+          referrer: referrer_id,
+          campaign_id,
+          tracking_id,
+        },
+      };
     }
 
-    const reqBody = {
-      name,
-      session_id,
-      project_id: this.projectId ?? args?.project_id,
-      event_args: {
-        ...args,
-        referrer: referrer_id,
-        tracking_id,
-      },
-    };
-
-    if (name !== "connect_wallet") {
-      Object.defineProperty(reqBody.event_args, "campaign_id", {
-        value: campaign_id,
-        enumerable: true,
-      });
-    }
+    if (this.isEventAlreadySentAndInValidTimestamp(name, params)) return;
 
     const url = `${this.BASE_API_URL}/events`;
 
@@ -82,7 +90,7 @@ export class Fuul {
   }
 
   private isEventAlreadySentAndInValidTimestamp(
-    eventName: string,
+    eventName: EventType,
     params: SentEventParams
   ): boolean {
     const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
@@ -97,19 +105,16 @@ export class Fuul {
       new Date(parsedEvent.timestamp)
     );
 
-    if (
-      parsedEvent["tracking_id"] === params.tracking_id &&
-      parsedEvent["campaign_id"] === params.campaign_id &&
-      parsedEvent["referrer_id"] === params.referrer_id
-    ) {
-      if (isSameDay) {
-        return true;
-      } else {
-        return false;
-      }
+    if (eventName === "connect_wallet") {
+      return parsedEvent["tracking_id"] === params.tracking_id && isSameDay;
+    } else {
+      return (
+        parsedEvent["tracking_id"] === params.tracking_id &&
+        parsedEvent["campaign_id"] === params.campaign_id &&
+        parsedEvent["referrer_id"] === params.referrer_id &&
+        isSameDay
+      );
     }
-
-    return false;
   }
 
   private saveSentEvent(eventName: string, params: SentEventParams): void {
