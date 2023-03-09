@@ -47,6 +47,7 @@ export class Fuul {
     if (name === "connect_wallet") {
       reqBody = {
         name,
+        session_id,
         event_args: {
           ...args,
           tracking_id,
