@@ -1,3 +1,9 @@
+export interface SendEventParams {
+  name: EventType;
+  args?: EventArgsType;
+  projectId?: string;
+}
+
 export type EventArgsType = {
   [key: string]: string;
 };
