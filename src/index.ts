@@ -90,6 +90,10 @@ const saveTrackingId = (): void => {
   localStorage.setItem(REFERRER_ID_KEY, queryParams.get("r") ?? "");
 };
 
+const buildTrackingLinkQueryParams = (r: string, c: string) => {
+  return `c=${c}&origin=fuul&r=${r}`;
+};
+
 export class Fuul {
   private projectId?: string;
   private BASE_API_URL: string = "https://api.fuul.xyz/api/v1";
@@ -177,6 +181,24 @@ export class Fuul {
     } catch (error) {
       return error;
     }
+  }
+
+  verifyConnection(): void {
+    if (window !== undefined && globalThis.Fuul) {
+      window.alert("You are successfully connected to Fuul SDK! ✅");
+    }
+  }
+  /**
+   * It generates the URL that should be sent
+   * @param  {string} address referrer wallet address
+   * @param  {string} cid campaign id you want to refer the user
+   * @returns tracking link url
+   */
+  generateTrackingLink(address: string, cid: string): string {
+    return `${window.location.href}?${buildTrackingLinkQueryParams(
+      address,
+      cid
+    )}`;
   }
 }
 
