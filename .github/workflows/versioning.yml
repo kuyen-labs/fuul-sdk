@@ -30,9 +30,5 @@ jobs:
         uses: reedyuk/npm-version@1.1.1
         with:
           version: ${{ steps.tag_version.outputs.version }}
-          package: "../"
-
-      - name: Tag Release (vX.Y.Z)
-        run: |
-          git tag ${{ steps.tag_version.outputs.version_tag }}
-          git push origin ${{ steps.tag_version.outputs.version_tag }}
+          package: "./"
+          git-tag-version: true
