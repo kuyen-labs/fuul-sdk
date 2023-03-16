@@ -36,6 +36,7 @@
     "url": "https://github.com/fuul-app/fuul-sdk.git"
   },
   "publishConfig": {
-    "access": "restricted"
+    "registry": "https://registry.npmjs.org/",
+    "tag": "latest"
   }
 }
