@@ -17,7 +17,12 @@ import {
   TRACKING_ID_KEY,
 } from "./constants.js";
 
-import { EventArgsType, EventType, SentEventParams } from "./types/types.js";
+import {
+  EventArgsType,
+  EventType,
+  IGenerateTrackingLink,
+  SentEventParams,
+} from "./types/types.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   const timestamp = Date.now();
@@ -188,14 +193,20 @@ export class Fuul {
       window.alert("You are successfully connected to Fuul SDK! ✅");
     }
   }
+
   /**
-   * It generates the URL that should be sent
-   * @param  {string} address referrer wallet address
+   * Generates a tracking link for a referrer
+   * @param  {string} address referrer address
    * @param  {string} cid campaign id you want to refer the user
-   * @returns tracking link url
+   * @param  {string} baseUrl base url of your app
+   * @returns {string} tracking link
    */
-  generateTrackingLink(address: string, cid: string): string {
-    return `${window.location.href}?${buildTrackingLinkQueryParams(
+  generateTrackingLink({
+    address,
+    cid,
+    baseUrl,
+  }: IGenerateTrackingLink): string {
+    return `${baseUrl ?? window.location.href}?${buildTrackingLinkQueryParams(
       address,
       cid
     )}`;

@@ -15,3 +15,9 @@ export interface SentEventParams {
   campaign_id?: string;
   referrer_id?: string;
 }
+
+export interface IGenerateTrackingLink {
+  address: string;
+  cid: string;
+  baseUrl?: string;
+}
