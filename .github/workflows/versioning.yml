@@ -7,29 +7,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
+        with:
+          ref: master
+          fetch-depth: 0
 
       - name: Git Semantic Version
         uses: PaulHatch/semantic-version@v5.0.2
+        id: tag_version
         with:
           branch: master
           tag_prefix: "v"
-          major_pattern: "(MAJOR)"
-          minor_pattern: "(MINOR)"
+          major_pattern: "Major:"
+          minor_pattern: "Minor:"
           version_format: "${major}.${minor}.${patch}-prerelease${increment}"
-          change_path: "src/"
+          change_path: "."
           bump_each_commit: false
           search_commit_body: false
           user_format_type: "csv"
 
-  update-package-json-version:
-    runs-on: ubuntu-latest
-    needs: update-git-version
-    steps:
-      - env:
-          VERSION: ${{needs.update-git-version.outputs.version}}
+      - name: Set package.json version
         uses: reedyuk/npm-version@1.1.1
         with:
-          version: $VERSION
+          version: ${{ steps.tag_version.outputs.version }}
           package: "../"
-          git-tag-version: "true"
+
+      - name: Tag Release (vX.Y.Z)
+        run: |
+          git tag ${{ steps.tag_version.outputs.version_tag }}
+          git push origin ${{ steps.tag_version.outputs.version_tag }}
