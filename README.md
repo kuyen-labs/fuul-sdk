@@ -2,23 +2,23 @@
 
 **Setting up the Fuul SDK**
 
-## **1. Install the Fuul SDK**
+## 1. Install the Fuul SDK
 
 Run one of the following commands to add Fuul SDK to your project:
 
 ### npm
 
 ```bash
-npm install fuul-sdk
+npm install @fuul/sdk
 ```
 
 ### yarn
 
 ```bash
-yarn add fuul-sdk
+yarn add @fuul/sdk
 ```
 
-## 2**. Set up the Fuul SDK**
+## 2. Set up the Fuul SDK
 
 In order to authenticate to full with your project, you must execute the following in the root file of your app.
 
@@ -37,7 +37,7 @@ By this way, you’ll be available to use Fuul as a global object in any of your
 
 - Please note that `projectId` is not required when you initialize Fuul sdk, but it is mandatory in order to send a `“connect_wallet”` event. But don’t worry, you can send it later as an argument using the `Fuul.sendEvent()` method if needed (please refer to section 3 of this guide)
 
-## 3**. Verifying the connection to Fuul SDK**
+## 3. Verifying the connection to Fuul SDK
 
 You can verify that everything was set up successfully with the following method
 
@@ -49,7 +49,7 @@ If everything is ok, you will see a prompt as below:
 
 ![Untitled](Getting%20started%20with%20Fuul%20SDK%205855c088f6d14fcf9dca9d3a13e9bd86/Untitled.png)
 
-## 4**. Sending events**
+## 4. Sending events
 
 In order to send events such as `pageview` or `connect_wallet` you must do the following
 
@@ -83,7 +83,7 @@ const handlePageView = async () => {
 }
 ```
 
-## 5**. Generating tracking links**
+## 5. Generating tracking links
 
 You can also generate the tracking link for a given wallet `address` and `campaign id`
 
