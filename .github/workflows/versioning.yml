@@ -1,37 +1,15 @@
-# Add semantic versioning to your project
-
-name: SDK Versioning
+name: CI
 on: push
 jobs:
-  update-git-version:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Set git credentials
-        run: git config --global user.email "matidaloia@gmail.com" && git config --global user.name "matiasdaloia"
-
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
         with:
-          ref: master
-          fetch-depth: 0
-
-      - name: Git Semantic Version
-        uses: PaulHatch/semantic-version@v5.0.2
-        id: tag_version
-        with:
-          branch: master
-          tag_prefix: "v"
-          major_pattern: "Major:"
-          minor_pattern: "Minor:"
-          version_format: "${major}.${minor}.${patch}-prerelease${increment}"
-          change_path: "."
-          bump_each_commit: false
-          search_commit_body: false
-          user_format_type: "csv"
-
-      - name: Set package.json version
-        uses: reedyuk/npm-version@1.1.1
-        with:
-          version: ${{ steps.tag_version.outputs.version }}
-          package: "."
-          git-tag-version: true
+          node-version: "18"
+      - run: npm ci
+      - name: Release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
