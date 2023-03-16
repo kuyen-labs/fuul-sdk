@@ -1,5 +1,5 @@
 {
-  "name": "fuul-sdk",
+  "name": "@fuul/sdk",
   "version": "0.2.0",
   "description": "Fuul SDK",
   "types": "./lib/esm/types/index.d.ts",
