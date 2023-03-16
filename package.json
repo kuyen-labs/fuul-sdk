@@ -1,6 +1,7 @@
 {
   "name": "@fuul/sdk",
   "version": "0.5.1",
+  "type": "module",
   "description": "Fuul SDK",
   "types": "./lib/esm/types/index.d.ts",
   "main": "./lib/esm/index.mjs",
