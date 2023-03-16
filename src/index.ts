@@ -1,12 +1,13 @@
 import axios from "axios";
+import { nanoid } from "nanoid";
 
-import { datesAreOnSameDay } from "./utils/date";
+import { datesAreOnSameDay } from "./utils/date.js";
 import {
   getCampaignId,
   getReferrerId,
   getSessionId,
   getTrackingId,
-} from "./utils/localStorage";
+} from "./utils/localStorage.js";
 
 import {
   CAMPAIGN_ID_KEY,
@@ -14,14 +15,14 @@ import {
   SENT_EVENT_ID_KEY,
   SESSION_ID_KEY,
   TRACKING_ID_KEY,
-} from "./constants";
+} from "./constants.js";
 
 import {
   EventArgsType,
   EventType,
   IGenerateTrackingLink,
   SentEventParams,
-} from "./types/types";
+} from "./types/types.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   const timestamp = Date.now();
@@ -60,19 +61,17 @@ const isEventAlreadySentAndInValidTimestamp = (
   }
 };
 
-const generateRandomId = async () => {
-  const nanoid = await import("nanoid").then((m) => m.nanoid);
-
+const generateRandomId = () => {
   return nanoid();
 };
 
-const saveSessionId = async (): Promise<void> => {
+const saveSessionId = (): void => {
   if (typeof window === "undefined") return;
 
-  localStorage.setItem(SESSION_ID_KEY, await generateRandomId());
+  localStorage.setItem(SESSION_ID_KEY, generateRandomId());
 };
 
-const saveTrackingId = async (): Promise<void> => {
+const saveTrackingId = (): void => {
   if (typeof window === "undefined" || typeof document === "undefined") return;
 
   const queryParams = new URLSearchParams(window.location.search);
@@ -89,7 +88,7 @@ const saveTrackingId = async (): Promise<void> => {
   if (!isFuulOrigin) return;
 
   if (!getTrackingId()) {
-    localStorage.setItem(TRACKING_ID_KEY, await generateRandomId());
+    localStorage.setItem(TRACKING_ID_KEY, generateRandomId());
   }
 
   localStorage.setItem(CAMPAIGN_ID_KEY, queryParams.get("c") ?? "");
