@@ -16,7 +16,7 @@ export class CampaignsService {
 
       return data;
     } catch (error: any) {
-      throw new Error(error.message);
+      return error;
     }
   }
 }
