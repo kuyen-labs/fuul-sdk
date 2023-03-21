@@ -24,6 +24,8 @@ import {
 } from "./types/types.js";
 
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
+import { CampaignsService } from "./infrastructure/campaigns/campaignsService.js";
+import { CampaignDTO } from "./infrastructure/campaigns/dtos.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   const timestamp = Date.now();
@@ -100,21 +102,21 @@ const buildTrackingLinkQueryParams = (r: string, c: string) => {
 
 export class Fuul {
   private readonly apiKey: string;
-  private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1";
+  private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
   private readonly httpClient: HttpClient;
+  private campaignsService: CampaignsService;
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
     this.checkApiKey();
 
     this.httpClient = new HttpClient({
-      baseURL:
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:14000/api/v1"
-          : this.BASE_API_URL,
+      baseURL: this.BASE_API_URL,
       timeout: 10000,
     });
     this.httpClient.setToken(this.apiKey);
+
+    this.campaignsService = new CampaignsService(this.httpClient);
 
     this.init();
   }
@@ -139,7 +141,7 @@ export class Fuul {
    * import { Fuul } from 'fuul-sdk'
    *
    * // Initialize Fuul in your app root file
-   * new Fuul('your-project-id')
+   * new Fuul('your-api-key')
    *
    * // Then you can send an event as follows:
    * fuul.sendEvent('connect_wallet', {
@@ -225,6 +227,10 @@ export class Fuul {
       address,
       cid
     )}`;
+  }
+
+  async getCampaignById(campaignId: string): Promise<CampaignDTO> {
+    return await this.campaignsService.getCampaignyById(campaignId);
   }
 }
 
