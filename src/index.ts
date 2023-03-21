@@ -113,7 +113,7 @@ export class Fuul {
     this.httpClient = new HttpClient({
       baseURL: this.BASE_API_URL,
       timeout: 10000,
-      token: this.apiKey,
+      apiKey: this.apiKey,
     });
 
     this.campaignsService = new CampaignsService(this.httpClient);

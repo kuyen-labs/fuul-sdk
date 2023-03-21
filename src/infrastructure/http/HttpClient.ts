@@ -7,11 +7,7 @@ import axios, {
 interface HttpClientOptions {
   baseURL: string;
   timeout: number;
-  token: string;
-}
-
-interface HttpHeaders {
-  [key: string]: string;
+  apiKey?: string;
 }
 
 export interface HttpError {
@@ -25,7 +21,7 @@ export class HttpClient {
   constructor(options: HttpClientOptions) {
     this.client = axios.create({
       ...options,
-      headers: this._getHeaders(options.token),
+      headers: options.apiKey ? this._getHeaders(options.apiKey) : {},
     });
   }
 
@@ -55,10 +51,10 @@ export class HttpClient {
     return this.client.delete<T>(path);
   }
 
-  _getHeaders(token: string): RawAxiosRequestHeaders {
+  _getHeaders(apiKey: string): RawAxiosRequestHeaders {
     const headers: RawAxiosRequestHeaders = {};
 
-    headers.Authorization = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${apiKey}`;
 
     return headers;
   }
