@@ -6,6 +6,7 @@ export interface SendEventParams {
 
 export type EventArgsType = {
   [key: string]: string;
+  project_id: string;
 };
 
 export type EventType = "connect_wallet" | "pageview";
