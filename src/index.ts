@@ -1,4 +1,3 @@
-import axios from "axios";
 import { nanoid } from "nanoid";
 
 import { datesAreOnSameDay } from "./utils/date.js";
@@ -23,6 +22,10 @@ import {
   IGenerateTrackingLink,
   SentEventParams,
 } from "./types/types.js";
+
+import { HttpClient } from "./infrastructure/http/HttpClient.js";
+import { CampaignsService } from "./infrastructure/campaigns/campaignsService.js";
+import { CampaignDTO } from "./infrastructure/campaigns/dtos.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   const timestamp = Date.now();
@@ -61,9 +64,7 @@ const isEventAlreadySentAndInValidTimestamp = (
   }
 };
 
-const generateRandomId = () => {
-  return nanoid();
-};
+const generateRandomId = () => nanoid();
 
 const saveSessionId = (): void => {
   if (typeof window === "undefined") return;
@@ -100,16 +101,39 @@ const buildTrackingLinkQueryParams = (r: string, c: string) => {
 };
 
 export class Fuul {
-  private projectId?: string;
-  private BASE_API_URL: string = "https://api.fuul.xyz/api/v1";
+  private readonly apiKey: string;
+  private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
+  private readonly httpClient: HttpClient;
+  private campaignsService: CampaignsService;
 
-  constructor(projectId?: string) {
-    this.projectId = projectId;
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+    this.checkApiKey();
 
     saveSessionId();
     saveTrackingId();
 
+    this.httpClient = new HttpClient({
+      baseURL: this.BASE_API_URL,
+      timeout: 10000,
+      apiKey: this.apiKey,
+    });
+
+    this.campaignsService = new CampaignsService(this.httpClient);
+
+    this.init();
+  }
+
+  init() {
+    this.sendEvent("pageview");
+
     globalThis.Fuul = this;
+  }
+
+  checkApiKey(): void {
+    if (!this.apiKey) {
+      throw new Error("Fuul API key is required");
+    }
   }
 
   /**
@@ -119,7 +143,7 @@ export class Fuul {
    * import { Fuul } from 'fuul-sdk'
    *
    * // Initialize Fuul in your app root file
-   * new Fuul('your-project-id')
+   * new Fuul('your-api-key')
    *
    * // Then you can send an event as follows:
    * fuul.sendEvent('connect_wallet', {
@@ -163,7 +187,6 @@ export class Fuul {
       reqBody = {
         name,
         session_id,
-        project_id: this.projectId ?? args?.project_id,
         event_args: {
           ...args,
           referrer: referrer_id,
@@ -175,16 +198,12 @@ export class Fuul {
 
     if (isEventAlreadySentAndInValidTimestamp(name, params)) return;
 
-    const url = `${this.BASE_API_URL}/events`;
-
     try {
-      const response = await axios.post(url, reqBody);
+      await this.httpClient.post("events", reqBody);
 
       saveSentEvent(name, params);
-
-      return response.data;
-    } catch (error) {
-      return error;
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   }
 
@@ -210,6 +229,10 @@ export class Fuul {
       address,
       cid
     )}`;
+  }
+
+  async getCampaignById(campaignId: string): Promise<CampaignDTO> {
+    return await this.campaignsService.getCampaignyById(campaignId);
   }
 }
 
