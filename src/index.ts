@@ -110,6 +110,9 @@ export class Fuul {
     this.apiKey = apiKey;
     this.checkApiKey();
 
+    saveSessionId();
+    saveTrackingId();
+
     this.httpClient = new HttpClient({
       baseURL: this.BASE_API_URL,
       timeout: 10000,
@@ -122,8 +125,7 @@ export class Fuul {
   }
 
   init() {
-    saveSessionId();
-    saveTrackingId();
+    this.sendEvent("pageview");
 
     globalThis.Fuul = this;
   }
