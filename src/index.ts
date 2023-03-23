@@ -125,8 +125,6 @@ export class Fuul {
   }
 
   init() {
-    this.sendEvent("pageview");
-
     globalThis.Fuul = this;
   }
 
