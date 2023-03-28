@@ -8,15 +8,10 @@ export class CampaignsService {
     this.httpClient = httpClient;
   }
 
-  async getCampaignyById(campaignId: string): Promise<CampaignDTO> {
-    try {
-      const { data } = await this.httpClient.get<CampaignDTO>(
-        `/campaigns/${campaignId}`
-      );
+  async getAllCampaignsByProjectId(projectId?: string): Promise<CampaignDTO[]> {
+    const PATH = projectId ? `campaigns?project_id=${projectId}` : `campaigns`;
+    const { data } = await this.httpClient.get<CampaignDTO[]>(PATH);
 
-      return data;
-    } catch (error: any) {
-      return error;
-    }
+    return data;
   }
 }

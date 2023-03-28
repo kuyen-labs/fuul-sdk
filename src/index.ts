@@ -102,7 +102,10 @@ const buildTrackingLinkQueryParams = (r: string, c: string) => {
 
 export class Fuul {
   private readonly apiKey: string;
-  private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
+  private readonly BASE_API_URL: string =
+    process.env.NODE_ENV === "production"
+      ? "https://api.fuul.xyz/api/v1/"
+      : "http://localhost:14000/api/v1/";
   private readonly httpClient: HttpClient;
   private campaignsService: CampaignsService;
 
@@ -150,7 +153,11 @@ export class Fuul {
    * })
    * ```
    */
-  async sendEvent(name: EventType, args?: EventArgsType): Promise<any> {
+  async sendEvent(
+    name: EventType,
+    args?: EventArgsType,
+    projectId?: string
+  ): Promise<any> {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
     const campaign_id = getCampaignId();
@@ -197,11 +204,12 @@ export class Fuul {
     if (isEventAlreadySentAndInValidTimestamp(name, params)) return;
 
     try {
-      await this.httpClient.post("events", reqBody);
+      const PATH = projectId ? `events?project_id=${projectId}` : "events";
+      await this.httpClient.post(PATH, reqBody);
 
       saveSentEvent(name, params);
     } catch (error: any) {
-      throw new Error(error.message);
+      return error;
     }
   }
 
@@ -229,8 +237,8 @@ export class Fuul {
     )}`;
   }
 
-  async getCampaignById(campaignId: string): Promise<CampaignDTO> {
-    return await this.campaignsService.getCampaignyById(campaignId);
+  async getAllCampaigns(projectId?: string): Promise<CampaignDTO[]> {
+    return this.campaignsService.getAllCampaignsByProjectId(projectId);
   }
 }
 
