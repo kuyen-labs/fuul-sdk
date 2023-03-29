@@ -9,7 +9,6 @@
     "lib/**/*"
   ],
   "scripts": {
-    "compile": "node compile.js",
     "clean": "rm -rf ./lib",
     "dev": "ts-node ./src/index.ts",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
