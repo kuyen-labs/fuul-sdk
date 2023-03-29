@@ -99,7 +99,7 @@ const buildTrackingLinkQueryParams = (r: string, p: string) => {
 
 export class Fuul {
   private readonly apiKey: string;
-  private readonly BASE_API_URL: string = "http://localhost:14000/api/v1/";
+  private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
   private readonly httpClient: HttpClient;
   private campaignsService: CampaignsService;
 
