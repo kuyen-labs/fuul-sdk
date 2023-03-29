@@ -9,11 +9,9 @@
     "lib/**/*"
   ],
   "scripts": {
-    "compile": "node compile.js",
     "clean": "rm -rf ./lib",
     "dev": "ts-node ./src/index.ts",
-    "build:test": "NODE_ENV=development npm run clean && npm run build:esm && npm run build:cjs",
-    "build": "NODE_ENV=production npm run clean && npm run build:esm && npm run build:cjs",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
     "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
     "semantic-release": "semantic-release"

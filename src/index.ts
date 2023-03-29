@@ -2,14 +2,12 @@ import { nanoid } from "nanoid";
 
 import { datesAreOnSameDay } from "./utils/date.js";
 import {
-  getCampaignId,
   getReferrerId,
   getSessionId,
   getTrackingId,
 } from "./utils/localStorage.js";
 
 import {
-  CAMPAIGN_ID_KEY,
   REFERRER_ID_KEY,
   SENT_EVENT_ID_KEY,
   SESSION_ID_KEY,
@@ -57,7 +55,7 @@ const isEventAlreadySentAndInValidTimestamp = (
   } else {
     return (
       parsedEvent["tracking_id"] === params.tracking_id &&
-      parsedEvent["campaign_id"] === params.campaign_id &&
+      parsedEvent["project_id"] === params.project_id &&
       parsedEvent["referrer_id"] === params.referrer_id &&
       isSameDay
     );
@@ -78,7 +76,7 @@ const saveTrackingId = (): void => {
   const queryParams = new URLSearchParams(window.location.search);
 
   if (
-    !queryParams.has("c") ||
+    !queryParams.has("p") ||
     !queryParams.has("origin") ||
     !queryParams.has("r")
   )
@@ -92,20 +90,16 @@ const saveTrackingId = (): void => {
     localStorage.setItem(TRACKING_ID_KEY, generateRandomId());
   }
 
-  localStorage.setItem(CAMPAIGN_ID_KEY, queryParams.get("c") ?? "");
   localStorage.setItem(REFERRER_ID_KEY, queryParams.get("r") ?? "");
 };
 
-const buildTrackingLinkQueryParams = (r: string, c: string) => {
-  return `c=${c}&origin=fuul&r=${r}`;
+const buildTrackingLinkQueryParams = (r: string, p: string) => {
+  return `p=${p}&origin=fuul&r=${r}`;
 };
 
 export class Fuul {
   private readonly apiKey: string;
-  private readonly BASE_API_URL: string =
-    process.env.NODE_ENV === "production"
-      ? "https://api.fuul.xyz/api/v1/"
-      : "http://localhost:14000/api/v1/";
+  private readonly BASE_API_URL: string = "http://localhost:14000/api/v1/";
   private readonly httpClient: HttpClient;
   private campaignsService: CampaignsService;
 
@@ -153,14 +147,9 @@ export class Fuul {
    * })
    * ```
    */
-  async sendEvent(
-    name: EventType,
-    args?: EventArgsType,
-    projectId?: string
-  ): Promise<any> {
+  async sendEvent(name: EventType, args?: EventArgsType): Promise<any> {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
-    const campaign_id = getCampaignId();
     const referrer_id = getReferrerId();
 
     if (!tracking_id) return;
@@ -181,12 +170,12 @@ export class Fuul {
         },
       };
     } else {
-      if (!campaign_id || !referrer_id) return;
+      if (!referrer_id) return;
 
       params = {
         ...params,
         referrer_id,
-        campaign_id,
+        project_id: args?.project_id,
       };
 
       reqBody = {
@@ -195,7 +184,6 @@ export class Fuul {
         event_args: {
           ...args,
           referrer: referrer_id,
-          campaign_id,
           tracking_id,
         },
       };
@@ -204,7 +192,9 @@ export class Fuul {
     if (isEventAlreadySentAndInValidTimestamp(name, params)) return;
 
     try {
-      const PATH = projectId ? `events?project_id=${projectId}` : "events";
+      const PATH = args?.project_id
+        ? `events?project_id=${args.project_id}`
+        : "events";
       await this.httpClient.post(PATH, reqBody);
 
       saveSentEvent(name, params);
@@ -222,23 +212,23 @@ export class Fuul {
   /**
    * Generates a tracking link for a referrer
    * @param  {string} address referrer address
-   * @param  {string} cid campaign id you want to refer the user
+   * @param  {string} pid project id you want to refer the user
    * @param  {string} baseUrl base url of your app
    * @returns {string} tracking link
    */
   generateTrackingLink({
     address,
-    cid,
+    pid,
     baseUrl,
   }: IGenerateTrackingLink): string {
     return `${baseUrl ?? window.location.href}?${buildTrackingLinkQueryParams(
       address,
-      cid
+      pid
     )}`;
   }
 
-  async getAllCampaigns(projectId?: string): Promise<CampaignDTO[]> {
-    return this.campaignsService.getAllCampaignsByProjectId(projectId);
+  async getAllCampaigns(args?: Record<string, string>): Promise<CampaignDTO[]> {
+    return this.campaignsService.getAllCampaignsByProjectId(args);
   }
 }
 
