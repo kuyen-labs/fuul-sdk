@@ -17,13 +17,16 @@ import {
 import {
   EventArgsType,
   EventType,
-  FuulSettings,
   IGenerateTrackingLink,
+  QueryParams,
   SentEventParams,
 } from "./types/types.js";
 
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
-import { CampaignsService } from "./infrastructure/campaigns/campaignsService.js";
+import {
+  CampaignsService,
+  buildQueryParams,
+} from "./infrastructure/campaigns/campaignsService.js";
 import { CampaignDTO } from "./infrastructure/campaigns/dtos.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
@@ -102,13 +105,14 @@ export class Fuul {
   private readonly apiKey: string;
   private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
   private readonly httpClient: HttpClient;
-  private readonly settings: FuulSettings;
+  private readonly queryParams: QueryParams;
   private campaignsService: CampaignsService;
 
-  constructor(apiKey: string, settings: FuulSettings = {}) {
+  constructor(apiKey: string, queryParams: QueryParams = {}) {
     this.apiKey = apiKey;
     this.checkApiKey();
-    this.settings = settings;
+    this.queryParams = queryParams;
+
     saveSessionId();
     saveTrackingId();
 
@@ -126,7 +130,7 @@ export class Fuul {
   async init() {
     globalThis.Fuul = this;
 
-    if (typeof window !== "undefined" && !this.settings.preventAutoPageView) {
+    if (typeof window !== "undefined") {
       await this.sendEvent("pageview");
     }
   }
@@ -198,8 +202,8 @@ export class Fuul {
     if (isEventAlreadySentAndInValidTimestamp(name, params)) return;
 
     try {
-      const PATH = args?.project_id
-        ? `events?project_id=${args.project_id}`
+      const PATH = this.queryParams
+        ? `events?${buildQueryParams(this.queryParams)}`
         : "events";
       await this.httpClient.post(PATH, reqBody);
 
@@ -233,8 +237,8 @@ export class Fuul {
     )}`;
   }
 
-  async getAllCampaigns(args?: Record<string, string>): Promise<CampaignDTO[]> {
-    return this.campaignsService.getAllCampaignsByProjectId(args);
+  async getAllCampaigns(): Promise<CampaignDTO[]> {
+    return this.campaignsService.getAllCampaignsByProjectId(this.queryParams);
   }
 }
 

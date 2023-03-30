@@ -1,7 +1,7 @@
 import { HttpClient } from "../http/HttpClient.js";
 import { CampaignDTO } from "./dtos.js";
 
-const buildQueryParams = (args: Record<string, string>) => {
+export const buildQueryParams = (args: Record<string, string>) => {
   let queryParams = "";
 
   Object.keys(args).forEach((key) => {
@@ -22,9 +22,11 @@ export class CampaignsService {
   }
 
   async getAllCampaignsByProjectId(
-    args?: Record<string, string>
+    queryParams?: Record<string, string>
   ): Promise<CampaignDTO[]> {
-    const PATH = args ? `campaigns?${buildQueryParams(args)}` : `campaigns`;
+    const PATH = queryParams
+      ? `campaigns?${buildQueryParams(queryParams)}`
+      : `campaigns`;
     const { data } = await this.httpClient.get<CampaignDTO[]>(PATH);
 
     return data;
