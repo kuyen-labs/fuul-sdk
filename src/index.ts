@@ -17,6 +17,7 @@ import {
 import {
   EventArgsType,
   EventType,
+  FuulSettings,
   IGenerateTrackingLink,
   SentEventParams,
 } from "./types/types.js";
@@ -101,12 +102,13 @@ export class Fuul {
   private readonly apiKey: string;
   private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
   private readonly httpClient: HttpClient;
+  private readonly settings?: FuulSettings;
   private campaignsService: CampaignsService;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, settings?: FuulSettings) {
     this.apiKey = apiKey;
     this.checkApiKey();
-
+    this.settings = settings;
     saveSessionId();
     saveTrackingId();
 
@@ -124,7 +126,7 @@ export class Fuul {
   async init() {
     globalThis.Fuul = this;
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && this.settings?.autoPageview) {
       await this.sendEvent("pageview");
     }
   }

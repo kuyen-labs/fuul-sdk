@@ -7,6 +7,10 @@ export type EventArgsType = {
   [key: string]: string;
 };
 
+export type FuulSettings = {
+  [key: string]: string;
+};
+
 export type EventType = "connect_wallet" | "pageview";
 
 export interface SentEventParams {
