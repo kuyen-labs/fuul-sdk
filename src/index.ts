@@ -121,8 +121,12 @@ export class Fuul {
     this.init();
   }
 
-  init() {
+  async init() {
     globalThis.Fuul = this;
+
+    if (typeof window !== "undefined") {
+      await this.sendEvent("pageview");
+    }
   }
 
   checkApiKey(): void {
@@ -204,7 +208,7 @@ export class Fuul {
   }
 
   verifyConnection(): void {
-    if (window !== undefined && globalThis.Fuul) {
+    if (typeof window !== undefined && globalThis.Fuul) {
       window.alert("You are successfully connected to Fuul SDK! ✅");
     }
   }
