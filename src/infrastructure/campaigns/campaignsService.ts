@@ -1,18 +1,6 @@
+import { buildQueryParams } from "../../utils/queryParams.js";
 import { HttpClient } from "../http/HttpClient.js";
 import { CampaignDTO } from "./dtos.js";
-
-export const buildQueryParams = (args: Record<string, string>) => {
-  let queryParams = "";
-
-  Object.keys(args).forEach((key) => {
-    queryParams =
-      queryParams === ""
-        ? queryParams + `${key}=${args[key]}`
-        : queryParams + "&" + `${key}=${args[key]}`;
-  });
-
-  return queryParams;
-};
 
 export class CampaignsService {
   private httpClient: HttpClient;

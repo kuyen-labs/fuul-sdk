@@ -23,11 +23,9 @@ import {
 } from "./types/types.js";
 
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
-import {
-  CampaignsService,
-  buildQueryParams,
-} from "./infrastructure/campaigns/campaignsService.js";
+import { CampaignsService } from "./infrastructure/campaigns/campaignsService.js";
 import { CampaignDTO } from "./infrastructure/campaigns/dtos.js";
+import { buildQueryParams } from "./utils/queryParams.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   const timestamp = Date.now();
