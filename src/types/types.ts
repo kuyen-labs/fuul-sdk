@@ -7,8 +7,8 @@ export type EventArgsType = {
   [key: string]: string;
 };
 
-export type FuulSettings = {
-  [key: string]: string | boolean;
+export type QueryParams = {
+  [key: string]: string;
 };
 
 export type EventType = "connect_wallet" | "pageview";
