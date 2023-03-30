@@ -102,10 +102,10 @@ export class Fuul {
   private readonly apiKey: string;
   private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
   private readonly httpClient: HttpClient;
-  private readonly settings?: FuulSettings;
+  private readonly settings: FuulSettings;
   private campaignsService: CampaignsService;
 
-  constructor(apiKey: string, settings?: FuulSettings) {
+  constructor(apiKey: string, settings: FuulSettings = {}) {
     this.apiKey = apiKey;
     this.checkApiKey();
     this.settings = settings;
@@ -126,7 +126,7 @@ export class Fuul {
   async init() {
     globalThis.Fuul = this;
 
-    if (typeof window !== "undefined" && !this.settings?.preventAutoPageView) {
+    if (typeof window !== "undefined" && !this.settings.preventAutoPageView) {
       await this.sendEvent("pageview");
     }
   }
