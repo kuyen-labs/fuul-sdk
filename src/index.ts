@@ -126,7 +126,7 @@ export class Fuul {
   async init() {
     globalThis.Fuul = this;
 
-    if (typeof window !== "undefined" && this.settings?.autoPageview) {
+    if (typeof window !== "undefined" && !this.settings?.preventAutoPageView) {
       await this.sendEvent("pageview");
     }
   }
