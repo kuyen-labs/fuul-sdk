@@ -7,8 +7,10 @@ export type EventArgsType = {
   [key: string]: string;
 };
 
-export type QueryParams = {
+export type FuulSettings = {
   [key: string]: string;
+} & {
+  defaultQueryParams?: Record<string, string>;
 };
 
 export type EventType = "connect_wallet" | "pageview";

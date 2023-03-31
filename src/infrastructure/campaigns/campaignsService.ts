@@ -1,4 +1,3 @@
-import { buildQueryParams } from "../../utils/queryParams.js";
 import { HttpClient } from "../http/HttpClient.js";
 import { CampaignDTO } from "./dtos.js";
 
@@ -9,13 +8,8 @@ export class CampaignsService {
     this.httpClient = httpClient;
   }
 
-  async getAllCampaignsByProjectId(
-    queryParams?: Record<string, string>
-  ): Promise<CampaignDTO[]> {
-    const PATH = queryParams
-      ? `campaigns?${buildQueryParams(queryParams)}`
-      : `campaigns`;
-    const { data } = await this.httpClient.get<CampaignDTO[]>(PATH);
+  async getAllCampaignsByProjectId(): Promise<CampaignDTO[]> {
+    const { data } = await this.httpClient.get<CampaignDTO[]>("campaigns");
 
     return data;
   }

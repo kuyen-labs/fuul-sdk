@@ -17,8 +17,8 @@ import {
 import {
   EventArgsType,
   EventType,
+  FuulSettings,
   IGenerateTrackingLink,
-  QueryParams,
   SentEventParams,
 } from "./types/types.js";
 
@@ -103,13 +103,13 @@ export class Fuul {
   private readonly apiKey: string;
   private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
   private readonly httpClient: HttpClient;
-  private readonly queryParams: QueryParams;
+  private readonly settings: FuulSettings;
   private campaignsService: CampaignsService;
 
-  constructor(apiKey: string, queryParams: QueryParams = {}) {
+  constructor(apiKey: string, settings: FuulSettings = {}) {
     this.apiKey = apiKey;
+    this.settings = settings;
     this.checkApiKey();
-    this.queryParams = queryParams;
 
     saveSessionId();
     saveTrackingId();
@@ -118,6 +118,7 @@ export class Fuul {
       baseURL: this.BASE_API_URL,
       timeout: 10000,
       apiKey: this.apiKey,
+      queryParams: this.settings.defaultQueryParams,
     });
 
     this.campaignsService = new CampaignsService(this.httpClient);
@@ -200,10 +201,7 @@ export class Fuul {
     if (isEventAlreadySentAndInValidTimestamp(name, params)) return;
 
     try {
-      const PATH = this.queryParams
-        ? `events?${buildQueryParams(this.queryParams)}`
-        : "events";
-      await this.httpClient.post(PATH, reqBody);
+      await this.httpClient.post("events", reqBody);
 
       saveSentEvent(name, params);
     } catch (error: any) {
@@ -236,7 +234,7 @@ export class Fuul {
   }
 
   async getAllCampaigns(): Promise<CampaignDTO[]> {
-    return this.campaignsService.getAllCampaignsByProjectId(this.queryParams);
+    return this.campaignsService.getAllCampaignsByProjectId();
   }
 }
 

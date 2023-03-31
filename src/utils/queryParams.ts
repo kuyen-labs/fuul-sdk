@@ -4,7 +4,7 @@ export const buildQueryParams = (args: Record<string, string>) => {
   Object.keys(args).forEach((key) => {
     queryParams =
       queryParams === ""
-        ? queryParams + `${key}=${args[key]}`
+        ? queryParams + `?${key}=${args[key]}`
         : queryParams + "&" + `${key}=${args[key]}`;
   });
 
