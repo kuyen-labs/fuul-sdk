@@ -25,6 +25,7 @@ import {
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
 import { CampaignsService } from "./infrastructure/campaigns/campaignsService.js";
 import { CampaignDTO } from "./infrastructure/campaigns/dtos.js";
+import { buildQueryParams } from "./utils/queryParams.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   const timestamp = Date.now();
@@ -107,8 +108,9 @@ export class Fuul {
 
   constructor(apiKey: string, settings: FuulSettings = {}) {
     this.apiKey = apiKey;
-    this.checkApiKey();
     this.settings = settings;
+    this.checkApiKey();
+
     saveSessionId();
     saveTrackingId();
 
@@ -116,6 +118,7 @@ export class Fuul {
       baseURL: this.BASE_API_URL,
       timeout: 10000,
       apiKey: this.apiKey,
+      queryParams: this.settings.defaultQueryParams,
     });
 
     this.campaignsService = new CampaignsService(this.httpClient);
@@ -126,7 +129,7 @@ export class Fuul {
   async init() {
     globalThis.Fuul = this;
 
-    if (typeof window !== "undefined" && !this.settings.preventAutoPageView) {
+    if (typeof window !== "undefined") {
       await this.sendEvent("pageview");
     }
   }
@@ -198,10 +201,7 @@ export class Fuul {
     if (isEventAlreadySentAndInValidTimestamp(name, params)) return;
 
     try {
-      const PATH = args?.project_id
-        ? `events?project_id=${args.project_id}`
-        : "events";
-      await this.httpClient.post(PATH, reqBody);
+      await this.httpClient.post("events", reqBody);
 
       saveSentEvent(name, params);
     } catch (error: any) {
@@ -233,8 +233,8 @@ export class Fuul {
     )}`;
   }
 
-  async getAllCampaigns(args?: Record<string, string>): Promise<CampaignDTO[]> {
-    return this.campaignsService.getAllCampaignsByProjectId(args);
+  async getAllCampaigns(): Promise<CampaignDTO[]> {
+    return this.campaignsService.getAllCampaignsByProjectId();
   }
 }
 

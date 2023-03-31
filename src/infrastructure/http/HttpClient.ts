@@ -3,11 +3,13 @@ import axios, {
   AxiosResponse,
   RawAxiosRequestHeaders,
 } from "axios";
+import { buildQueryParams } from "../../utils/queryParams.js";
 
 interface HttpClientOptions {
   baseURL: string;
   timeout: number;
   apiKey?: string;
+  queryParams?: Record<string, string>;
 }
 
 export interface HttpError {
@@ -17,16 +19,20 @@ export interface HttpError {
 
 export class HttpClient {
   private readonly client: AxiosInstance;
+  private readonly queryParams: string;
 
   constructor(options: HttpClientOptions) {
     this.client = axios.create({
       ...options,
       headers: options.apiKey ? this._getHeaders(options.apiKey) : {},
     });
+    this.queryParams = options.queryParams
+      ? buildQueryParams(options.queryParams)
+      : "";
   }
 
   async get<T>(path: string, params?: any): Promise<AxiosResponse<T>> {
-    return this.client.get<T>(path, { params });
+    return this.client.get<T>(path + this.queryParams, { params });
   }
 
   async post<T>(
@@ -35,7 +41,7 @@ export class HttpClient {
       [key: string]: any;
     }
   ): Promise<AxiosResponse<T>> {
-    return this.client.post<T>(path, data);
+    return this.client.post<T>(path + this.queryParams, data);
   }
 
   async put<T>(
@@ -44,11 +50,11 @@ export class HttpClient {
       [key: string]: any;
     }
   ): Promise<AxiosResponse<T>> {
-    return this.client.put<T>(path, data);
+    return this.client.put<T>(path + this.queryParams, data);
   }
 
   async delete<T>(path: string): Promise<AxiosResponse<T>> {
-    return this.client.delete<T>(path);
+    return this.client.delete<T>(path + this.queryParams);
   }
 
   _getHeaders(apiKey: string): RawAxiosRequestHeaders {
