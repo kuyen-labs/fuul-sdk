@@ -118,7 +118,10 @@ export class Fuul {
       baseURL: this.BASE_API_URL,
       timeout: 10000,
       apiKey: this.apiKey,
-      queryParams: this.settings.defaultQueryParams,
+      ...(this.settings.defaultQueryParams &&
+        typeof this.settings.defaultQueryParams !== "string" && {
+          queryParams: this.settings.defaultQueryParams,
+        }),
     });
 
     this.campaignsService = new CampaignsService(this.httpClient);
