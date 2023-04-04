@@ -22,78 +22,68 @@ yarn add @fuul/sdk
 
 In order to authenticate to full with your project, you must execute the following in the root file of your app.
 
-```tsx
+```
 // App.tsx
 
 // Settings config object
 const settings = {
-  projectId: "myprojectid", // Replace with your Fuul Project Id.
+  apiKey: "your-fuul-api-key" 
 };
 
 const fuul = new Fuul(settings);
 ```
 
-By this way, you’ll be available to use Fuul as a global object in any of your files, so you don’t have to create a new instance every time.
+Now you’ll be able to use Fuul as a global object in any of your files, so you don’t have to create a new instance every time.
 
-- Please note that `projectId` is not required when you initialize Fuul sdk, but it is mandatory in order to send a `“connect_wallet”` event. But don’t worry, you can send it later as an argument using the `Fuul.sendEvent()` method if needed (please refer to section 3 of this guide)
+## 3. Test your integration
 
-## 3. Verifying the connection to Fuul SDK
+Test your integration with the following method:
 
-You can verify that everything was set up successfully with the following method
-
-```tsx
-Fuul.verifyConnection()
 ```
-
-If everything is ok, you will see a prompt as below:
-
-![Untitled](Getting%20started%20with%20Fuul%20SDK%205855c088f6d14fcf9dca9d3a13e9bd86/Untitled.png)
+function main() {
+  fuul.verifyConnection();
+}
+main();
+```
 
 ## 4. Sending events
 
-In order to send events such as `pageview` or `connect_wallet` you must do the following
+For Fuul to attribute conversion events to your visitors, you'll need to report the connect_wallet event. 
 
-```tsx
-// Sending a pageview event does not need any parameters, just the event name
-const handlePageView = async () => {
-	await Fuul.sendEvent("pageview");
-}
+### Connect wallet event
+Projects must send this event every time users connect a wallet to their website (both when connecting a wallet for the first time and when changing wallets during the session).
+For this type of event, projects must send the user address that is being connected to the website as an argument.
 
-// You can also send additional event arguments as follows:
-const handlePageView = async () => {
-	await Fuul.sendEvent("pageview", {
-		foo,
-		bar,
-		...myWonderfulArguments
-	});
-}
+```
+await Fuul.sendEvent("connect_wallet", {
+    address: <address>,
+    signing_message: <message>,
+    signature: <signature>
+});
+```
 
-// For connect_wallet events, you must send the address that is being connected as an argument
-const handlePageView = async () => {
-	await Fuul.sendEvent("connect_wallet", {
-		address: "0x3Ec0590BC79c74B0145f94C0bE1C5d63E491569f"
-		});
-}
+### Sending custom events (optional)
+Apart from the necessary `connect wallet` event, we allow projects to send any custom event to track as pleased.
 
-// Sending projectId as an event argument (please note that you must send it as project_id)
-const handlePageView = async () => {
-	await Fuul.sendEvent("pageview", {
-		project_id: "my-wonderful-project-id"
-	});
-}
+```
+await fuul.sendEvent("myCustomEvent", {
+	foo,
+	bar,
+	...myWonderfulArguments
+});
 ```
 
 ## 5. Generating tracking links
 
-You can also generate the tracking link for a given wallet `address` and `campaign id`
+You can also generate the tracking link for a given wallet `address` and `project id`
 
 ```tsx
 // Let's assume you are testing in localhost:3000
 
 const myWonderfulReferrerAddress: string = "0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE"
-const campaignId: string = "79e72760-c730-4422-9e7b-3b730e8800dc"
+const projectId: string = "79e72760-c730-4422-9e7b-3b730e8800dc"
 
-const myTrackingId: string = Fuul.generateTrackingLink(myWonderfulReferrerAddress, campaignId);
+const myTrackingId: string = Fuul.generateTrackingLink(myWonderfulReferrerAddress, projectId);
 
-console.log(myTrackingId) // http://localhost:3000?c=79e72760-c730-4422-9e7b-3b730e8800dc&origin=fuul&r=0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE 
+console.log(myTrackingId) // http://localhost:3000?p=79e72760-c730-4422-9e7b-3b730e8800dc&origin=fuul&r=0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE 
 ```
