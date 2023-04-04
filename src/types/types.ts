@@ -17,6 +17,7 @@ export interface SentEventParams {
   tracking_id: string;
   project_id?: string;
   referrer_id?: string;
+  address?: string;
 }
 
 export interface IGenerateTrackingLink {
