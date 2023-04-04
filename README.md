@@ -20,7 +20,7 @@ yarn add @fuul/sdk
 
 ## 2. Set up the Fuul SDK
 
-In order to authenticate to full with your project, you must execute the following in the root file of your app.
+In order to authenticate to Fuul with your project, you must execute the following in the root file of your app.
 
 ```
 // App.tsx
