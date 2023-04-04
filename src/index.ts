@@ -53,7 +53,11 @@ const isEventAlreadySentAndInValidTimestamp = (
   );
 
   if (eventName === "connect_wallet") {
-    return parsedEvent["tracking_id"] === params.tracking_id && isSameDay;
+    return (
+      parsedEvent["tracking_id"] === params.tracking_id && 
+      parsedEvent["address"] === params.address && 
+      isSameDay
+    );
   } else {
     return (
       parsedEvent["tracking_id"] === params.tracking_id &&
@@ -173,13 +177,18 @@ export class Fuul {
     let reqBody = {};
 
     if (name === "connect_wallet") {
+      params = {
+        ...params,
+        address: args?.address
+      };
+
       reqBody = {
         name,
         session_id,
         event_args: {
           ...args,
           tracking_id,
-        },
+        }
       };
     } else {
       if (!referrer_id) return;
