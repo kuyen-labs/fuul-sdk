@@ -20,7 +20,7 @@ yarn add @fuul/sdk
 
 ## 2. Set up the Fuul SDK
 
-In order to authenticate to full with your project, you must execute the following in the root file of your app.
+In order to authenticate to Fuul with your project, you must execute the following in the root file of your app.
 
 ```tsx
 // App.tsx
@@ -33,9 +33,9 @@ const settings = {
 const fuul = new Fuul(settings);
 ```
 
-By this way, you’ll be available to use Fuul as a global object in any of your files, so you don’t have to create a new instance every time.
+This way you’ll be able to use Fuul as a global object in any of your files, so you don’t have to create a new instance every time.
 
-- Please note that `projectId` is not required when you initialize Fuul sdk, but it is mandatory in order to send a `“connect_wallet”` event. But don’t worry, you can send it later as an argument using the `Fuul.sendEvent()` method if needed (please refer to section 3 of this guide)
+- Please note that `projectId` is not required when you initialize Fuul SDK, but it is mandatory in order to send a `“connect_wallet”` event. But don’t worry, you can send it later as an argument using the `Fuul.sendEvent()` method if needed (please refer to section 3 of this guide)
 
 ## 3. Verifying the connection to Fuul SDK
 
