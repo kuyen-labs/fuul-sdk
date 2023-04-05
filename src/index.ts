@@ -48,24 +48,27 @@ const shouldEventBeSent = (eventName: EventType, params: SentEventParams): boole
 
   const nowTimestamp = Date.now();
   const timespanMillis = nowTimestamp - parsedEvent.timestamp;
-  const sentEventStillValid = timespanMillis < SENT_EVENT_VALIDITY_PERIOD_MS;
-
-  if (sentEventStillValid) {
-    return false;
+  const sentEventExpired = timespanMillis > SENT_EVENT_VALIDITY_PERIOD_MS;
+  
+  if (sentEventExpired) {
+    return true;
   }
 
+  let eventArgsMatch = false;
   if (eventName === "connect_wallet") {
-    return (
-      parsedEvent["tracking_id"] !== params.tracking_id || 
-      parsedEvent["address"] !== params.address
+    eventArgsMatch = (
+      parsedEvent["tracking_id"] === params.tracking_id &&
+      parsedEvent["address"] === params.address
     );
   } else {
-    return (
-      parsedEvent["tracking_id"] !== params.tracking_id ||
-      parsedEvent["project_id"] !== params.project_id ||
-      parsedEvent["referrer_id"] !== params.referrer_id
+    eventArgsMatch = (
+      parsedEvent["tracking_id"] === params.tracking_id &&
+      parsedEvent["project_id"] === params.project_id &&
+      parsedEvent["referrer_id"] === params.referrer_id
     );
   }
+
+  return !eventArgsMatch;
 };
 
 const generateRandomId = () => nanoid();
