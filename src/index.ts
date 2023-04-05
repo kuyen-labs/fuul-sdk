@@ -11,6 +11,7 @@ import {
   SENT_EVENT_ID_KEY,
   SESSION_ID_KEY,
   TRACKING_ID_KEY,
+  SENT_EVENT_VALIDITY_PERIOD_MS
 } from "./constants.js";
 
 import {
@@ -47,7 +48,7 @@ const shouldEventBeSent = (eventName: EventType, params: SentEventParams): boole
 
   const nowTimestamp = Date.now();
   const timespanMillis = nowTimestamp - parsedEvent.timestamp;
-  const sentEventStillValid = timespanMillis < 60000;
+  const sentEventStillValid = timespanMillis < SENT_EVENT_VALIDITY_PERIOD_MS;
 
   if (sentEventStillValid) {
     return false;
@@ -107,6 +108,7 @@ export class Fuul {
   private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
   private readonly httpClient: HttpClient;
   private readonly settings: FuulSettings;
+
   private campaignsService: CampaignsService;
 
   constructor(apiKey: string, settings: FuulSettings = {}) {
