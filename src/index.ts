@@ -1,6 +1,5 @@
 import { nanoid } from "nanoid";
 
-import { datesAreOnSameDay } from "./utils/date.js";
 import {
   getReferrerId,
   getSessionId,
@@ -36,34 +35,34 @@ const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
 };
 
-const isEventAlreadySentAndInValidTimestamp = (
-  eventName: EventType,
-  params: SentEventParams
-): boolean => {
+const shouldEventBeSent = (eventName: EventType, params: SentEventParams): boolean => {
   const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
-  const storedEvent = localStorage.getItem(SENT_EVENT_KEY);
+  const sentEvent = localStorage.getItem(SENT_EVENT_KEY);
 
-  if (!storedEvent) return false;
+  if (!sentEvent) {
+    return true;
+  }
 
-  const parsedEvent = JSON.parse(storedEvent);
+  const parsedEvent = JSON.parse(sentEvent);
 
-  const isSameDay = datesAreOnSameDay(
-    new Date(Date.now()),
-    new Date(parsedEvent.timestamp)
-  );
+  const nowTimestamp = Date.now();
+  const timespanMillis = nowTimestamp - parsedEvent.timestamp;
+  const sentEventStillValid = timespanMillis < 60000;
+
+  if (sentEventStillValid) {
+    return false;
+  }
 
   if (eventName === "connect_wallet") {
     return (
-      parsedEvent["tracking_id"] === params.tracking_id && 
-      parsedEvent["address"] === params.address && 
-      isSameDay
+      parsedEvent["tracking_id"] !== params.tracking_id || 
+      parsedEvent["address"] !== params.address
     );
   } else {
     return (
-      parsedEvent["tracking_id"] === params.tracking_id &&
-      parsedEvent["project_id"] === params.project_id &&
-      parsedEvent["referrer_id"] === params.referrer_id &&
-      isSameDay
+      parsedEvent["tracking_id"] !== params.tracking_id ||
+      parsedEvent["project_id"] !== params.project_id ||
+      parsedEvent["referrer_id"] !== params.referrer_id
     );
   }
 };
@@ -210,7 +209,9 @@ export class Fuul {
       };
     }
 
-    if (isEventAlreadySentAndInValidTimestamp(name, params)) return;
+    if (!shouldEventBeSent(name, params)) {
+      return;
+    }
 
     try {
       await this.httpClient.post("events", reqBody);
