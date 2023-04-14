@@ -11,7 +11,7 @@ import {
   SENT_EVENT_ID_KEY,
   SESSION_ID_KEY,
   TRACKING_ID_KEY,
-  SENT_EVENT_VALIDITY_PERIOD_MS
+  SENT_EVENT_VALIDITY_PERIOD_MS,
 } from "./constants.js";
 
 import {
@@ -25,7 +25,6 @@ import {
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
 import { CampaignsService } from "./infrastructure/campaigns/campaignsService.js";
 import { CampaignDTO } from "./infrastructure/campaigns/dtos.js";
-import { buildQueryParams } from "./utils/queryParams.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   const timestamp = Date.now();
@@ -36,7 +35,10 @@ const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
 };
 
-const shouldEventBeSent = (eventName: EventType, params: SentEventParams): boolean => {
+const shouldEventBeSent = (
+  eventName: EventType,
+  params: SentEventParams
+): boolean => {
   const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
   const sentEvent = localStorage.getItem(SENT_EVENT_KEY);
 
@@ -49,23 +51,21 @@ const shouldEventBeSent = (eventName: EventType, params: SentEventParams): boole
   const nowTimestamp = Date.now();
   const timespanMillis = nowTimestamp - parsedEvent.timestamp;
   const sentEventExpired = timespanMillis > SENT_EVENT_VALIDITY_PERIOD_MS;
-  
+
   if (sentEventExpired) {
     return true;
   }
 
   let eventArgsMatch = false;
   if (eventName === "connect_wallet") {
-    eventArgsMatch = (
+    eventArgsMatch =
       parsedEvent["tracking_id"] === params.tracking_id &&
-      parsedEvent["address"] === params.address
-    );
+      parsedEvent["address"] === params.address;
   } else {
-    eventArgsMatch = (
+    eventArgsMatch =
       parsedEvent["tracking_id"] === params.tracking_id &&
       parsedEvent["project_id"] === params.project_id &&
-      parsedEvent["referrer_id"] === params.referrer_id
-    );
+      parsedEvent["referrer_id"] === params.referrer_id;
   }
 
   return !eventArgsMatch;
@@ -154,6 +154,8 @@ export class Fuul {
   /**
    * @param {EventType} name Event name.
    * @param {EventArgsType} args Event additional arguments.
+   * @param {String} signature Event signature.
+   * @param {String} signature_message Event signature message.
    * ```js
    * import { Fuul } from 'fuul-sdk'
    *
@@ -167,7 +169,12 @@ export class Fuul {
    * })
    * ```
    */
-  async sendEvent(name: EventType, args?: EventArgsType): Promise<any> {
+  async sendEvent(
+    name: EventType,
+    args?: EventArgsType,
+    signature?: string,
+    signature_message?: string
+  ): Promise<any> {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
     const referrer_id = getReferrerId();
@@ -183,7 +190,7 @@ export class Fuul {
     if (name === "connect_wallet") {
       params = {
         ...params,
-        address: args?.address
+        address: args?.address,
       };
 
       reqBody = {
@@ -192,7 +199,7 @@ export class Fuul {
         event_args: {
           ...args,
           tracking_id,
-        }
+        },
       };
     } else {
       if (!referrer_id) return;
@@ -213,6 +220,16 @@ export class Fuul {
         },
       };
     }
+
+    reqBody = {
+      ...reqBody,
+      ...(signature && {
+        signature,
+      }),
+      ...(signature_message && {
+        signature_message,
+      }),
+    };
 
     if (!shouldEventBeSent(name, params)) {
       return;
