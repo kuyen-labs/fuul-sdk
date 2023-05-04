@@ -4,6 +4,10 @@ import {
   getReferrerId,
   getSessionId,
   getTrackingId,
+  getTrafficCategory,
+  getTrafficSource,
+  getTrafficTag,
+  getTrafficTitle,
 } from "./utils/localStorage.js";
 
 import {
@@ -12,19 +16,23 @@ import {
   SESSION_ID_KEY,
   TRACKING_ID_KEY,
   SENT_EVENT_VALIDITY_PERIOD_MS,
+  TRAFFIC_SOURCE_KEY,
+  TRAFFIC_CATEGORY_KEY,
+  TRAFFIC_TITLE_KEY,
+  TRAFFIC_TAG_KEY,
+  SEARCH_ENGINE_URLS,
 } from "./constants.js";
 
 import {
   EventArgsType,
   EventType,
   FuulSettings,
-  IGenerateTrackingLink,
   SentEventParams,
 } from "./types/types.js";
 
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
-import { CampaignsService } from "./infrastructure/campaigns/campaignsService.js";
-import { CampaignDTO } from "./infrastructure/campaigns/dtos.js";
+import { ConversionsService } from "./infrastructure/conversions/conversionsService.js";
+import { ConversionDTO } from "./infrastructure/conversions/dtos.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   const timestamp = Date.now();
@@ -64,8 +72,7 @@ const shouldEventBeSent = (
   } else {
     eventArgsMatch =
       parsedEvent["tracking_id"] === params.tracking_id &&
-      parsedEvent["project_id"] === params.project_id &&
-      parsedEvent["referrer_id"] === params.referrer_id;
+      parsedEvent["project_id"] === params.project_id;
   }
 
   return !eventArgsMatch;
@@ -74,45 +81,78 @@ const shouldEventBeSent = (
 const generateRandomId = () => nanoid();
 
 const saveSessionId = (): void => {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return;
+  }
 
   localStorage.setItem(SESSION_ID_KEY, generateRandomId());
 };
 
 const saveTrackingId = (): void => {
-  if (typeof window === "undefined" || typeof document === "undefined") return;
-
-  const queryParams = new URLSearchParams(window.location.search);
-
-  if (
-    !queryParams.has("p") ||
-    !queryParams.has("origin") ||
-    !queryParams.has("r")
-  )
+  if (typeof window === "undefined" || typeof document === "undefined") {
     return;
-
-  const isFuulOrigin = queryParams.get("origin") === "fuul";
-
-  if (!isFuulOrigin) return;
+  }
 
   if (!getTrackingId()) {
     localStorage.setItem(TRACKING_ID_KEY, generateRandomId());
   }
-
-  localStorage.setItem(REFERRER_ID_KEY, queryParams.get("r") ?? "");
 };
 
-const buildTrackingLinkQueryParams = (r: string, p: string) => {
-  return `p=${p}&origin=fuul&r=${r}`;
+const saveUrlParams = (): void => {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return;
+  }
+
+  const queryParams = new URLSearchParams(window.location.search);
+
+  saveTrafficSource(queryParams);
+
+  localStorage.setItem(TRAFFIC_CATEGORY_KEY, queryParams.get("category") ?? "");
+  localStorage.setItem(TRAFFIC_TITLE_KEY, queryParams.get("title") ?? "");
+  localStorage.setItem(TRAFFIC_TAG_KEY, queryParams.get("tag") ?? "");
+};
+
+const saveTrafficSource = (queryParams: URLSearchParams): void => {
+  const trafficSourceParam = queryParams.get("source");
+  const referrerParam = queryParams.get("r");
+
+  // if is an affiliate link
+  if (referrerParam) {
+    localStorage.setItem(TRAFFIC_SOURCE_KEY, "affiliate");
+    localStorage.setItem(TRAFFIC_CATEGORY_KEY, "affiliate");
+    localStorage.setItem(TRAFFIC_TITLE_KEY, referrerParam);
+    localStorage.setItem(REFERRER_ID_KEY, referrerParam);
+    return;
+  }
+
+  // if traffic source is defined
+  if (trafficSourceParam) {
+    localStorage.setItem(TRAFFIC_SOURCE_KEY, trafficSourceParam);
+    return;
+  }
+
+  // if traffic source is not defined
+  const originURL = document.referrer;
+
+  localStorage.setItem(TRAFFIC_CATEGORY_KEY, originURL);
+  localStorage.setItem(TRAFFIC_TITLE_KEY, originURL);
+
+  // if traffic source is a search engine
+  if (SEARCH_ENGINE_URLS.includes(originURL)) {
+    localStorage.setItem(TRAFFIC_SOURCE_KEY, "organic");
+  } else {
+    // if traffic source is direct
+    localStorage.setItem(TRAFFIC_SOURCE_KEY, "direct");
+  }
 };
 
 export class Fuul {
   private readonly apiKey: string;
-  private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
+  private readonly BASE_API_URL: string = "http://localhost:14000/api/v1/";
   private readonly httpClient: HttpClient;
   private readonly settings: FuulSettings;
 
-  private campaignsService: CampaignsService;
+  private conversionsService: ConversionsService;
 
   constructor(apiKey: string, settings: FuulSettings = {}) {
     this.apiKey = apiKey;
@@ -121,6 +161,7 @@ export class Fuul {
 
     saveSessionId();
     saveTrackingId();
+    saveUrlParams();
 
     this.httpClient = new HttpClient({
       baseURL: this.BASE_API_URL,
@@ -132,7 +173,7 @@ export class Fuul {
         }),
     });
 
-    this.campaignsService = new CampaignsService(this.httpClient);
+    this.conversionsService = new ConversionsService(this.httpClient);
 
     this.init();
   }
@@ -202,11 +243,20 @@ export class Fuul {
         },
       };
     } else {
+      const source = getTrafficSource();
+      const category = getTrafficCategory();
+      const title = getTrafficTitle();
+      const tag = getTrafficTag();
+
       if (!referrer_id) return;
 
       params = {
         ...params,
         referrer_id,
+        source,
+        category,
+        title,
+        tag,
         project_id: args?.project_id,
       };
 
@@ -217,6 +267,10 @@ export class Fuul {
           ...args,
           referrer: referrer_id,
           tracking_id,
+          source,
+          category,
+          title,
+          tag,
         },
       };
     }
@@ -250,26 +304,8 @@ export class Fuul {
     }
   }
 
-  /**
-   * Generates a tracking link for a referrer
-   * @param  {string} address referrer address
-   * @param  {string} pid project id you want to refer the user
-   * @param  {string} baseUrl base url of your app
-   * @returns {string} tracking link
-   */
-  generateTrackingLink({
-    address,
-    pid,
-    baseUrl,
-  }: IGenerateTrackingLink): string {
-    return `${baseUrl ?? window.location.href}?${buildTrackingLinkQueryParams(
-      address,
-      pid
-    )}`;
-  }
-
-  async getAllCampaigns(): Promise<CampaignDTO[]> {
-    return this.campaignsService.getAllCampaignsByProjectId();
+  async getAllConversions(): Promise<ConversionDTO[]> {
+    return this.conversionsService.getAllConversionsByProjectId();
   }
 }
 
