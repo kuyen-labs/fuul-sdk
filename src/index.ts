@@ -31,7 +31,7 @@ import {
 } from "./types/types.js";
 
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
-import { ConversionsService } from "./infrastructure/conversions/conversionsService.js";
+import { ConversionService } from "./infrastructure/conversions/conversionService.js";
 import { ConversionDTO } from "./infrastructure/conversions/dtos.js";
 
 const saveSentEvent = (eventName: string, params: SentEventParams): void => {
@@ -65,6 +65,7 @@ const shouldEventBeSent = (
   }
 
   let eventArgsMatch = false;
+
   if (eventName === "connect_wallet") {
     eventArgsMatch =
       parsedEvent["tracking_id"] === params.tracking_id &&
@@ -72,7 +73,12 @@ const shouldEventBeSent = (
   } else {
     eventArgsMatch =
       parsedEvent["tracking_id"] === params.tracking_id &&
-      parsedEvent["project_id"] === params.project_id;
+      parsedEvent["project_id"] === params.project_id &&
+      parsedEvent["referrer_id"] === params.referrer_id &&
+      parsedEvent["source"] === params.source &&
+      parsedEvent["category"] === params.category &&
+      parsedEvent["title"] === params.title &&
+      parsedEvent["tag"] === params.tag;
   }
 
   return !eventArgsMatch;
@@ -80,8 +86,11 @@ const shouldEventBeSent = (
 
 const generateRandomId = () => nanoid();
 
+const isBrowserUndefined =
+  typeof window === "undefined" || typeof document === "undefined";
+
 const saveSessionId = (): void => {
-  if (typeof window === "undefined" || typeof document === "undefined") {
+  if (isBrowserUndefined) {
     return;
   }
 
@@ -89,7 +98,7 @@ const saveSessionId = (): void => {
 };
 
 const saveTrackingId = (): void => {
-  if (typeof window === "undefined" || typeof document === "undefined") {
+  if (isBrowserUndefined) {
     return;
   }
 
@@ -99,7 +108,7 @@ const saveTrackingId = (): void => {
 };
 
 const saveUrlParams = (): void => {
-  if (typeof window === "undefined" || typeof document === "undefined") {
+  if (isBrowserUndefined) {
     return;
   }
 
@@ -148,11 +157,11 @@ const saveTrafficSource = (queryParams: URLSearchParams): void => {
 
 export class Fuul {
   private readonly apiKey: string;
-  private readonly BASE_API_URL: string = "http://localhost:14000/api/v1/";
+  private readonly BASE_API_URL: string = "https://api.fuul.xyz/api/v1/";
   private readonly httpClient: HttpClient;
   private readonly settings: FuulSettings;
 
-  private conversionsService: ConversionsService;
+  private conversionService: ConversionService;
 
   constructor(apiKey: string, settings: FuulSettings = {}) {
     this.apiKey = apiKey;
@@ -173,7 +182,7 @@ export class Fuul {
         }),
     });
 
-    this.conversionsService = new ConversionsService(this.httpClient);
+    this.conversionService = new ConversionService(this.httpClient);
 
     this.init();
   }
@@ -252,12 +261,12 @@ export class Fuul {
 
       params = {
         ...params,
+        project_id: args?.project_id,
         referrer_id,
         source,
         category,
         title,
         tag,
-        project_id: args?.project_id,
       };
 
       reqBody = {
@@ -305,7 +314,7 @@ export class Fuul {
   }
 
   async getAllConversions(): Promise<ConversionDTO[]> {
-    return this.conversionsService.getAllConversionsByProjectId();
+    return this.conversionService.getAll();
   }
 }
 
