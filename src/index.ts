@@ -318,6 +318,7 @@ export class Fuul {
   }
 }
 
+// Declare global module so it can be used anywhere once initialized
 declare module globalThis {
   var Fuul: Fuul;
 }
