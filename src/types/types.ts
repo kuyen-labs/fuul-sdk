@@ -16,12 +16,10 @@ export type EventType = "connect_wallet" | "pageview";
 export interface SentEventParams {
   tracking_id: string;
   project_id?: string;
-  referrer_id?: string;
-  address?: string;
-}
-
-export interface IGenerateTrackingLink {
-  address: string;
-  pid: string;
-  baseUrl?: string;
+  referrer_id?: string | null;
+  address?: string | null;
+  source?: string | null;
+  category?: string | null;
+  title?: string | null;
+  tag?: string | null;
 }
