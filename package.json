@@ -37,6 +37,6 @@
   },
   "publishConfig": {
     "tag": "latest",
-    "access": "public"
+    "access": "restricted"
   }
 }
