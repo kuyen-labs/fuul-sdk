@@ -6,6 +6,7 @@ export interface Project {
 
 export interface ConversionDTO {
   id: string;
+  name: string;
   payment_currency: string;
   conversion_window: number;
   payment_type: string;
