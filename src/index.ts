@@ -257,8 +257,6 @@ export class Fuul {
       const title = getTrafficTitle();
       const tag = getTrafficTag();
 
-      if (!referrer_id) return;
-
       params = {
         ...params,
         project_id: args?.project_id,
