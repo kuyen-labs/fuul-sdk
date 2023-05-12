@@ -4,15 +4,20 @@ export interface Project {
   thumbnail_url: string;
 }
 
+interface ConversionPaymentActionArgs {
+  payment_type: string;
+  payment_currency: string;
+  referral_amount: number;
+  referrer_amount: number;
+}
+
 export interface ConversionDTO {
+  action_args?: ConversionPaymentActionArgs;
+  action_type?: string;
+  attribution_type: string;
+  conversion_window: number;
+  created_at: string;
   id: string;
   name: string;
   project: Project;
-  payment_currency: string;
-  conversion_window: number;
-  payment_type: string;
-  payment_argument: string;
-  referrer_amount: number;
-  referral_amount: number;
-  attribution_type: string;
 }
