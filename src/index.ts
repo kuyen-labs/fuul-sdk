@@ -27,8 +27,9 @@ import {
   EventArgsType,
   EventType,
   FuulSettings,
+  IGenerateTrackingLink,
   SentEventParams,
-} from "./types/types.js";
+} from "./types/index.js";
 
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
 import { ConversionService } from "./infrastructure/conversions/conversionService.js";
@@ -114,45 +115,47 @@ const saveUrlParams = (): void => {
 
   const queryParams = new URLSearchParams(window.location.search);
 
-  saveTrafficSource(queryParams);
-
+  localStorage.setItem(REFERRER_ID_KEY, queryParams.get("referrer") ?? "");
+  localStorage.setItem(TRAFFIC_SOURCE_KEY, queryParams.get("source") ?? "");
   localStorage.setItem(TRAFFIC_CATEGORY_KEY, queryParams.get("category") ?? "");
   localStorage.setItem(TRAFFIC_TITLE_KEY, queryParams.get("title") ?? "");
   localStorage.setItem(TRAFFIC_TAG_KEY, queryParams.get("tag") ?? "");
+
+  saveTrafficSource();
 };
 
-const saveTrafficSource = (queryParams: URLSearchParams): void => {
-  const trafficSourceParam = queryParams.get("source");
-  const referrerParam = queryParams.get("r");
+const saveTrafficSource = (): void => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const source = queryParams.get("source");
+  const referrer = queryParams.get("referrer");
 
-  // if is an affiliate link
-  if (referrerParam) {
+  if (source) {
+    return;
+  }
+
+  if (referrer) {
     localStorage.setItem(TRAFFIC_SOURCE_KEY, "affiliate");
     localStorage.setItem(TRAFFIC_CATEGORY_KEY, "affiliate");
-    localStorage.setItem(TRAFFIC_TITLE_KEY, referrerParam);
-    localStorage.setItem(REFERRER_ID_KEY, referrerParam);
-    return;
-  }
-
-  // if traffic source is defined
-  if (trafficSourceParam) {
-    localStorage.setItem(TRAFFIC_SOURCE_KEY, trafficSourceParam);
-    return;
-  }
-
-  // if traffic source is not defined
-  const originURL = document.referrer;
-
-  localStorage.setItem(TRAFFIC_CATEGORY_KEY, originURL);
-  localStorage.setItem(TRAFFIC_TITLE_KEY, originURL);
-
-  // if traffic source is a search engine
-  if (SEARCH_ENGINE_URLS.includes(originURL)) {
-    localStorage.setItem(TRAFFIC_SOURCE_KEY, "organic");
+    localStorage.setItem(TRAFFIC_TITLE_KEY, referrer);
   } else {
-    // if traffic source is direct
-    localStorage.setItem(TRAFFIC_SOURCE_KEY, "direct");
+    // if traffic source is not defined
+    const originURL = document.referrer;
+
+    localStorage.setItem(TRAFFIC_CATEGORY_KEY, originURL);
+    localStorage.setItem(TRAFFIC_TITLE_KEY, originURL);
+
+    // if traffic source is a search engine
+    if (SEARCH_ENGINE_URLS.includes(originURL)) {
+      localStorage.setItem(TRAFFIC_SOURCE_KEY, "organic");
+    } else {
+      // if traffic source is direct
+      localStorage.setItem(TRAFFIC_SOURCE_KEY, "direct");
+    }
   }
+};
+
+const buildTrackingLinkQueryParams = (referrer: string, projectId: string) => {
+  return `p=${projectId}&source=fuul&referrer=${referrer}`;
 };
 
 export class Fuul {
@@ -188,11 +191,11 @@ export class Fuul {
   }
 
   async init() {
-    globalThis.Fuul = this;
-
-    if (typeof window !== "undefined") {
-      await this.sendEvent("pageview");
+    if (isBrowserUndefined) {
+      return;
     }
+
+    await this.sendEvent("pageview");
   }
 
   checkApiKey(): void {
@@ -306,19 +309,37 @@ export class Fuul {
   }
 
   verifyConnection(): void {
-    if (typeof window !== undefined && globalThis.Fuul) {
-      window.alert("You are successfully connected to Fuul SDK! ✅");
+    if (isBrowserUndefined) {
+      throw new Error(
+        'Fuul SDK is not supported in this environment. Please use "typeof window !== undefined" to check if you are in the browser environment.'
+      );
     }
+
+    window.alert("You are successfully connected to Fuul SDK! ✅");
+  }
+
+  /**
+   * Generates a tracking link for a referrer
+   * @param {Object} trackingLinkParams - Tracking link parameters
+   * @param {string} trackingLinkParams.address - Referrer wallet address.
+   * @param {string} trackingLinkParams.projectId - Project ID.
+   * @param {string} trackingLinkParams.baseUrl - Base URL of your app. Defaults to window.location.href.
+   * @returns {string} tracking link
+   **/
+  generateTrackingLink({
+    address,
+    projectId,
+    baseUrl,
+  }: IGenerateTrackingLink): string {
+    return `${baseUrl ?? window.location.href}?${buildTrackingLinkQueryParams(
+      address,
+      projectId
+    )}`;
   }
 
   async getAllConversions(): Promise<ConversionDTO[]> {
     return this.conversionService.getAll();
   }
-}
-
-// Declare global module so it can be used anywhere once initialized
-declare module globalThis {
-  var Fuul: Fuul;
 }
 
 export default {

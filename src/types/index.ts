@@ -23,3 +23,9 @@ export interface SentEventParams {
   title?: string | null;
   tag?: string | null;
 }
+
+export interface IGenerateTrackingLink {
+  address: string;
+  projectId: string;
+  baseUrl?: string;
+}
