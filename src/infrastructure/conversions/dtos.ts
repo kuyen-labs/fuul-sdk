@@ -11,6 +11,17 @@ interface ConversionPaymentActionArgs {
   referrer_amount: number;
 }
 
+interface ContractDTO {
+  address: string;
+  network: string;
+}
+
+interface TriggerDTO {
+  name: string;
+  description: string;
+  contracts: ContractDTO[];
+}
+
 export interface ConversionDTO {
   action_args?: ConversionPaymentActionArgs;
   action_type?: string;
@@ -20,4 +31,5 @@ export interface ConversionDTO {
   id: string;
   name: string;
   project: Project;
+  triggers: TriggerDTO[];
 }
