@@ -21,6 +21,7 @@ import {
   TRAFFIC_TITLE_KEY,
   TRAFFIC_TAG_KEY,
   SEARCH_ENGINE_URLS,
+  TRAFFIC_ORIGIN_URL,
 } from "./constants.js";
 
 import {
@@ -120,6 +121,7 @@ const saveUrlParams = (): void => {
   localStorage.setItem(TRAFFIC_CATEGORY_KEY, queryParams.get("category") ?? "");
   localStorage.setItem(TRAFFIC_TITLE_KEY, queryParams.get("title") ?? "");
   localStorage.setItem(TRAFFIC_TAG_KEY, queryParams.get("tag") ?? "");
+  localStorage.setItem(TRAFFIC_ORIGIN_URL, document.referrer ?? "");
 
   saveTrafficSource();
 };
@@ -231,11 +233,19 @@ export class Fuul {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
     const referrer_id = getReferrerId();
+    const source = getTrafficSource();
+    const category = getTrafficCategory();
+    const title = getTrafficTitle();
+    const tag = getTrafficTag();
 
     if (!tracking_id) return;
 
     let params: SentEventParams = {
       tracking_id,
+      source,
+      category,
+      title,
+      tag,
     };
 
     let reqBody = {};
@@ -252,22 +262,17 @@ export class Fuul {
         event_args: {
           ...args,
           tracking_id,
+          source,
+          category,
+          title,
+          tag,
         },
       };
     } else {
-      const source = getTrafficSource();
-      const category = getTrafficCategory();
-      const title = getTrafficTitle();
-      const tag = getTrafficTag();
-
       params = {
         ...params,
         project_id: args?.project_id,
         referrer_id,
-        source,
-        category,
-        title,
-        tag,
       };
 
       reqBody = {
