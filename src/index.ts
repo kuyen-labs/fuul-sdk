@@ -220,7 +220,6 @@ export class Fuul {
    * // Then you can send an event as follows:
    * fuul.sendEvent('connect_wallet', {
    *    address,
-   *    ...args
    * })
    * ```
    */
