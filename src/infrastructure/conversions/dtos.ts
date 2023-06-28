@@ -2,6 +2,10 @@ export interface Project {
   id: string;
   name: string;
   thumbnail_url: string;
+  integration_type: string;
+  user_landing_page_url?: string;
+  partner_landing_page_url?: string;
+  user_onboarding_page_url?: string;
 }
 
 interface ConversionPaymentActionArgs {
