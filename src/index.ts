@@ -25,18 +25,17 @@ import {
 } from "./constants.js";
 
 import {
-  EventArgsType,
-  EventType,
   FuulSettings,
   IGenerateTrackingLink,
-  SentEventParams,
+  SendEventArgs,
+  SendEventRequest,
 } from "./types/index.js";
 
 import { HttpClient } from "./infrastructure/http/HttpClient.js";
 import { ConversionService } from "./infrastructure/conversions/conversionService.js";
 import { ConversionDTO } from "./infrastructure/conversions/dtos.js";
 
-const saveSentEvent = (eventName: string, params: SentEventParams): void => {
+const saveSentEvent = (eventName: string, params: SendEventRequest): void => {
   const timestamp = Date.now();
 
   const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
@@ -45,18 +44,18 @@ const saveSentEvent = (eventName: string, params: SentEventParams): void => {
   localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
 };
 
-const shouldEventBeSent = (
-  eventName: EventType,
-  params: SentEventParams
+const shouldSendEvent = (
+  eventName: string,
+  reqBody: SendEventRequest
 ): boolean => {
   const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
-  const sentEvent = localStorage.getItem(SENT_EVENT_KEY);
 
-  if (!sentEvent) {
+  let lastSentEvent = localStorage.getItem(SENT_EVENT_KEY);
+  if (!lastSentEvent) {
     return true;
   }
 
-  const parsedEvent = JSON.parse(sentEvent);
+  const parsedEvent = JSON.parse(lastSentEvent);
 
   const nowTimestamp = Date.now();
   const timespanMillis = nowTimestamp - parsedEvent.timestamp;
@@ -68,19 +67,21 @@ const shouldEventBeSent = (
 
   let eventArgsMatch = false;
 
+  const { tracking_id, project_id, referrer, source, category, title, tag } =  reqBody.metadata;
+
   if (eventName === "connect_wallet") {
     eventArgsMatch =
-      parsedEvent["tracking_id"] === params.tracking_id &&
-      parsedEvent["address"] === params.address;
+      parsedEvent["tracking_id"] === tracking_id &&
+      parsedEvent["address"] === reqBody.user_address;
   } else {
     eventArgsMatch =
-      parsedEvent["tracking_id"] === params.tracking_id &&
-      parsedEvent["project_id"] === params.project_id &&
-      parsedEvent["referrer_id"] === params.referrer_id &&
-      parsedEvent["source"] === params.source &&
-      parsedEvent["category"] === params.category &&
-      parsedEvent["title"] === params.title &&
-      parsedEvent["tag"] === params.tag;
+      parsedEvent["tracking_id"] === tracking_id &&
+      parsedEvent["project_id"] === project_id &&
+      parsedEvent["referrer"] === referrer &&
+      parsedEvent["source"] === source &&
+      parsedEvent["category"] === category &&
+      parsedEvent["title"] === title &&
+      parsedEvent["tag"] === tag;
   }
 
   return !eventArgsMatch;
@@ -208,9 +209,11 @@ export class Fuul {
 
   /**
    * @param {EventType} name Event name.
-   * @param {EventArgsType} args Event additional arguments.
+   * @param {EventArgs} args Event additional arguments.
    * @param {String} signature Event signature.
    * @param {String} signature_message Event signature message.
+   * @returns {Promise<any>} Promise object represents the result of the event.
+   * @example
    * ```js
    * import { Fuul } from 'fuul-sdk'
    *
@@ -219,19 +222,17 @@ export class Fuul {
    *
    * // Then you can send an event as follows:
    * fuul.sendEvent('connect_wallet', {
-   *    address,
+   *    userAddress: '0x01',
+   *    args: {
+   *     score: 10
+   *    }
    * })
    * ```
    */
-  async sendEvent(
-    name: EventType,
-    args?: EventArgsType,
-    signature?: string,
-    signature_message?: string
-  ): Promise<any> {
+  async sendEvent(name: string, { args, userAddress, projectId, signature, signatureMessage }: SendEventArgs = {}): Promise<any> {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
-    const referrer_id = getReferrerId();
+    const referrerId = getReferrerId();
     const source = getTrafficSource();
     const category = getTrafficCategory();
     const title = getTrafficTitle();
@@ -239,74 +240,33 @@ export class Fuul {
 
     if (!tracking_id) return;
 
-    let params: SentEventParams = {
-      tracking_id,
-      source,
-      category,
-      title,
-      tag,
-    };
+    const reqBody = {
+      name,
+      session_id,
+      event_args: args,
+      ...(userAddress && { user_address: userAddress }),
+      metadata: {
+        ...(referrerId && { referrer: referrerId}),
+        ...(projectId && { project_id: projectId }),
+        tracking_id,
+        source,
+        category,
+        title,
+        tag,
+      },
+      ...(signature && { signature }),
+      ...(signatureMessage && { signature_message: signatureMessage }),
+    } as SendEventRequest;
+  
 
-    let reqBody = {};
-
-    if (name === "connect_wallet") {
-      params = {
-        ...params,
-        address: args?.address,
-      };
-
-      reqBody = {
-        name,
-        session_id,
-        event_args: {
-          ...args,
-          tracking_id,
-          source,
-          category,
-          title,
-          tag,
-        },
-      };
-    } else {
-      params = {
-        ...params,
-        project_id: args?.project_id,
-        referrer_id,
-      };
-
-      reqBody = {
-        name,
-        session_id,
-        event_args: {
-          ...args,
-          referrer: referrer_id,
-          tracking_id,
-          source,
-          category,
-          title,
-          tag,
-        },
-      };
-    }
-
-    reqBody = {
-      ...reqBody,
-      ...(signature && {
-        signature,
-      }),
-      ...(signature_message && {
-        signature_message,
-      }),
-    };
-
-    if (!shouldEventBeSent(name, params)) {
+    if (!shouldSendEvent(name, reqBody)) {
       return;
     }
 
     try {
       await this.httpClient.post("events", reqBody);
 
-      saveSentEvent(name, params);
+      saveSentEvent(name, reqBody);
     } catch (error: any) {
       return error;
     }

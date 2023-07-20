@@ -22,7 +22,7 @@ yarn add @fuul/sdk
 
 In order to authenticate to Fuul with your project, you must execute the following in the root file of your app.
 
-```
+```javascript
 // App.tsx
 
 // Settings config object
@@ -39,7 +39,7 @@ Now you’ll be able to use Fuul as a global object in any of your files, so you
 
 Test your integration with the following method:
 
-```
+```javascript
 function main() {
   fuul.verifyConnection();
 }
@@ -54,22 +54,22 @@ For Fuul to attribute conversion events to your visitors, you'll need to report 
 Projects must send this event every time users connect a wallet to their website (both when connecting a wallet for the first time and when changing wallets during the session).
 For this type of event, projects must send the user address that is being connected to the website as an argument.
 
-```
+```tsx
 await Fuul.sendEvent("connect_wallet", {
-    address: <address>,
-    signing_message: <message>,
-    signature: <signature>
+    address: '',
+    signing_message: '',
+    signature: ''
 });
 ```
 
-### Sending custom events (optional)
+### Sending Custom Events
+
 Apart from the necessary `connect wallet` event, we allow projects to send any custom event to track as pleased.
 
-```
-await fuul.sendEvent("myCustomEvent", {
-	foo,
-	bar,
-	...myWonderfulArguments
+```tsx
+await fuul.sendEvent("my-custom-event", {
+	arg1: 'arg1',
+	arg2: 'arg2',
 });
 ```
 
