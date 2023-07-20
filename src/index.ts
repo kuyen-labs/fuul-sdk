@@ -25,9 +25,10 @@ import {
 } from "./constants.js";
 
 import {
+  EventArgs,
   FuulSettings,
   IGenerateTrackingLink,
-  SendEventArgs,
+  EventMetadata,
   SendEventRequest,
 } from "./types/index.js";
 
@@ -65,26 +66,21 @@ const shouldSendEvent = (
     return true;
   }
 
-  let eventArgsMatch = false;
+  const { tracking_id, project_id, referrer, source, category, title, tag, user_address } =  reqBody.metadata;
 
-  const { tracking_id, project_id, referrer, source, category, title, tag } =  reqBody.metadata;
+  const eventMetadata = parsedEvent['metadata'];
 
-  if (eventName === "connect_wallet") {
-    eventArgsMatch =
-      parsedEvent["tracking_id"] === tracking_id &&
-      parsedEvent["address"] === reqBody.user_address;
-  } else {
-    eventArgsMatch =
-      parsedEvent["tracking_id"] === tracking_id &&
-      parsedEvent["project_id"] === project_id &&
-      parsedEvent["referrer"] === referrer &&
-      parsedEvent["source"] === source &&
-      parsedEvent["category"] === category &&
-      parsedEvent["title"] === title &&
-      parsedEvent["tag"] === tag;
-  }
+  const eventMetadataMatches =
+    eventMetadata['tracking_id'] === tracking_id &&
+    eventMetadata['project_id'] === project_id &&
+    eventMetadata['referrer'] === referrer &&
+    eventMetadata['source'] === source &&
+    eventMetadata['category'] === category &&
+    eventMetadata['title'] === title &&
+    eventMetadata['tag'] === tag;
+    eventMetadata['user_address'] === user_address;
 
-  return !eventArgsMatch;
+  return !eventMetadataMatches;
 };
 
 const generateRandomId = () => nanoid();
@@ -179,13 +175,10 @@ export class Fuul {
     saveUrlParams();
 
     this.httpClient = new HttpClient({
-      baseURL: this.BASE_API_URL,
+      baseURL: settings.baseApiUrl || this.BASE_API_URL,
       timeout: 10000,
       apiKey: this.apiKey,
-      ...(this.settings.defaultQueryParams &&
-        typeof this.settings.defaultQueryParams !== "string" && {
-          queryParams: this.settings.defaultQueryParams,
-        }),
+      ...(this.settings.defaultQueryParams && { queryParams: this.settings.defaultQueryParams })
     });
 
     this.conversionService = new ConversionService(this.httpClient);
@@ -221,15 +214,10 @@ export class Fuul {
    * new Fuul('your-api-key')
    *
    * // Then you can send an event as follows:
-   * fuul.sendEvent('connect_wallet', {
-   *    userAddress: '0x01',
-   *    args: {
-   *     score: 10
-   *    }
-   * })
+   * fuul.sendEvent('my event', { value: 10 }, { user_address: '0x01' })
    * ```
    */
-  async sendEvent(name: string, { args, userAddress, projectId, signature, signatureMessage }: SendEventArgs = {}): Promise<any> {
+  async sendEvent(name: string, args: EventArgs = {}, metadata: EventMetadata = {}): Promise<any> {
     const session_id = getSessionId();
     const tracking_id = getTrackingId();
     const referrerId = getReferrerId();
@@ -238,26 +226,26 @@ export class Fuul {
     const title = getTrafficTitle();
     const tag = getTrafficTag();
 
+    const  { userAddress, signature, signatureMessage } = metadata;
+
     if (!tracking_id) return;
 
     const reqBody = {
       name,
-      session_id,
       event_args: args,
-      ...(userAddress && { user_address: userAddress }),
       metadata: {
         ...(referrerId && { referrer: referrerId}),
-        ...(projectId && { project_id: projectId }),
+        session_id,
         tracking_id,
         source,
         category,
         title,
         tag,
       },
+      ...(userAddress && { user_address: userAddress }),
       ...(signature && { signature }),
       ...(signatureMessage && { signature_message: signatureMessage }),
     } as SendEventRequest;
-  
 
     if (!shouldSendEvent(name, reqBody)) {
       return;

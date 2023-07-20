@@ -2,6 +2,8 @@ export interface SendEventMetadataRequest {
   referrer?: string;
   project_id?: string;
   tracking_id: string;
+  session_id: string;
+  user_address?: string;
   source?: string;
   category?: string;
   title?: string;
@@ -10,28 +12,25 @@ export interface SendEventMetadataRequest {
 
 export interface SendEventRequest {
   name: string;
-  session_id: string;
   event_args: EventArgs;
-  user_address?: string;
   metadata: SendEventMetadataRequest;
   signature?: string;
   signatureMessage?: string;
 }
 
-export interface SendEventArgs {
-  args?: EventArgs;
+export interface EventMetadata {
   userAddress?: string; 
   signature?: string; 
   signatureMessage?: string;
-  projectId?: string;
 }
 
 export type EventArgs = {
-  [key: string]: string;
+  [key: string]: unknown;
 };
 
 export type FuulSettings = {
-  [key: string]: string | Record<string, string>;
+  baseApiUrl?: string;
+  defaultQueryParams?: Record<string, string>;
 };
 
 export interface IGenerateTrackingLink {
