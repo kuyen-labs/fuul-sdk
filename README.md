@@ -2,7 +2,7 @@
 
 ## Installation
 
-### 1. Install the Fuul SDK:
+### 1. Install the Fuul SDK
 
 Run one of the following commands to add Fuul SDK to your project:
 
