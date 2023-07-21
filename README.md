@@ -82,5 +82,3 @@ const myTrackingId: string = Fuul.generateTrackingLink(myWonderfulReferrerAddres
 
 console.log(myTrackingId) // http://localhost:3000?p=79e72760-c730-4422-9e7b-3b730e8800dc&origin=fuul&r=0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE 
 ```
-
-##
