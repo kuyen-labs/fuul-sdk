@@ -12,8 +12,9 @@ export interface SendEventMetadataRequest {
 
 export interface SendEventRequest {
   name: string;
-  event_args: EventArgs;
-  metadata: SendEventMetadataRequest;
+  event_args?: EventArgs;
+  metadata?: SendEventMetadataRequest;
+  user_address?: string;
   signature?: string;
   signatureMessage?: string;
 }
