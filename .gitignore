@@ -3,3 +3,5 @@ dest/
 .DS_Store
 .git
 lib/
+dist/
+coverage/
