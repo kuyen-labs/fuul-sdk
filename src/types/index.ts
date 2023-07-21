@@ -1,28 +1,38 @@
-export interface SendEventParams {
-  name: EventType;
-  args?: EventArgsType;
+export interface SendEventMetadataRequest {
+  referrer?: string;
+  project_id?: string;
+  tracking_id: string;
+  session_id: string;
+  user_address?: string;
+  source?: string;
+  category?: string;
+  title?: string;
+  tag?: string;
 }
 
-export type EventArgsType = {
-  [key: string]: string;
+export interface SendEventRequest {
+  name: string;
+  event_args?: EventArgs;
+  metadata?: SendEventMetadataRequest;
+  user_address?: string;
+  signature?: string;
+  signatureMessage?: string;
+}
+
+export interface EventMetadata {
+  userAddress?: string; 
+  signature?: string; 
+  signatureMessage?: string;
+}
+
+export type EventArgs = {
+  [key: string]: unknown;
 };
 
 export type FuulSettings = {
-  [key: string]: string | Record<string, string>;
+  baseApiUrl?: string;
+  defaultQueryParams?: Record<string, string>;
 };
-
-export type EventType = "connect_wallet" | "pageview";
-
-export interface SentEventParams {
-  tracking_id: string;
-  project_id?: string;
-  referrer_id?: string | null;
-  address?: string | null;
-  source?: string | null;
-  category?: string | null;
-  title?: string | null;
-  tag?: string | null;
-}
 
 export interface IGenerateTrackingLink {
   address: string;

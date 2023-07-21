@@ -1,31 +1,28 @@
 # Getting started with Fuul SDK
 
-**Setting up the Fuul SDK**
+## Installation
 
-## 1. Install the Fuul SDK
+### 1. Install the Fuul SDK
 
 Run one of the following commands to add Fuul SDK to your project:
 
-### npm
+Npm:
 
 ```bash
 npm install @fuul/sdk
 ```
 
-### yarn
+Yarn:
 
 ```bash
 yarn add @fuul/sdk
 ```
 
-## 2. Set up the Fuul SDK
+### 2. Set up the Fuul SDK
 
 In order to authenticate to Fuul with your project, you must execute the following in the root file of your app.
 
-```
-// App.tsx
-
-// Settings config object
+```tsx
 const settings = {
   apiKey: "your-fuul-api-key" 
 };
@@ -35,45 +32,43 @@ const fuul = new Fuul(settings);
 
 Now you’ll be able to use Fuul as a global object in any of your files, so you don’t have to create a new instance every time.
 
-## 3. Test your integration
+### 3. Test your integration
 
 Test your integration with the following method:
 
-```
+```tsx
 function main() {
   fuul.verifyConnection();
 }
 main();
 ```
 
-## 4. Sending events
+### 4. Sending events
 
 For Fuul to attribute conversion events to your visitors, you'll need to report the connect_wallet event. 
 
-### Connect wallet event
+#### Connect wallet event
+
 Projects must send this event every time users connect a wallet to their website (both when connecting a wallet for the first time and when changing wallets during the session).
+
 For this type of event, projects must send the user address that is being connected to the website as an argument.
 
-```
-await Fuul.sendEvent("connect_wallet", {
-    address: <address>,
-    signing_message: <message>,
-    signature: <signature>
-});
+```tsx
+await fuul.sendEvent("connect_wallet", {}, { userAddress: '0x01' });
 ```
 
-### Sending custom events (optional)
+### Sending Custom Events
+
 Apart from the necessary `connect wallet` event, we allow projects to send any custom event to track as pleased.
 
-```
-await fuul.sendEvent("myCustomEvent", {
-	foo,
-	bar,
-	...myWonderfulArguments
+```tsx
+await fuul.sendEvent("my-custom-event", {
+	arg1: 'arg1',
+	arg2: 'arg2',
 });
 ```
 
-## 5. Generating tracking links
+### 5. Generating Tracking Links
 
 You can also generate the tracking link for a given wallet `address` and `project id`
 
