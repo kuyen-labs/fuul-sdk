@@ -11,11 +11,6 @@ export default defineConfig((configEnv) => ({
       name: 'FuulSdk',
       fileName: 'fuul-sdk',
     },
-    rollupOptions: {
-      output: {
-        exports: 'default',
-      },
-    },
   },
   plugins: [
     tsConfigPaths(),

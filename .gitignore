@@ -4,3 +4,5 @@ dest/
 .git
 lib/
 dist/
+coverage/
+```

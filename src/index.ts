@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid'
-
 import {
   getReferrerId,
   getSessionId,
@@ -8,21 +6,11 @@ import {
   getTrafficSource,
   getTrafficTag,
   getTrafficTitle,
+  isBrowserUndefined,
+  saveSessionId,
+  saveTrackingId,
+  saveUrlParams,
 } from './utils/localStorage'
-
-import {
-  REFERRER_ID_KEY,
-  SENT_EVENT_ID_KEY,
-  SESSION_ID_KEY,
-  TRACKING_ID_KEY,
-  SENT_EVENT_VALIDITY_PERIOD_MS,
-  TRAFFIC_SOURCE_KEY,
-  TRAFFIC_CATEGORY_KEY,
-  TRAFFIC_TITLE_KEY,
-  TRAFFIC_TAG_KEY,
-  SEARCH_ENGINE_URLS,
-  TRAFFIC_ORIGIN_URL,
-} from './constants'
 
 import {
   EventArgs,
@@ -30,125 +18,12 @@ import {
   IGenerateTrackingLink,
   EventMetadata,
   SendEventRequest,
-} from './types/index'
+} from './types'
 
 import { HttpClient } from './infrastructure/http/HttpClient'
 import { ConversionService } from './infrastructure/conversions/conversionService'
 import { ConversionDTO } from './infrastructure/conversions/dtos'
-
-const saveSentEvent = (eventName: string, params: SendEventRequest): void => {
-  const timestamp = Date.now()
-
-  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`
-  const eventParams = { ...params, timestamp }
-
-  localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams))
-}
-
-const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): boolean => {
-  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`
-
-  let lastSentEvent = localStorage.getItem(SENT_EVENT_KEY)
-  if (!lastSentEvent) {
-    return true
-  }
-
-  const parsedEvent = JSON.parse(lastSentEvent)
-
-  const nowTimestamp = Date.now()
-  const timespanMillis = nowTimestamp - parsedEvent.timestamp
-  const sentEventExpired = timespanMillis > SENT_EVENT_VALIDITY_PERIOD_MS
-
-  if (sentEventExpired) {
-    return true
-  }
-
-  const { tracking_id, project_id, referrer, source, category, title, tag, user_address } =
-    reqBody.metadata
-
-  const eventMetadata = parsedEvent['metadata']
-
-  const eventMetadataMatches =
-    eventMetadata['tracking_id'] === tracking_id &&
-    eventMetadata['project_id'] === project_id &&
-    eventMetadata['referrer'] === referrer &&
-    eventMetadata['source'] === source &&
-    eventMetadata['category'] === category &&
-    eventMetadata['title'] === title &&
-    eventMetadata['tag'] === tag
-  eventMetadata['user_address'] === user_address
-
-  return !eventMetadataMatches
-}
-
-const generateRandomId = () => nanoid()
-
-const isBrowserUndefined = typeof window === 'undefined' || typeof document === 'undefined'
-
-const saveSessionId = (): void => {
-  if (isBrowserUndefined) {
-    return
-  }
-
-  localStorage.setItem(SESSION_ID_KEY, generateRandomId())
-}
-
-const saveTrackingId = (): void => {
-  if (isBrowserUndefined) {
-    return
-  }
-
-  if (!getTrackingId()) {
-    localStorage.setItem(TRACKING_ID_KEY, generateRandomId())
-  }
-}
-
-const saveUrlParams = (): void => {
-  if (isBrowserUndefined) {
-    return
-  }
-
-  const queryParams = new URLSearchParams(window.location.search)
-
-  localStorage.setItem(REFERRER_ID_KEY, queryParams.get('referrer') ?? '')
-  localStorage.setItem(TRAFFIC_SOURCE_KEY, queryParams.get('source') ?? '')
-  localStorage.setItem(TRAFFIC_CATEGORY_KEY, queryParams.get('category') ?? '')
-  localStorage.setItem(TRAFFIC_TITLE_KEY, queryParams.get('title') ?? '')
-  localStorage.setItem(TRAFFIC_TAG_KEY, queryParams.get('tag') ?? '')
-  localStorage.setItem(TRAFFIC_ORIGIN_URL, document.referrer ?? '')
-
-  saveTrafficSource()
-}
-
-const saveTrafficSource = (): void => {
-  const queryParams = new URLSearchParams(window.location.search)
-  const source = queryParams.get('source')
-  const referrer = queryParams.get('referrer')
-
-  if (source) {
-    return
-  }
-
-  if (referrer) {
-    localStorage.setItem(TRAFFIC_SOURCE_KEY, 'affiliate')
-    localStorage.setItem(TRAFFIC_CATEGORY_KEY, 'affiliate')
-    localStorage.setItem(TRAFFIC_TITLE_KEY, referrer)
-  } else {
-    // if traffic source is not defined
-    const originURL = document.referrer
-
-    localStorage.setItem(TRAFFIC_CATEGORY_KEY, originURL)
-    localStorage.setItem(TRAFFIC_TITLE_KEY, originURL)
-
-    // if traffic source is a search engine
-    if (SEARCH_ENGINE_URLS.includes(originURL)) {
-      localStorage.setItem(TRAFFIC_SOURCE_KEY, 'organic')
-    } else {
-      // if traffic source is direct
-      localStorage.setItem(TRAFFIC_SOURCE_KEY, 'direct')
-    }
-  }
-}
+import { saveSentEvent, shouldSendEvent } from './utils/events'
 
 const buildTrackingLinkQueryParams = (referrer: string, projectId: string) => {
   return `p=${projectId}&source=fuul&referrer=${referrer}`
