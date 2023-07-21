@@ -13,7 +13,7 @@ export const saveSentEvent = (eventName: string, params: SendEventRequest): void
 export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): boolean => {
   const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`
 
-  let lastSentEvent = localStorage.getItem(SENT_EVENT_KEY)
+  const lastSentEvent = localStorage.getItem(SENT_EVENT_KEY)
   if (!lastSentEvent) {
     return true
   }
@@ -28,20 +28,22 @@ export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): b
     return true
   }
 
-  const { tracking_id, project_id, referrer, source, category, title, tag, user_address } =
-    reqBody.metadata
+  if (reqBody.metadata) {
+    const { tracking_id, project_id, referrer, source, category, title, tag } =
+      reqBody.metadata
 
-  const eventMetadata = parsedEvent['metadata']
+    const matches =
+      parsedEvent.metadata.tracking_id === tracking_id &&
+      parsedEvent.metadata.project_id === project_id &&
+      parsedEvent.metadata.referrer === referrer &&
+      parsedEvent.metadata.source === source &&
+      parsedEvent.metadata.category === category &&
+      parsedEvent.metadata.title === title &&
+      parsedEvent.metadata.tag === tag
+      parsedEvent.user_address === reqBody.user_address
 
-  const eventMetadataMatches =
-    eventMetadata['tracking_id'] === tracking_id &&
-    eventMetadata['project_id'] === project_id &&
-    eventMetadata['referrer'] === referrer &&
-    eventMetadata['source'] === source &&
-    eventMetadata['category'] === category &&
-    eventMetadata['title'] === title &&
-    eventMetadata['tag'] === tag
-  eventMetadata['user_address'] === user_address
+    return !matches
+  }
 
-  return !eventMetadataMatches
+  return true
 }

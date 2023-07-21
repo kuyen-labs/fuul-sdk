@@ -14,7 +14,6 @@
   },
   "plugins": ["@typescript-eslint", "prettier", "simple-import-sort"],
   "rules": {
-    "camelcase": "error",
     "no-duplicate-imports": "error",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-explicit-any": "off",
