@@ -202,19 +202,12 @@ export class Fuul {
 
   /**
    * @param {EventType} name Event name.
-   * @param {EventArgs} args Event additional arguments.
-   * @param {String} signature Event signature.
-   * @param {String} signature_message Event signature message.
+   * @param {EventArgs} args Event arguments
+   * @param {EventMetadata} metadata Event metadata like userAddress, signature, signatureMessage
    * @returns {Promise<any>} Promise object represents the result of the event.
    * @example
    * ```js
-   * import { Fuul } from 'fuul-sdk'
-   *
-   * // Initialize Fuul in your app root file
-   * new Fuul('your-api-key')
-   *
-   * // Then you can send an event as follows:
-   * fuul.sendEvent('my event', { value: 10 }, { user_address: '0x01' })
+   * fuul.sendEvent('my_event', { value: 10 }, { userAddress: '0x01' })
    * ```
    */
   async sendEvent(name: string, args: EventArgs = {}, metadata: EventMetadata = {}): Promise<any> {
