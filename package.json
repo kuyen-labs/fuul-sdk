@@ -14,7 +14,8 @@
     "lint:fix": "eslint --fix 'src/**/*.{js,json,ts}'",
     "format": "prettier --write 'src/**/*.{js,json,ts}' --config ./.prettierrc",
     "semantic-release": "semantic-release",
-    "test": "jest --coverage --watchAll"
+    "test": "jest --coverage --watchAll",
+    "test:ci": "jest --coverage --ci"
   },
   "husky": {
     "hooks": {
