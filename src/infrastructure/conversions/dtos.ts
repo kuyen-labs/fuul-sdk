@@ -10,10 +10,29 @@ interface ContractDTO {
   network: string
 }
 
-interface TriggerDTO {
+export interface AbiInput {
+  name: string
+  type: string
+  internalType: string
+}
+
+export interface TriggerDTO {
+  id: string
+  projectId: string
   name: string
   description: string
-  contracts: ContractDTO[]
+  type: string
+  networks: string[]
+  signature: string
+  ref: string
+  contractAddress: string
+  contract_address: string
+  contracts?: ContractDTO[]
+  createdAt: string
+  updatedAt: string
+  deletedAt?: string
+  arguments?: AbiInput[]
+  condition_expression?: string
 }
 
 enum ProjectIntegrationType {
