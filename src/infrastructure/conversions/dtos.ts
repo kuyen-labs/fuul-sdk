@@ -5,9 +5,14 @@ interface ConversionPaymentActionArgs {
   referrer_amount: number
 }
 
-interface ContractDTO {
+export interface ContractDTO {
   address: string
+  createdAt: string
+  deletedAt: null
+  id: string
   network: string
+  sentinelId: null
+  updatedAt: string
 }
 
 export interface AbiInput {
