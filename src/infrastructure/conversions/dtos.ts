@@ -1,8 +1,11 @@
 interface ConversionPaymentActionArgs {
   payment_type: string
   payment_currency: string
-  referral_amount: number
-  referrer_amount: number
+  referral_amount?: string
+  referrer_amount?: string
+  referrer_amount_percentage?: number
+  referral_amount_percentage?: number
+  payment_argument?: string;
 }
 
 export interface ContractDTO {
