@@ -126,6 +126,7 @@ class Fuul {
 
   /**
    * @param {UserMetadata} userMetadata Metadata from the user that is connecting the wallet
+   * @see https://docs.fuul.xyz/technical-guide-for-projects/sending-events-through-the-fuul-sdk#connect-wallet-event
    * @returns {Promise<void>}
    * @example
    * ```typescript
