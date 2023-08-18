@@ -17,7 +17,7 @@ import {
   getTrafficSource,
   getTrafficTag,
   getTrafficTitle,
-  isClient,
+  isBrowserUndefined,
   saveSessionId,
   saveTrackingId,
   saveUrlParams,
@@ -57,10 +57,8 @@ class Fuul {
   }
 
   async init() {
-    if (!isClient) {
-      throw new Error(
-        'Fuul SDK is not supported in this environment. Please use "typeof window !== undefined" to check if you are in the browser environment.',
-      )
+    if (isBrowserUndefined) {
+      return
     }
 
     await this.sendEvent('pageview')
@@ -126,7 +124,7 @@ class Fuul {
   }
 
   verifyConnection(): void {
-    if (!isClient) {
+    if (isBrowserUndefined) {
       throw new Error(
         'Fuul SDK is not supported in this environment. Please use "typeof window !== undefined" to check if you are in the browser environment.',
       )
