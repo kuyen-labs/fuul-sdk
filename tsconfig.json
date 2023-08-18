@@ -18,7 +18,7 @@
     "declarationMap": true,
     "baseUrl": ".",
     "paths": {
-      "fuul-protocol-abis": ["src/index.ts"]
+      "fuul-sdk": ["src/index.ts"]
     },
     "typeRoots": ["node_modules/@types", "src/index.d.ts"]
   },

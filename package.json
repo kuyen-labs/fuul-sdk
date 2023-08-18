@@ -37,8 +37,8 @@
       "require": "./dist/fuul-sdk.umd.js"
     }
   },
-  "main": "./dist/fuul-protocol-abis.umd.js",
-  "module": "./dist/fuul-protocol-abis.mjs",
+  "main": "./dist/fuul-sdk.umd.js",
+  "module": "./dist/fuul-sdk.mjs",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {

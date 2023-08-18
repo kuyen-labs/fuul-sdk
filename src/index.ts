@@ -1,3 +1,14 @@
+import { ConversionService } from './infrastructure/conversions/conversionService'
+import { ConversionDTO } from './infrastructure/conversions/dtos'
+import { HttpClient } from './infrastructure/http/HttpClient'
+import {
+  EventArgs,
+  EventMetadata,
+  FuulSettings,
+  IGenerateTrackingLink,
+  SendEventRequest,
+} from './types'
+import { saveSentEvent, shouldSendEvent } from './utils/events'
 import {
   getReferrerId,
   getSessionId,
@@ -6,24 +17,11 @@ import {
   getTrafficSource,
   getTrafficTag,
   getTrafficTitle,
-  isBrowserUndefined,
+  isClient,
   saveSessionId,
   saveTrackingId,
   saveUrlParams,
 } from './utils/localStorage'
-
-import {
-  EventArgs,
-  FuulSettings,
-  IGenerateTrackingLink,
-  EventMetadata,
-  SendEventRequest,
-} from './types'
-
-import { HttpClient } from './infrastructure/http/HttpClient'
-import { ConversionService } from './infrastructure/conversions/conversionService'
-import { ConversionDTO } from './infrastructure/conversions/dtos'
-import { saveSentEvent, shouldSendEvent } from './utils/events'
 
 const buildTrackingLinkQueryParams = (referrer: string, projectId: string) => {
   return `p=${projectId}&source=fuul&referrer=${referrer}`
@@ -59,8 +57,10 @@ class Fuul {
   }
 
   async init() {
-    if (isBrowserUndefined) {
-      return
+    if (!isClient) {
+      throw new Error(
+        'Fuul SDK is not supported in this environment. Please use "typeof window !== undefined" to check if you are in the browser environment.',
+      )
     }
 
     await this.sendEvent('pageview')
@@ -126,12 +126,13 @@ class Fuul {
   }
 
   verifyConnection(): void {
-    if (isBrowserUndefined) {
+    if (!isClient) {
       throw new Error(
         'Fuul SDK is not supported in this environment. Please use "typeof window !== undefined" to check if you are in the browser environment.',
       )
     }
 
+    // eslint-disable-next-line no-alert
     window.alert('You are successfully connected to Fuul SDK! ✅')
   }
 
