@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid'
+
 import {
   PROJECT_ID_KEY,
   REFERRER_ID_KEY,
@@ -21,11 +22,12 @@ export const getTrafficCategory = () => localStorage.getItem(TRAFFIC_CATEGORY_KE
 export const getTrafficTitle = () => localStorage.getItem(TRAFFIC_TITLE_KEY)
 export const getTrafficTag = () => localStorage.getItem(TRAFFIC_TAG_KEY)
 
-export const isBrowserUndefined = typeof window === 'undefined' || typeof document === 'undefined'
+export const isClient = typeof window !== 'undefined'
+
 const generateRandomId = () => nanoid()
 
 export const saveSessionId = (): void => {
-  if (isBrowserUndefined) {
+  if (!isClient) {
     return
   }
 
@@ -33,7 +35,7 @@ export const saveSessionId = (): void => {
 }
 
 export const saveTrackingId = (): void => {
-  if (isBrowserUndefined) {
+  if (!isClient) {
     return
   }
 
@@ -43,7 +45,7 @@ export const saveTrackingId = (): void => {
 }
 
 export const saveUrlParams = (): void => {
-  if (isBrowserUndefined) {
+  if (!isClient) {
     return
   }
 
