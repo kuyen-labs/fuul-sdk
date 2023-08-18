@@ -7,6 +7,7 @@ import {
   FuulSettings,
   IGenerateTrackingLink,
   SendEventRequest,
+  UserMetadata,
 } from './types'
 import { saveSentEvent, shouldSendEvent } from './utils/events'
 import {
@@ -74,13 +75,13 @@ class Fuul {
    * @param {EventType} name Event name.
    * @param {EventArgs} args Event arguments
    * @param {EventMetadata} metadata Event metadata like userAddress, signature, signatureMessage
-   * @returns {Promise<any>} Promise object represents the result of the event.
+   * @returns {Promise<void>}
    * @example
    * ```js
    * fuul.sendEvent('my_event', { value: 10 }, { userAddress: '0x01' })
    * ```
    */
-  async sendEvent(name: string, args: EventArgs = {}, metadata: EventMetadata = {}): Promise<any> {
+  async sendEvent(name: string, args: EventArgs = {}, metadata: EventMetadata = {}): Promise<void> {
     const session_id = getSessionId()
     const tracking_id = getTrackingId()
     const referrerId = getReferrerId()
@@ -121,6 +122,22 @@ class Fuul {
     } catch (error: any) {
       return error
     }
+  }
+
+  /**
+   * @param {UserMetadata} userMetadata Metadata from the user that is connecting the wallet
+   * @returns {Promise<void>}
+   * @example
+   * ```typescript
+   * fuul.sendConnectWalletEvent({
+   *     userAddress: '0x12345',
+   *     signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
+   *     signatureMessage: 'Accept referral from Fuul'
+   * })
+   * ```
+   */
+  async sendConnectWalletEvent(userMetadata: UserMetadata): Promise<void> {
+    await this.sendEvent('connect_wallet', {}, userMetadata)
   }
 
   verifyConnection(): void {
