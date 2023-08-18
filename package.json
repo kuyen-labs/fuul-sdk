@@ -1,6 +1,5 @@
 {
   "name": "@fuul/sdk",
-  "type": "module",
   "version": "1.1.1",
   "description": "Fuul SDK",
   "keywords": [
@@ -70,13 +69,13 @@
   "files": [
     "dist"
   ],
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.umd.js",
       "types": "./dist/index.d.ts"
     }
   }
