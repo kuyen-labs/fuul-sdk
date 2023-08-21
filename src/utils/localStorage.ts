@@ -73,7 +73,7 @@ export const saveTrafficSource = (): void => {
   if (referrer) {
     localStorage.setItem(TRAFFIC_SOURCE_KEY, 'affiliate')
     localStorage.setItem(TRAFFIC_CATEGORY_KEY, 'affiliate')
-    localStorage.setItem(TRAFFIC_TITLE_KEY, referrer)
+    localStorage.setItem(TRAFFIC_TITLE_KEY, 'affiliate')
   } else {
     // if traffic source is not defined
     const originURL = document.referrer
