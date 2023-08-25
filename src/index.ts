@@ -1,14 +1,7 @@
 import { ConversionService } from './infrastructure/conversions/conversionService'
 import { ConversionDTO } from './infrastructure/conversions/dtos'
 import { HttpClient } from './infrastructure/http/HttpClient'
-import {
-  EventArgs,
-  EventMetadata,
-  FuulSettings,
-  IGenerateTrackingLink,
-  SendEventRequest,
-  UserMetadata,
-} from './types'
+import { EventArgs, EventMetadata, FuulSettings, SendEventRequest, UserMetadata } from './types'
 import { saveSentEvent, shouldSendEvent } from './utils/events'
 import {
   getReferrerId,
@@ -33,8 +26,7 @@ class Fuul {
   private readonly BASE_API_URL: string = 'https://api.fuul.xyz/api/v1/'
   private readonly httpClient: HttpClient
   private readonly settings: FuulSettings
-
-  private conversionService: ConversionService
+  private readonly conversionService: ConversionService
 
   constructor(apiKey: string, settings: FuulSettings = {}) {
     this.apiKey = apiKey
@@ -53,16 +45,6 @@ class Fuul {
     })
 
     this.conversionService = new ConversionService(this.httpClient)
-
-    this.init()
-  }
-
-  async init() {
-    if (isBrowserUndefined) {
-      return
-    }
-
-    await this.sendEvent('pageview')
   }
 
   checkApiKey(): void {
@@ -72,7 +54,7 @@ class Fuul {
   }
 
   /**
-   * @param {EventType} name Event name.
+   * @param {string} name Event name.
    * @param {EventArgs} args Event arguments
    * @param {EventMetadata} metadata Event metadata like userAddress, signature, signatureMessage
    * @returns {Promise<void>}
@@ -115,13 +97,8 @@ class Fuul {
       return
     }
 
-    try {
-      await this.httpClient.post('events', reqBody)
-
-      saveSentEvent(name, reqBody)
-    } catch (error: any) {
-      return error
-    }
+    await this.httpClient.post('events', reqBody)
+    saveSentEvent(name, reqBody)
   }
 
   /**
@@ -141,6 +118,10 @@ class Fuul {
     await this.sendEvent('connect_wallet', {}, userMetadata)
   }
 
+  async sendPageViewEvent() {
+    await this.sendEvent('pageview')
+  }
+
   verifyConnection(): void {
     if (isBrowserUndefined) {
       throw new Error(
@@ -154,14 +135,16 @@ class Fuul {
 
   /**
    * Generates a tracking link for a referrer
-   * @param {Object} trackingLinkParams - Tracking link parameters
-   * @param {string} trackingLinkParams.address - Referrer wallet address.
-   * @param {string} trackingLinkParams.projectId - Project ID.
-   * @param {string} trackingLinkParams.baseUrl - Base URL of your app. Defaults to window.location.href.
+   * @param {string} referrerAddress - Referrer wallet address.
+   * @param {string} projectId - Project ID.
+   * @param {string} baseUrl - Base URL of your app. Defaults to window.location.href.
    * @returns {string} tracking link
    **/
-  generateTrackingLink({ address, projectId, baseUrl }: IGenerateTrackingLink): string {
-    return `${baseUrl ?? window.location.href}?${buildTrackingLinkQueryParams(address, projectId)}`
+  generateTrackingLink(referrerAddress: string, projectId: string, baseUrl?: string): string {
+    return `${baseUrl ?? window.location.href}?${buildTrackingLinkQueryParams(
+      referrerAddress,
+      projectId,
+    )}`
   }
 
   async getAllConversions(): Promise<ConversionDTO[]> {

@@ -39,9 +39,3 @@ export type FuulSettings = {
   baseApiUrl?: string
   defaultQueryParams?: Record<string, string>
 }
-
-export interface IGenerateTrackingLink {
-  address: string
-  projectId: string
-  baseUrl?: string
-}
