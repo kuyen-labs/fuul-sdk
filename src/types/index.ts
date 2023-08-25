@@ -1,41 +1,36 @@
-export interface SendEventMetadataRequest {
-  referrer?: string
-  project_id?: string
-  tracking_id: string
-  session_id: string
-  user_address?: string
-  source?: string
-  category?: string
-  title?: string
-  tag?: string
-}
-
-export interface SendEventRequest {
-  name: string
-  event_args?: EventArgs
-  metadata?: SendEventMetadataRequest
-  user_address?: string
-  signature?: string
-  signatureMessage?: string
-}
-
-export interface EventMetadata {
-  userAddress?: string
-  signature?: string
-  signatureMessage?: string
-}
-
-export interface UserMetadata {
-  userAddress: string
-  signature?: string
-  signatureMessage?: string
-}
-
 export type EventArgs = {
-  [key: string]: unknown
-}
+  [key: string]: unknown;
+};
+
+export type UserMetadata = {
+  userAddress?: string;
+  signature?: string;
+  signatureMessage?: string;
+};
+
+export type SendEventRequest = {
+  name: string;
+  user_address?: string;
+  signature?: string;
+  signature_message?: string;
+  event_args?: EventArgs;
+  metadata?: {
+    referrer?: string | null; // Affiliate_id -> deprected
+    affiliate_id?: string | null;
+    referrer_url: string | null;
+    project_id?: string;
+    tracking_id: string;
+    user_address?: string;
+    signature?: string;
+    signature_message?: string;
+    source?: string | null;
+    category?: string | null;
+    title?: string | null;
+    tag?: string | null;
+  };
+};
 
 export type FuulSettings = {
-  baseApiUrl?: string
-  defaultQueryParams?: Record<string, string>
-}
+  baseApiUrl?: string;
+  defaultQueryParams?: Record<string, string>;
+};
