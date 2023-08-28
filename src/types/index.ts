@@ -14,7 +14,7 @@ export type SendEventRequest = {
   signature?: string;
   signature_message?: string;
   event_args?: EventArgs;
-  timestamp: Number;
+  timestamp: number;
   metadata?: {
     referrer?: string | null; // Affiliate_id -> deprected
     affiliate_id?: string | null;

@@ -1,7 +1,7 @@
 import { ConversionService } from './infrastructure/conversions/conversionService';
 import { ConversionDTO } from './infrastructure/conversions/dtos';
 import { HttpClient } from './infrastructure/http/HttpClient';
-import { EventArgs, FuulSettings, UserMetadata, SendEventRequest } from './types';
+import { EventArgs, FuulSettings, SendEventRequest,UserMetadata } from './types';
 import { saveSentEvent, shouldSendEvent } from './utils/events';
 import {
   getAffiliateId,
