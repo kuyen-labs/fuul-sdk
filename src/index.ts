@@ -11,141 +11,185 @@ import {
   getTrafficSource,
   getTrafficTag,
   getTrafficTitle,
-  isBrowserUndefined,
   saveTrackingId,
   saveUrlParams,
 } from './utils/localStorage';
 
-const buildTrackingLinkQueryParams = (referrer: string, projectId: string) => {
-  return `p=${projectId}&source=fuul&referrer=${referrer}`;
-};
+const DEFAULT_BASE_API_URL = 'https://api.fuul.xyz/api/v1/';
 
-class Fuul {
-  private readonly apiKey: string;
-  private readonly BASE_API_URL: string = 'https://api.fuul.xyz/api/v1/';
-  private readonly httpClient: HttpClient;
-  private readonly settings: FuulSettings;
-  private readonly conversionService: ConversionService;
+let _initialized = false;
+let _debug = false;
 
-  constructor(apiKey: string, settings: FuulSettings = {}) {
-    this.apiKey = apiKey;
-    this.settings = settings;
-    this.checkApiKey();
+let _apiKey: string;
+let _httpClient: HttpClient;
+let _settings: FuulSettings;
+let _conversionService: ConversionService;
 
-    saveTrackingId();
-    saveUrlParams();
-
-    this.httpClient = new HttpClient({
-      baseURL: settings.baseApiUrl || this.BASE_API_URL,
-      timeout: 10000,
-      apiKey: this.apiKey,
-      ...(this.settings.defaultQueryParams && { queryParams: this.settings.defaultQueryParams }),
-    });
-
-    this.conversionService = new ConversionService(this.httpClient);
+function init(apiKey: string, settings: FuulSettings = {}) {
+  if (_initialized) {
+    console.warn(`Fuul SDK: SDK was already initialized. Calling init() multiple times has no effect.`);
+    return;
   }
 
-  checkApiKey(): void {
-    if (!this.apiKey) {
-      throw new Error('Fuul API key is required');
-    }
+  assertBrowserEnvironment();
+
+  _apiKey = apiKey;
+  assertValidApiKey();
+
+  _settings = settings;
+  if (_settings.debug) {
+    _debug = true;
   }
 
-  /**
-   * @param {string} name Event name.
-   * @param {EventArgs} args Event arguments
-   * @param {UserMetadata} metadata Event metadata like userAddress, signature, signatureMessage
-   * @returns {Promise<void>}
-   * @example
-   * ```js
-   * fuul.sendEvent('my_event', { value: 10 }, { userAddress: '0x01' })
-   * ```
-   */
-  async sendEvent(name: string, args: EventArgs = {}, metadata: UserMetadata = {}): Promise<void> {
-    const tracking_id = getTrackingId();
-    const affiliateId = getAffiliateId();
-    const source = getTrafficSource();
-    const category = getTrafficCategory();
-    const title = getTrafficTitle();
-    const tag = getTrafficTag();
-    const referrerUrl = getTrafficReferrerUrl();
+  _httpClient = createApiClient();
+  _conversionService = new ConversionService(_httpClient);
 
-    if (!tracking_id) return;
+  saveTrackingId();
+  saveUrlParams();
 
-    const reqBody: SendEventRequest = {
-      name,
-      event_args: args,
-      metadata: {
-        referrer: affiliateId,
-        affiliate_id: affiliateId,
-        referrer_url: referrerUrl,
-        tracking_id,
-        source,
-        category,
-        title,
-        tag,
-      },
-      user_address: metadata.userAddress,
-      signature: metadata.signature,
-      signature_message: metadata.signatureMessage,
-    };
+  _initialized = true;
+  _debug && console.debug('Fuul SDK: Initialization complete!');
+}
 
-    if (!shouldSendEvent(name, reqBody)) {
-      return;
-    }
+function isInitialized(): boolean {
+  return _initialized;
+}
 
-    await this.httpClient.post('events', reqBody);
-    saveSentEvent(name, reqBody);
-  }
-
-  /**
-   * @param {UserMetadata} userMetadata Metadata from the user that is connecting the wallet
-   * @see https://docs.fuul.xyz/technical-guide-for-projects/sending-events-through-the-fuul-sdk#connect-wallet-event
-   * @returns {Promise<void>}
-   * @example
-   * ```typescript
-   * fuul.sendConnectWalletEvent({
-   *     userAddress: '0x12345',
-   *     signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
-   *     signatureMessage: 'Accept referral from Fuul'
-   * })
-   * ```
-   */
-  async sendConnectWalletEvent(userMetadata: UserMetadata): Promise<void> {
-    await this.sendEvent('connect_wallet', {}, userMetadata);
-  }
-
-  async sendPageViewEvent(page?: string) {
-    await this.sendEvent('pageview', {
-      page: page ?? document.location.href,
-    });
-  }
-
-  verifyConnection(): void {
-    if (isBrowserUndefined) {
-      throw new Error(
-        'Fuul SDK is not supported in this environment. Please use "typeof window !== undefined" to check if you are in the browser environment.',
-      );
-    }
-
-    // eslint-disable-next-line no-alert
-    window.alert('You are successfully connected to Fuul SDK! ✅');
-  }
-
-  /**
-   * Generates a tracking link for a referrer
-   * @param {string} referrerAddress - Referrer wallet address.
-   * @param {string} projectId - Project ID.
-   * @param {string} baseUrl - Base URL of your app. Defaults to window.location.href.
-   * @returns {string} tracking link
-   **/
-  generateTrackingLink(referrerAddress: string, projectId: string, baseUrl?: string): string {
-    return `${baseUrl ?? window.location.href}?${buildTrackingLinkQueryParams(referrerAddress, projectId)}`;
-  }
-
-  async getAllConversions(): Promise<ConversionDTO[]> {
-    return this.conversionService.getAll();
+function assertInitialized() {
+  if (!isInitialized()) {
+    throw new Error('Fuul SDK: Not initialized. Remember to call init() before using Fuul SDK.');
   }
 }
 
-export default Fuul;
+function assertValidApiKey() {
+  if (!_apiKey) {
+    throw new Error('Fuul SDK: Invalid API key');
+  }
+}
+
+function assertBrowserEnvironment() {
+  const isBrowserUndefined = typeof window === 'undefined' || typeof document === 'undefined';
+  if (isBrowserUndefined) {
+    throw new Error(
+      'Fuul SDK: Browserless environment not supported. Please use "typeof window !== undefined" to check if you are in the browser environment.',
+    );
+  }
+}
+
+function createApiClient() {
+  return new HttpClient({
+    baseURL: _settings.baseApiUrl || DEFAULT_BASE_API_URL,
+    timeout: 10000,
+    apiKey: _apiKey,
+    ...(_settings.defaultQueryParams && { queryParams: _settings.defaultQueryParams }),
+  });
+}
+
+/**
+ * @param {string} name Event name
+ * @param {EventArgs} args Event arguments
+ * @param {UserMetadata} metadata Event metadata like userAddress, signature, signatureMessage
+ * @returns {Promise<void>}
+ * @example
+ * ```typescript
+ * Fuul.sendEvent('my_event', { value: 10 }, { userAddress: '0x01' })
+ * ```
+ */
+async function sendEvent(name: string, args: EventArgs = {}, metadata: UserMetadata = {}): Promise<void> {
+  assertInitialized();
+
+  const tracking_id = getTrackingId();
+  const affiliateId = getAffiliateId();
+  const source = getTrafficSource();
+  const category = getTrafficCategory();
+  const title = getTrafficTitle();
+  const tag = getTrafficTag();
+  const referrerUrl = getTrafficReferrerUrl();
+
+  if (!tracking_id) return;
+
+  const event: SendEventRequest = {
+    name,
+    event_args: args,
+    timestamp: Math.round(Date.now() / 1000),
+    metadata: {
+      referrer: affiliateId,
+      affiliate_id: affiliateId,
+      referrer_url: referrerUrl,
+      tracking_id,
+      source,
+      category,
+      title,
+      tag,
+    },
+    user_address: metadata.userAddress,
+    signature: metadata.signature,
+    signature_message: metadata.signatureMessage,
+  };
+
+  if (!shouldSendEvent(event)) {
+    _debug && console.debug(`Fuul SDK: Event is considered duplicate and will not be sent`, event);
+    return;
+  }
+
+  _debug && console.debug(`Fuul SDK: Send event attempt`, event);
+  const result = await _httpClient.post('events', event);
+  _debug && console.debug(`Fuul SDK: Event sent`, event, result);
+
+  saveSentEvent(event);
+}
+
+/**
+ * @param {UserMetadata} userMetadata Metadata from the user that is connecting the wallet
+ * @see https://docs.fuul.xyz/technical-guide-for-projects/sending-events-through-the-fuul-sdk#connect-wallet-event
+ * @returns {Promise<void>}
+ * @example
+ * ```typescript
+ * Fuul.sendConnectWalletEvent({
+ *     userAddress: '0x12345',
+ *     signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
+ *     signatureMessage: 'Accept referral from Fuul'
+ * })
+ * ```
+ */
+async function sendConnectWalletEvent(userMetadata: UserMetadata): Promise<void> {
+  await sendEvent('connect_wallet', {}, userMetadata);
+}
+
+async function sendPageViewEvent(page?: string) {
+  await sendEvent('pageview', {
+    page: page ?? document.location.href,
+  });
+}
+
+function verifyConnection(): void {
+  assertInitialized();
+  console.log('Fuul SDK: You are successfully connected! ✅');
+}
+
+/**
+ * Generates a tracking link for a referrer
+ * @param {string} referrerAddress - Referrer wallet address
+ * @param {string} projectId - Project ID
+ * @param {string} baseUrl - Base URL of your app. Defaults to window.location.href
+ * @returns {string} tracking link
+ **/
+function generateTrackingLink(referrerAddress: string, projectId: string, baseUrl?: string): string {
+  const qp = `p=${projectId}&source=fuul&referrer=${referrerAddress}`;
+  return `${baseUrl ?? window.location.href}?${qp}`;
+}
+
+async function getAllConversions(): Promise<ConversionDTO[]> {
+  return _conversionService.getAll();
+}
+
+export default {
+  init,
+  isInitialized,
+  sendEvent,
+  sendConnectWalletEvent,
+  sendPageViewEvent,
+  verifyConnection,
+  getAllConversions,
+  generateTrackingLink,
+};

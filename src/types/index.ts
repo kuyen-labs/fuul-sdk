@@ -14,10 +14,11 @@ export type SendEventRequest = {
   signature?: string;
   signature_message?: string;
   event_args?: EventArgs;
+  timestamp: Number;
   metadata?: {
     referrer?: string | null; // Affiliate_id -> deprected
     affiliate_id?: string | null;
-    referrer_url: string | null;
+    referrer_url?: string | null;
     project_id?: string;
     tracking_id: string;
     user_address?: string;
@@ -33,4 +34,5 @@ export type SendEventRequest = {
 export type FuulSettings = {
   baseApiUrl?: string;
   defaultQueryParams?: Record<string, string>;
+  debug?: boolean;
 };

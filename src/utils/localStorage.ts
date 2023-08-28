@@ -35,11 +35,6 @@ export const saveTrackingId = (): void => {
   }
 };
 
-const getAffiliate = (): string | null => {
-  const queryParams = new URLSearchParams(window.location.search);
-  return queryParams.get('affiliate') ?? queryParams.get('referrer');
-};
-
 export const saveUrlParams = (): void => {
   if (isBrowserUndefined) {
     return;
@@ -55,7 +50,12 @@ export const saveUrlParams = (): void => {
   localStorage.setItem(TRAFFIC_REFERRER_URL, document.referrer ?? '');
 };
 
-export const detectSource = (): string => {
+function getAffiliate(): string | null {
+  const queryParams = new URLSearchParams(window.location.search);
+  return queryParams.get('affiliate') ?? queryParams.get('referrer');
+}
+
+function detectSource(): string {
   const queryParams = new URLSearchParams(window.location.search);
   const source = queryParams.get('source');
   const affiliate = getAffiliate();
@@ -74,4 +74,4 @@ export const detectSource = (): string => {
   }
 
   return 'direct';
-};
+}
