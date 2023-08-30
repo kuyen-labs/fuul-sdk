@@ -29,8 +29,7 @@ export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): b
   }
 
   if (reqBody.metadata) {
-    const { tracking_id, project_id, referrer, source, category, title, tag } =
-      reqBody.metadata
+    const { tracking_id, project_id, referrer, source, category, title, tag } = reqBody.metadata
 
     const matches =
       parsedEvent.metadata.tracking_id === tracking_id &&
@@ -39,7 +38,7 @@ export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): b
       parsedEvent.metadata.source === source &&
       parsedEvent.metadata.category === category &&
       parsedEvent.metadata.title === title &&
-      parsedEvent.metadata.tag === tag
+      parsedEvent.metadata.tag === tag &&
       parsedEvent.user_address === reqBody.user_address
 
     return !matches
