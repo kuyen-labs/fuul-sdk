@@ -1,1 +1,1 @@
-export type { UserMetadata, EventArgs, FuulSettings } from './sdk';
+export type { EventArgs, FuulSettings,UserMetadata } from './sdk';

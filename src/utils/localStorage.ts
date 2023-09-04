@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
 
 import {
-  PROJECT_ID_KEY,
   AFFILIATE_ID_KEY,
+  PROJECT_ID_KEY,
   SEARCH_ENGINE_URLS,
   TRACKING_ID_KEY,
   TRAFFIC_CATEGORY_KEY,
