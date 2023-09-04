@@ -6,6 +6,7 @@ import { FuulEvent } from './types/api';
 import { saveSentEvent, shouldSendEvent } from './utils/events';
 import {
   getAffiliateId,
+  getReferrerUrl,
   getTrackingId,
   getTrafficCategory,
   getTrafficSource,
@@ -55,6 +56,7 @@ class Fuul {
     const category = getTrafficCategory();
     const title = getTrafficTitle();
     const tag = getTrafficTag();
+    const referrerUrl = getReferrerUrl();
 
     if (!tracking_id) return;
 
@@ -67,6 +69,7 @@ class Fuul {
       metadata: {
         referrer: affiliateId,
         affiliate_id: affiliateId,
+        referrer_url: referrerUrl,
         tracking_id,
         source,
         category,

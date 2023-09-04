@@ -6,6 +6,7 @@ export type FuulEventMetadata = {
   tracking_id: string;
   referrer?: string | null; // Deprecated
   affiliate_id?: string | null;
+  referrer_url?: string | null;
   project_id?: string | null;
   user_address?: string | null;
   source?: string | null;
