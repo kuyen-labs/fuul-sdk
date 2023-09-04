@@ -5,7 +5,7 @@
 import 'jest-localstorage-mock';
 
 import { SENT_EVENT_ID_KEY } from '../constants';
-import { shouldSendEvent } from '../utils/events';
+import { shouldSendEvent } from './events';
 import { FuulEvent } from '../types/api';
 
 jest.spyOn(Date, 'now').mockImplementation(() => 1626921600000); // Mock date: 2021-07-22

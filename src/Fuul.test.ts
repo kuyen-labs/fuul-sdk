@@ -4,10 +4,10 @@
 
 import 'jest-localstorage-mock';
 
-import Fuul from '../index';
+import Fuul from './index';
 
-jest.mock('../infrastructure/http/HttpClient');
-jest.mock('../infrastructure/conversions/conversionService');
+jest.mock('./infrastructure/http/HttpClient');
+jest.mock('./infrastructure/conversions/conversionService');
 
 jest.mock('nanoid', () => ({
   nanoid: () => '123',
