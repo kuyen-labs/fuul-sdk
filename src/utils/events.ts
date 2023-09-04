@@ -1,35 +1,35 @@
-import { SENT_EVENT_ID_KEY, SENT_EVENT_VALIDITY_PERIOD_MS } from '../constants'
-import { SendEventRequest } from '../types'
+import { SENT_EVENT_ID_KEY, SENT_EVENT_VALIDITY_PERIOD_MS } from '../constants';
+import { SendEventRequest } from '../types';
 
 export const saveSentEvent = (eventName: string, params: SendEventRequest): void => {
-  const timestamp = Date.now()
+  const timestamp = Date.now();
 
-  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`
-  const eventParams = { ...params, timestamp }
+  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
+  const eventParams = { ...params, timestamp };
 
-  localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams))
-}
+  localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
+};
 
 export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): boolean => {
-  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`
+  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
 
-  const lastSentEvent = localStorage.getItem(SENT_EVENT_KEY)
+  const lastSentEvent = localStorage.getItem(SENT_EVENT_KEY);
   if (!lastSentEvent) {
-    return true
+    return true;
   }
 
-  const parsedEvent = JSON.parse(lastSentEvent)
+  const parsedEvent = JSON.parse(lastSentEvent);
 
-  const nowTimestamp = Date.now()
-  const timespanMillis = nowTimestamp - parsedEvent.timestamp
-  const sentEventExpired = timespanMillis > SENT_EVENT_VALIDITY_PERIOD_MS
+  const nowTimestamp = Date.now();
+  const timespanMillis = nowTimestamp - parsedEvent.timestamp;
+  const sentEventExpired = timespanMillis > SENT_EVENT_VALIDITY_PERIOD_MS;
 
   if (sentEventExpired) {
-    return true
+    return true;
   }
 
   if (reqBody.metadata) {
-    const { tracking_id, project_id, referrer, source, category, title, tag } = reqBody.metadata
+    const { tracking_id, project_id, referrer, source, category, title, tag } = reqBody.metadata;
 
     const matches =
       parsedEvent.metadata.tracking_id === tracking_id &&
@@ -39,10 +39,10 @@ export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): b
       parsedEvent.metadata.category === category &&
       parsedEvent.metadata.title === title &&
       parsedEvent.metadata.tag === tag &&
-      parsedEvent.user_address === reqBody.user_address
+      parsedEvent.user_address === reqBody.user_address;
 
-    return !matches
+    return !matches;
   }
 
-  return true
-}
+  return true;
+};
