@@ -63,20 +63,44 @@ class Fuul {
     const fuulEvent: FuulEvent = {
       name,
       event_args: args,
-      user_address: userMetadata?.userAddress,
-      signature: userMetadata?.signature,
-      signature_message: userMetadata?.signatureMessage,
       metadata: {
-        referrer: affiliateId,
-        affiliate_id: affiliateId,
-        referrer_url: referrerUrl,
         tracking_id,
-        source,
-        category,
-        title,
-        tag,
       },
     };
+
+    if (userMetadata?.userAddress) {
+      fuulEvent.user_address = userMetadata.userAddress;
+    }
+
+    if (userMetadata?.signature) {
+      fuulEvent.signature = userMetadata?.signature;
+      fuulEvent.signature_message = userMetadata?.signatureMessage;
+    }
+
+    if (affiliateId) {
+      fuulEvent.metadata.referrer = affiliateId;
+      fuulEvent.metadata.affiliate_id = affiliateId;
+    }
+
+    if (referrerUrl) {
+      fuulEvent.metadata.referrer_url = referrerUrl;
+    }
+
+    if (source) {
+      fuulEvent.metadata.source = source;
+    }
+
+    if (category) {
+      fuulEvent.metadata.category = category;
+    }
+
+    if (title) {
+      fuulEvent.metadata.title = title;
+    }
+
+    if (tag) {
+      fuulEvent.metadata.tag = tag;
+    }
 
     if (!shouldSendEvent(fuulEvent)) {
       return;

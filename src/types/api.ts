@@ -4,15 +4,15 @@ export type FuulEventArgs = {
 
 export type FuulEventMetadata = {
   tracking_id: string;
-  referrer?: string | null; // Deprecated
-  affiliate_id?: string | null;
-  referrer_url?: string | null;
-  project_id?: string | null;
-  user_address?: string | null;
-  source?: string | null;
-  category?: string | null;
-  title?: string | null;
-  tag?: string | null;
+  referrer?: string; // Deprecated
+  affiliate_id?: string;
+  referrer_url?: string;
+  project_id?: string;
+  user_address?: string;
+  source?: string;
+  category?: string;
+  title?: string;
+  tag?: string;
 };
 
 export type FuulEvent = {
@@ -21,5 +21,5 @@ export type FuulEvent = {
   signature?: string;
   signature_message?: string;
   event_args?: FuulEventArgs;
-  metadata?: FuulEventMetadata;
+  metadata: FuulEventMetadata;
 };
