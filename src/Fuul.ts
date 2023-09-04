@@ -146,13 +146,13 @@ class Fuul {
 
   /**
    * Generates a tracking link for an affiliate
-   * @param {string} affiliateAddress - Affiliate wallet address.
-   * @param {string} projectId - Project ID.
-   * @param {string} baseUrl - Base URL of your app. Defaults to window.location.href.
+   * @param {string} landingUrl - Landing URL of your project
+   * @param {string} affiliateAddress - Affiliate wallet address
+   * @param {string} projectId - Project ID
    * @returns {string} Tracking link
    **/
-  public generateTrackingLink(affiliateAddress: string, projectId: string, baseUrl?: string): string {
-    return `${baseUrl ?? window.location.href}?p=${projectId}&source=fuul&referrer=${affiliateAddress}`;
+  public generateTrackingLink(landingUrl: string, affiliateAddress: string, projectId: string): string {
+    return `${landingUrl}?p=${projectId}&source=fuul&referrer=${affiliateAddress}`;
   }
 
   public async getAllConversions(): Promise<ConversionDTO[]> {

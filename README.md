@@ -70,12 +70,12 @@ await fuul.sendEvent("my-custom-event", {
 You can also generate the tracking link for a given wallet `address` and `project id`
 
 ```tsx
-// Let's assume you are testing in localhost:3000
-
-const myWonderfulReferrerAddress = "0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE"
+const landingUrl = 'https://www.mycoolproject.com/campaign'
+const affiliateAddress = "0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE"
 const projectId = "79e72760-c730-4422-9e7b-3b730e8800dc"
 
-const myTrackingLink = fuul.generateTrackingLink(myWonderfulReferrerAddress, projectId);
+const myTrackingLink = fuul.generateTrackingLink(landingUrl, affiliateAddress, projectId);
 
-console.log(myTrackingLink) // http://localhost:3000?p=79e72760-c730-4422-9e7b-3b730e8800dc&origin=fuul&r=0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE 
+console.log(myTrackingLink) 
+// https://www.mycoolproject.com/campaign?p=79e72760-c730-4422-9e7b-3b730e8800dc&origin=fuul&r=0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE 
 ```
