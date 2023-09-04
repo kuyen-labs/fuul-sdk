@@ -1,17 +1,17 @@
 import { SENT_EVENT_ID_KEY, SENT_EVENT_VALIDITY_PERIOD_MS } from '../constants';
-import { SendEventRequest } from '../types';
+import { FuulEvent } from '../types/api';
 
-export const saveSentEvent = (eventName: string, params: SendEventRequest): void => {
+export const saveSentEvent = (event: FuulEvent): void => {
   const timestamp = Date.now();
 
-  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
-  const eventParams = { ...params, timestamp };
+  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${event.name}`;
+  const eventParams = { ...event, timestamp };
 
   localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
 };
 
-export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): boolean => {
-  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${eventName}`;
+export const shouldSendEvent = (event: FuulEvent): boolean => {
+  const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${event.name}`;
 
   const lastSentEvent = localStorage.getItem(SENT_EVENT_KEY);
   if (!lastSentEvent) {
@@ -28,8 +28,8 @@ export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): b
     return true;
   }
 
-  if (reqBody.metadata) {
-    const { tracking_id, project_id, referrer, source, category, title, tag } = reqBody.metadata;
+  if (event.metadata) {
+    const { tracking_id, project_id, referrer, source, category, title, tag } = event.metadata;
 
     const matches =
       parsedEvent.metadata.tracking_id === tracking_id &&
@@ -39,7 +39,7 @@ export const shouldSendEvent = (eventName: string, reqBody: SendEventRequest): b
       parsedEvent.metadata.category === category &&
       parsedEvent.metadata.title === title &&
       parsedEvent.metadata.tag === tag &&
-      parsedEvent.user_address === reqBody.user_address;
+      parsedEvent.user_address === event.user_address;
 
     return !matches;
   }

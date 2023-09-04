@@ -20,46 +20,43 @@ yarn add @fuul/sdk
 
 ### 2. Set up the Fuul SDK
 
-In order to authenticate to Fuul with your project, you must execute the following in the root file of your app.
+In order to authenticate to Fuul with your project you must initialize the SDK with your API key:
 
 ```tsx
-const settings = {
+import Fuul from ('@fuul/sdk');
+
+const fuul = new Fuul({
   apiKey: "your-fuul-api-key" 
-};
-
-const fuul = new Fuul(settings);
+});
 ```
 
-Now you’ll be able to use Fuul as a global object in any of your files, so you don’t have to create a new instance every time.
+Now you can start sending events.
 
-### 3. Test your integration
+### 3. Sending events
 
-Test your integration with the following method:
+For Fuul to attribute conversion events to your visitors you'll need to report the "pageview" and "connect_wallet" events.
+
+
+#### Page view event
+
+Projects must send this event every time a user visits a page on their website.
 
 ```tsx
-function main() {
-  fuul.verifyConnection();
-}
-main();
+await fuul.sendPageViewEvent();
 ```
 
-### 4. Sending events
-
-For Fuul to attribute conversion events to your visitors, you'll need to report the connect_wallet event. 
 
 #### Connect wallet event
 
 Projects must send this event every time users connect a wallet to their website (both when connecting a wallet for the first time and when changing wallets during the session).
 
-For this type of event, projects must send the user address that is being connected to the website as an argument.
-
 ```tsx
-await fuul.sendEvent("connect_wallet", {}, { userAddress: '0x01' });
+await fuul.sendConnectWalletEvent({ userAddress: '0x01' });
 ```
 
 ### Sending Custom Events
 
-Apart from the necessary `connect wallet` event, we allow projects to send any custom event to track as pleased.
+Beside the required `pageview` and `connect wallet` events, you can send any custom events you want to track.
 
 ```tsx
 await fuul.sendEvent("my-custom-event", {
@@ -75,10 +72,10 @@ You can also generate the tracking link for a given wallet `address` and `projec
 ```tsx
 // Let's assume you are testing in localhost:3000
 
-const myWonderfulReferrerAddress: string = "0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE"
-const projectId: string = "79e72760-c730-4422-9e7b-3b730e8800dc"
+const myWonderfulReferrerAddress = "0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE"
+const projectId = "79e72760-c730-4422-9e7b-3b730e8800dc"
 
-const myTrackingId: string = Fuul.generateTrackingLink(myWonderfulReferrerAddress, projectId);
+const myTrackingLink = fuul.generateTrackingLink(myWonderfulReferrerAddress, projectId);
 
-console.log(myTrackingId) // http://localhost:3000?p=79e72760-c730-4422-9e7b-3b730e8800dc&origin=fuul&r=0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE 
+console.log(myTrackingLink) // http://localhost:3000?p=79e72760-c730-4422-9e7b-3b730e8800dc&origin=fuul&r=0xE8BF39dCd16CF20d39006ba3C722A02e701bf0eE 
 ```
