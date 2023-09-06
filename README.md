@@ -58,5 +58,5 @@ NOTE: Make sure to send the event when connecting a wallet for the first time as
 ```tsx
 import { Fuul } from ('@fuul/sdk');
 
-await Fuul.sendConnectWallet({ userAddress: '0x01' });
+await Fuul.sendConnectWallet({ address: '0x01' });
 ```
