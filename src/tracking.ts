@@ -6,7 +6,6 @@ const TRAFFIC_SOURCE_KEY = 'fuul.traffic_source';
 const TRAFFIC_CATEGORY_KEY = 'fuul.traffic_category';
 const TRAFFIC_TITLE_KEY = 'fuul.traffic_title';
 const TRAFFIC_TAG_KEY = 'fuul.traffic_tag';
-const TRAFFIC_REFERRER_URL = 'fuul.traffic_referrer_url';
 
 const SEARCH_ENGINE_URLS = ['google.com', 'bing.com', 'yahoo.com'];
 

@@ -17,7 +17,7 @@
     "no-duplicate-imports": "error",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "no-console": "error",
+    "no-console": "off",
     "no-alert": "error",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",

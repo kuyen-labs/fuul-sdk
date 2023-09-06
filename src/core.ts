@@ -1,9 +1,6 @@
 import { ConversionService } from './ConversionService';
-import { HttpClient } from './HttpClient';
-import { UserMetadata, EventArgs, FuulSettings } from './types/sdk';
-import { Conversion, FuulEvent } from './types/api';
 import { EventService } from './EventService';
-
+import { HttpClient } from './HttpClient';
 import {
   getAffiliateId,
   getReferrerUrl,
@@ -13,11 +10,13 @@ import {
   getTrafficTag,
   getTrafficTitle,
 } from './tracking';
+import { Conversion, FuulEvent } from './types/api';
+import { EventArgs, FuulSettings,UserMetadata } from './types/sdk';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
 
-let _debug: boolean = false;
-let _initialized: boolean = false;
+let _debug = false;
+let _initialized = false;
 let _apiKey: string;
 let _httpClient: HttpClient;
 let _conversionService: ConversionService;
