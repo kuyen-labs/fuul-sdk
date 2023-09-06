@@ -1,7 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, RawAxiosRequestHeaders } from 'axios';
 
-import { buildQueryParams } from '../../utils/queryParams';
-
 interface HttpClientOptions {
   baseURL: string;
   timeout: number;
@@ -23,7 +21,18 @@ export class HttpClient {
       ...options,
       headers: options.apiKey ? this._getHeaders(options.apiKey) : {},
     });
-    this.queryParams = options.queryParams ? buildQueryParams(options.queryParams) : '';
+    this.queryParams = options.queryParams ? this.buildQueryParams(options.queryParams) : '';
+  }
+
+  private buildQueryParams(args: Record<string, string>): string {
+    let queryParams = '';
+
+    Object.keys(args).forEach((key) => {
+      queryParams =
+        queryParams === '' ? queryParams + `?${key}=${args[key]}` : queryParams + '&' + `${key}=${args[key]}`;
+    });
+
+    return queryParams;
   }
 
   async get<T>(path: string, params?: any): Promise<AxiosResponse<T>> {

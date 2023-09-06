@@ -1,6 +1,7 @@
-import Fuul from './Fuul';
+import Fuul from './core';
 
-export * from './types/index';
+export type { EventArgs, FuulSettings, UserMetadata } from './types/sdk';
+
+export type { Conversion } from './types/api';
+
 export { Fuul };
-
-export default Fuul;

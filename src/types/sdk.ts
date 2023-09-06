@@ -9,6 +9,8 @@ export type EventArgs = {
 };
 
 export type FuulSettings = {
+  debug?: boolean;
+  apiKey: string;
   baseApiUrl?: string;
   defaultQueryParams?: Record<string, string>;
 };
