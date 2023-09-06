@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosResponse, RawAxiosRequestHeaders } from 'axios';
-import { buildQueryParams } from '../../utils/queryParams';
 
 interface HttpClientOptions {
   baseURL: string;
@@ -20,9 +19,22 @@ export class HttpClient {
   constructor(options: HttpClientOptions) {
     this.client = axios.create({
       ...options,
-      headers: options.apiKey ? this._getHeaders(options.apiKey) : {},
+      headers: {
+        Authorization: `Bearer ${options.apiKey}`,
+      },
     });
-    this.queryParams = options.queryParams ? buildQueryParams(options.queryParams) : '';
+    this.queryParams = options.queryParams ? this.buildQueryParams(options.queryParams) : '';
+  }
+
+  private buildQueryParams(args: Record<string, string>): string {
+    let queryParams = '';
+
+    Object.keys(args).forEach((key) => {
+      queryParams =
+        queryParams === '' ? queryParams + `?${key}=${args[key]}` : queryParams + '&' + `${key}=${args[key]}`;
+    });
+
+    return queryParams;
   }
 
   async get<T>(path: string, params?: any): Promise<AxiosResponse<T>> {
@@ -49,13 +61,5 @@ export class HttpClient {
 
   async delete<T>(path: string): Promise<AxiosResponse<T>> {
     return this.client.delete<T>(path + this.queryParams);
-  }
-
-  _getHeaders(apiKey: string): RawAxiosRequestHeaders {
-    const headers: RawAxiosRequestHeaders = {};
-
-    headers.Authorization = `Bearer ${apiKey}`;
-
-    return headers;
   }
 }

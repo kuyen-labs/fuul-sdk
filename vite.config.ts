@@ -14,7 +14,7 @@ export default defineConfig({
   plugins: [
     tsconfigPaths(),
     dts({
-      exclude: ['node_modules'],
+      exclude: ['node_modules', 'src/**/*.test.ts'],
       compilerOptions: {
         sourceMap: false,
       },

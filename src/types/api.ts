@@ -1,4 +1,29 @@
-interface ConversionPaymentActionArgs {
+export type FuulEventArgs = {
+  [key: string]: unknown;
+};
+
+export type FuulEventMetadata = {
+  tracking_id: string;
+  referrer?: string; // Deprecated
+  affiliate_id?: string;
+  referrer_url?: string;
+  project_id?: string;
+  source?: string;
+  category?: string;
+  title?: string;
+  tag?: string;
+};
+
+export type FuulEvent = {
+  name: string;
+  user_address?: string;
+  signature?: string;
+  signature_message?: string;
+  args?: FuulEventArgs;
+  metadata: FuulEventMetadata;
+};
+
+type ConversionPaymentActionArgs = {
   payment_type: string;
   payment_currency: string;
   referral_amount?: string;
@@ -6,9 +31,9 @@ interface ConversionPaymentActionArgs {
   referrer_amount_percentage?: number;
   referral_amount_percentage?: number;
   payment_argument?: string;
-}
+};
 
-export interface ContractDTO {
+export type Contract = {
   address: string;
   createdAt: string;
   deletedAt: null;
@@ -16,15 +41,15 @@ export interface ContractDTO {
   network: string;
   sentinelId: null;
   updatedAt: string;
-}
+};
 
-export interface AbiInput {
+export type AbiInput = {
   name: string;
   type: string;
   internalType: string;
-}
+};
 
-export interface TriggerDTO {
+export type Trigger = {
   id: string;
   projectId: string;
   name: string;
@@ -35,57 +60,57 @@ export interface TriggerDTO {
   ref: string;
   contractAddress: string;
   contract_address: string;
-  contracts?: ContractDTO[];
+  contracts?: Contract[];
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;
   arguments?: AbiInput[];
   condition_expression?: string;
-}
+};
 
 enum ProjectIntegrationType {
   FUUL_HOSTED = 'FUUL_HOSTED',
   HYBRID = 'HYBRID',
   PROJECT_HOSTED = 'PROJECT_HOSTED',
 }
-interface ProjectSettingsDTO {
+type ProjectSettings = {
   validateEventSignature?: boolean;
   integrationType?: ProjectIntegrationType;
   userLandingPageUrl?: string; // Url to redirect the user after connecting the wallet on fuul hosted page
   partnerLandingPageUrl?: string; // Url of the project hosted page for creating tracking links
   userOnboardingPageUrl?: string; // Url of the project hosted page for onboarding users and connecting wallets
-}
+};
 
-interface ApiKeyDTO {
+type ApiKey = {
   id: string;
   token: string;
-}
+};
 
-interface ProjectTeamMemberDTO {
+type ProjectTeamMember = {
   id: string;
   address: string;
   role: string;
   enabled: boolean;
-}
+};
 
-export interface ProjectDTO {
+export type Project = {
   category: string;
-  conversions: ConversionDTO[] | [];
+  conversions: Conversion[] | [];
   description: string;
   slug: string;
   id: string;
   name: string;
   thumbnail_url: string;
-  triggers: TriggerDTO[] | [];
+  triggers: Trigger[] | [];
   twitter_handle: string;
   website_url: string;
-  settings: ProjectSettingsDTO;
+  settings: ProjectSettings;
   contract_address: string;
-  api_keys: ApiKeyDTO[] | [];
-  team_members: ProjectTeamMemberDTO[] | [];
-}
+  api_keys: ApiKey[] | [];
+  team_members: ProjectTeamMember[] | [];
+};
 
-export interface ConversionDTO {
+export type Conversion = {
   action_args?: ConversionPaymentActionArgs;
   action_type?: string;
   attribution_type: string;
@@ -93,17 +118,17 @@ export interface ConversionDTO {
   created_at: string;
   id: string;
   name: string;
-  project: ProjectDTO;
+  project: Project;
   rule: {
     expression: string;
     prettified_expression: string;
     timeframe_seconds: number;
   };
-  triggers: TriggerDTO[];
+  triggers: Trigger[];
   total_converted?: number;
   conversion_rate?: number;
   payout?: {
     amount: number;
     currency: string;
   };
-}
+};
