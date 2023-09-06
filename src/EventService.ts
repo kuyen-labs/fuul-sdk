@@ -2,7 +2,7 @@ import { HttpClient } from './HttpClient';
 import { FuulEvent } from './types/api';
 
 export const SENT_EVENT_ID_KEY = 'fuul.sent';
-export const SENT_EVENT_VALIDITY_PERIOD_MS = 60000;
+export const SENT_EVENT_VALIDITY_PERIOD_SECONDS = 60;
 
 export type EventServiceSettings = {
   httpClient: HttpClient;
@@ -19,7 +19,7 @@ export class EventService {
   }
 
   public async sendEvent(event: FuulEvent): Promise<void> {
-    if (!this.shouldSendEvent(event)) {
+    if (!this.isDuplicate(event)) {
       this.debug && console.debug(`Fuul SDK: Event is considered duplicate and will not be sent`);
       return;
     }
@@ -30,25 +30,27 @@ export class EventService {
     this.saveSentEvent(event);
   }
 
-  public shouldSendEvent(thisEvent: FuulEvent): boolean {
+  public isDuplicate(thisEvent: FuulEvent): boolean {
     const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${thisEvent.name}`;
 
     const lastSentEvent = localStorage.getItem(SENT_EVENT_KEY);
     if (!lastSentEvent) {
-      return true;
+      return false;
     }
 
     const savedEvent = JSON.parse(lastSentEvent) as FuulEvent & { timestamp: number };
 
     const nowTimestamp = this.getCurrentTimestamp();
-    const timespanMillis = nowTimestamp - savedEvent.timestamp;
-    const savedEventExpired = timespanMillis > SENT_EVENT_VALIDITY_PERIOD_MS;
+    const timespanSeconds = nowTimestamp - savedEvent.timestamp;
+    const savedEventExpired = timespanSeconds > SENT_EVENT_VALIDITY_PERIOD_SECONDS;
+
     if (savedEventExpired) {
-      return true;
+      return false;
     }
 
+    let matchesMetadata = false;
     if (thisEvent.metadata) {
-      const matches =
+      matchesMetadata =
         savedEvent.metadata.tracking_id === thisEvent.metadata.tracking_id &&
         savedEvent.metadata.project_id === thisEvent.metadata.project_id &&
         savedEvent.metadata.referrer === thisEvent.metadata.referrer &&
@@ -59,11 +61,14 @@ export class EventService {
         savedEvent.user_address === thisEvent.user_address &&
         savedEvent.signature === thisEvent.signature &&
         savedEvent.signature_message === thisEvent.signature_message;
-
-      return !matches;
     }
 
-    return true;
+    let matchesArgs = false;
+    if (thisEvent.args && savedEvent.args) {
+      matchesArgs = savedEvent.args.page === thisEvent.args.page;
+    }
+
+    return matchesArgs && matchesMetadata;
   }
 
   private getCurrentTimestamp() {

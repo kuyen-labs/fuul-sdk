@@ -19,8 +19,8 @@ jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
-describe('SDK', () => {
-  const apiKey = 'your-api-key';
+describe('SDK core', () => {
+  const testApiKey = 'your-api-key';
 
   beforeEach(() => {
     jest.resetModules();
@@ -44,7 +44,7 @@ describe('SDK', () => {
    */
   describe('sendEvent()', () => {
     beforeEach(() => {
-      Fuul.init({ apiKey: 'test-key' });
+      Fuul.init({ apiKey: testApiKey });
     });
 
     it('should call sendEvent with populated tracking properties', () => {
@@ -81,7 +81,7 @@ describe('SDK', () => {
 
   describe('sendPageView()', () => {
     beforeEach(() => {
-      Fuul.init({ apiKey: 'test-key' });
+      Fuul.init({ apiKey: testApiKey });
     });
 
     it('with no arguments should call sendEvent with correct arguments', () => {
@@ -119,7 +119,7 @@ describe('SDK', () => {
 
   describe('sendConnectWallet()', () => {
     beforeEach(() => {
-      Fuul.init({ apiKey: 'test-key' });
+      Fuul.init({ apiKey: testApiKey });
     });
 
     it('with required arguments should call sendEvent with correct arguments', () => {
