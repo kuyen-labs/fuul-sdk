@@ -11,7 +11,7 @@ import {
   getTrafficTitle,
 } from './tracking';
 import { Conversion, FuulEvent } from './types/api';
-import { EventArgs, FuulSettings,UserMetadata } from './types/sdk';
+import { EventArgs, FuulSettings, UserMetadata } from './types/sdk';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
 
@@ -26,7 +26,6 @@ export function init(settings: FuulSettings) {
   _debug = !!settings.debug;
 
   if (_initialized) {
-    console.warn(`Fuul SDK: Calling init() on an already initialized context does nothing.`);
     return;
   }
 
@@ -77,7 +76,7 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
 
   const fuulEvent: FuulEvent = {
     name,
-    args,
+    args: args || {},
     metadata: {
       tracking_id,
     },
