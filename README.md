@@ -44,7 +44,7 @@ Projects must send this event every time a user visits a page on their website.
 ```tsx
 import { Fuul } from ('@fuul/sdk');
 
-await fuul.sendPageView();
+await Fuul.sendPageView();
 ```
 
 
@@ -57,5 +57,5 @@ NOTE: Make sure to send the event when connecting a wallet for the first time as
 ```tsx
 import { Fuul } from ('@fuul/sdk');
 
-await fuul.sendConnectWallet({ userAddress: '0x01' });
+await Fuul.sendConnectWallet({ userAddress: '0x01' });
 ```
