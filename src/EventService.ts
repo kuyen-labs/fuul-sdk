@@ -30,36 +30,35 @@ export class EventService {
     this.saveSentEvent(event);
   }
 
-  public shouldSendEvent(event: FuulEvent): boolean {
-    const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${event.name}`;
+  public shouldSendEvent(thisEvent: FuulEvent): boolean {
+    const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${thisEvent.name}`;
 
     const lastSentEvent = localStorage.getItem(SENT_EVENT_KEY);
     if (!lastSentEvent) {
       return true;
     }
 
-    const parsedEvent = JSON.parse(lastSentEvent);
+    const savedEvent = JSON.parse(lastSentEvent) as FuulEvent & { timestamp: number };
 
-    const nowTimestamp = Date.now();
-    const timespanMillis = nowTimestamp - parsedEvent.timestamp;
-    const sentEventExpired = timespanMillis > SENT_EVENT_VALIDITY_PERIOD_MS;
-
-    if (sentEventExpired) {
+    const nowTimestamp = this.getCurrentTimestamp();
+    const timespanMillis = nowTimestamp - savedEvent.timestamp;
+    const savedEventExpired = timespanMillis > SENT_EVENT_VALIDITY_PERIOD_MS;
+    if (savedEventExpired) {
       return true;
     }
 
-    if (event.metadata) {
-      const { tracking_id, project_id, referrer, source, category, title, tag } = event.metadata;
-
+    if (thisEvent.metadata) {
       const matches =
-        parsedEvent.metadata.tracking_id === tracking_id &&
-        parsedEvent.metadata.project_id === project_id &&
-        parsedEvent.metadata.referrer === referrer &&
-        parsedEvent.metadata.source === source &&
-        parsedEvent.metadata.category === category &&
-        parsedEvent.metadata.title === title &&
-        parsedEvent.metadata.tag === tag &&
-        parsedEvent.user_address === event.user_address;
+        savedEvent.metadata.tracking_id === thisEvent.metadata.tracking_id &&
+        savedEvent.metadata.project_id === thisEvent.metadata.project_id &&
+        savedEvent.metadata.referrer === thisEvent.metadata.referrer &&
+        savedEvent.metadata.source === thisEvent.metadata.source &&
+        savedEvent.metadata.category === thisEvent.metadata.category &&
+        savedEvent.metadata.title === thisEvent.metadata.title &&
+        savedEvent.metadata.tag === thisEvent.metadata.tag &&
+        savedEvent.user_address === thisEvent.user_address &&
+        savedEvent.signature === thisEvent.signature &&
+        savedEvent.signature_message === thisEvent.signature_message;
 
       return !matches;
     }
@@ -67,10 +66,14 @@ export class EventService {
     return true;
   }
 
-  private saveSentEvent(event: FuulEvent): void {
-    const timestamp = Date.now();
+  private getCurrentTimestamp() {
+    return Date.now() / 1000;
+  }
 
+  private saveSentEvent(event: FuulEvent): void {
     const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${event.name}`;
+
+    const timestamp = this.getCurrentTimestamp();
     const eventParams = { ...event, timestamp };
 
     localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));

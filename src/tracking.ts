@@ -53,7 +53,6 @@ function getQueryParam(key: string) {
 function detectSource(): string {
   const source = getQueryParam('source');
   const affiliate = getQueryParam('af') || getQueryParam('referrer');
-  console.log('DETECT SOURCE', affiliate);
 
   if (source) {
     return source;
