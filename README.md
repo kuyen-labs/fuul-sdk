@@ -44,7 +44,7 @@ Projects must send this event every time a user visits a page on their website.
 ```tsx
 import { Fuul } from ('@fuul/sdk');
 
-await fuul.sendPageView();
+await fuul.sendPageview();
 ```
 
 

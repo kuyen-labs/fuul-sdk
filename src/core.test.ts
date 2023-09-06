@@ -34,7 +34,7 @@ describe('SDK core', () => {
     });
 
     it('should throw when un-initialized', async () => {
-      await expect(() => Fuul.sendPageView()).rejects.toThrow();
+      await expect(() => Fuul.sendPageview()).rejects.toThrow();
     });
   });
 
@@ -44,7 +44,7 @@ describe('SDK core', () => {
    */
   describe('sendEvent()', () => {
     beforeEach(() => {
-      Fuul.init({ apiKey: testApiKey });
+      Fuul.init({ apiKey: 'test-key' });
     });
 
     it('should call sendEvent with populated tracking properties', () => {
@@ -79,9 +79,9 @@ describe('SDK core', () => {
     });
   });
 
-  describe('sendPageView()', () => {
+  describe('sendPageview()', () => {
     beforeEach(() => {
-      Fuul.init({ apiKey: testApiKey });
+      Fuul.init({ apiKey: 'test-key' });
     });
 
     it('with no arguments should call sendEvent with correct arguments', () => {
@@ -89,7 +89,7 @@ describe('SDK core', () => {
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
       // Act
-      Fuul.sendPageView();
+      Fuul.sendPageview();
 
       // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
@@ -105,7 +105,7 @@ describe('SDK core', () => {
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
       // Act
-      Fuul.sendPageView('/custom-page');
+      Fuul.sendPageview('/custom-page');
 
       // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
@@ -119,7 +119,7 @@ describe('SDK core', () => {
 
   describe('sendConnectWallet()', () => {
     beforeEach(() => {
-      Fuul.init({ apiKey: testApiKey });
+      Fuul.init({ apiKey: 'test-key' });
     });
 
     it('with required arguments should call sendEvent with correct arguments', () => {

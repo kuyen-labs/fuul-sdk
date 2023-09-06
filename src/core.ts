@@ -125,11 +125,11 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
  * @returns {Promise<void>}
  * @example
  * ```typescript
- * sendPageView({ page: '/home' })
- * sendPageView({ page: '/product/123' })
+ * sendPageview({ page: '/home' })
+ * sendPageview({ page: '/product/123' })
  * ```
  */
-export async function sendPageView(pageName?: string): Promise<void> {
+export async function sendPageview(pageName?: string): Promise<void> {
   await sendEvent('pageview', {
     page: pageName ?? document.location.pathname,
     locationOrigin: document.location.origin,
@@ -193,7 +193,7 @@ function createApiClient(baseUrl: string, defaultQueryParams: Record<string, str
 export default {
   init,
   sendEvent,
-  sendPageView,
+  sendPageview,
   sendConnectWallet,
   generateTrackingLink,
   getConversions,
