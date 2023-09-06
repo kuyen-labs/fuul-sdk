@@ -58,5 +58,9 @@ NOTE: Make sure to send the event when connecting a wallet for the first time as
 ```tsx
 import { Fuul } from ('@fuul/sdk');
 
-await Fuul.sendConnectWallet({ address: '0x01' });
+await Fuul.sendConnectWallet({
+  address: "0x12345",
+  signature: "0x123485090123",
+  message: "Accept affiliate on 18 Aug 2023"
+});
 ```
