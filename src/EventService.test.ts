@@ -24,7 +24,7 @@ describe('shouldSendEvent', () => {
 
     const fuulEvent: FuulEvent = {
       name: 'pageview',
-      event_args: {},
+      args: {},
       metadata: {
         tracking_id: '123',
         project_id: 'test-project-id',
@@ -42,7 +42,7 @@ describe('shouldSendEvent', () => {
 
     const fuulEvent: FuulEvent = {
       name: 'pageview',
-      event_args: {},
+      args: {},
       metadata: {
         tracking_id: '123',
         project_id: 'test-project-id',
@@ -65,7 +65,7 @@ describe('shouldSendEvent', () => {
 
     const fuulEvent: FuulEvent = {
       name: 'pageview',
-      event_args: {},
+      args: {},
       metadata: {
         tracking_id: '123',
         project_id: 'test-project-id',

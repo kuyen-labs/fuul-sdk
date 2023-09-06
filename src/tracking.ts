@@ -26,7 +26,11 @@ function getStoredOrcurrent(key: string, currentValueFn: () => string | null) {
     return storedValue;
   } else {
     const currentValue = currentValueFn();
-    return localStorage.setItem(key, currentValue || '');
+    if (currentValue) {
+      localStorage.setItem(key, currentValue);
+    } else {
+      localStorage.removeItem(key);
+    }
     return currentValue;
   }
 }
