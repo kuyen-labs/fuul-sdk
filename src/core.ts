@@ -64,7 +64,7 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
   assertInitialized();
   assertBrowserContext();
 
-  const tracking_id = getTrackingId();
+  const trackingId = getTrackingId();
   const affiliateId = getAffiliateId();
   const source = getTrafficSource();
   const category = getTrafficCategory();
@@ -72,13 +72,11 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
   const tag = getTrafficTag();
   const referrerUrl = getReferrerUrl();
 
-  if (!tracking_id) return;
-
   const fuulEvent: FuulEvent = {
     name,
     args: args || {},
     metadata: {
-      tracking_id,
+      tracking_id: trackingId ?? '',
     },
   };
 
@@ -121,7 +119,7 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
 
 /**
  * @param {string} pageName Optional page name, default is document.location.pathname
- * @see https://docs.fuul.xyz/technical-guide-for-projects/sending-events-through-the-fuul-sdk#connect-wallet-event
+ * @see https://docs.fuul.xyz/technical-guide-for-projects/sending-events-through-the-fuul-sdk#pageview-event
  * @returns {Promise<void>}
  * @example
  * ```typescript
