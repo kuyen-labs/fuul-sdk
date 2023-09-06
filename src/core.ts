@@ -1,6 +1,6 @@
 import { ConversionService } from './ConversionService';
 import { HttpClient } from './HttpClient';
-import { EventArgs, FuulSettings, UserMetadata } from './types/sdk';
+import { UserMetadata, EventArgs, FuulSettings } from './types/sdk';
 import { Conversion, FuulEvent } from './types/api';
 import { EventService } from './EventService';
 
@@ -53,9 +53,9 @@ function assertInitialized() {
 }
 
 /**
- * @param {EventType} name Event name
+ * @param {string} name Event name
  * @param {EventArgs} args Event arguments
- * @param {EventMetadata} metadata Event metadata like userAddress, signature, signatureMessage
+ * @param {UserMetadata} userMetadata User metadata
  * @returns {Promise<void>}
  * @example
  * ```js
@@ -78,19 +78,19 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
 
   const fuulEvent: FuulEvent = {
     name,
-    event_args: args,
+    args,
     metadata: {
       tracking_id,
     },
   };
 
-  if (userMetadata?.userAddress) {
-    fuulEvent.user_address = userMetadata.userAddress;
+  if (userMetadata?.address) {
+    fuulEvent.user_address = userMetadata.address;
   }
 
   if (userMetadata?.signature) {
     fuulEvent.signature = userMetadata?.signature;
-    fuulEvent.signature_message = userMetadata?.signatureMessage;
+    fuulEvent.signature_message = userMetadata?.message;
   }
 
   if (affiliateId) {
@@ -127,14 +127,14 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
  * @returns {Promise<void>}
  * @example
  * ```typescript
- * sendPageViewEvent({ page: '/home' })
- * sendPageViewEvent({ page: '/product/123' })
+ * sendPageView({ page: '/home' })
+ * sendPageView({ page: '/product/123' })
  * ```
  */
-export async function sendPageViewEvent(pageName?: string): Promise<void> {
+export async function sendPageView(pageName?: string): Promise<void> {
   await sendEvent('pageview', {
     page: pageName ?? document.location.pathname,
-    origin: document.location.origin,
+    locationOrigin: document.location.origin,
   });
 }
 
@@ -144,14 +144,14 @@ export async function sendPageViewEvent(pageName?: string): Promise<void> {
  * @returns {Promise<void>}
  * @example
  * ```typescript
- * sendConnectWalletEvent({
+ * sendConnectWallet({
  *   userAddress: '0x12345',
  *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
  *   signatureMessage: 'Accept referral from Fuul'
  * })
  * ```
  */
-export async function sendConnectWalletEvent(userMetadata: UserMetadata): Promise<void> {
+export async function sendConnectWallet(userMetadata: UserMetadata): Promise<void> {
   await sendEvent('connect_wallet', {}, userMetadata);
 }
 
@@ -195,8 +195,8 @@ function createApiClient(baseUrl: string, defaultQueryParams: Record<string, str
 export default {
   init,
   sendEvent,
-  sendPageViewEvent,
-  sendConnectWalletEvent,
+  sendPageView,
+  sendConnectWallet,
   generateTrackingLink,
   getConversions,
 };

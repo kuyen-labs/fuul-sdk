@@ -19,7 +19,7 @@ export type FuulEvent = {
   user_address?: string;
   signature?: string;
   signature_message?: string;
-  event_args?: FuulEventArgs;
+  args?: FuulEventArgs;
   metadata: FuulEventMetadata;
 };
 

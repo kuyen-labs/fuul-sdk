@@ -10,23 +10,36 @@ const TRAFFIC_REFERRER_URL = 'fuul.traffic_referrer_url';
 
 const SEARCH_ENGINE_URLS = ['google.com', 'bing.com', 'yahoo.com'];
 
-export const getTrackingId = () => getTrackingParam(TRACKING_ID_KEY, () => nanoid());
-export const getAffiliateId = () => getTrackingParam(AFFILIATE_ID_KEY, () => getAffiliate() ?? '');
-export const getReferrerUrl = () => getTrackingParam(TRAFFIC_REFERRER_URL, () => document.referrer);
-export const getTrafficSource = () => getTrackingParam(TRAFFIC_SOURCE_KEY, detectSource);
-export const getTrafficCategory = () => getTrackingParam(TRAFFIC_CATEGORY_KEY, () => getQueryParam('category') ?? '');
-export const getTrafficTitle = () => getTrackingParam(TRAFFIC_TITLE_KEY, () => getQueryParam('title') ?? '');
-export const getTrafficTag = () => getTrackingParam(TRAFFIC_TAG_KEY, () => getQueryParam('tag') ?? '');
+export const getTrackingId = () => getStoredOrcurrent(TRACKING_ID_KEY, () => nanoid());
+export const getAffiliateId = () =>
+  getCurrentOrStored(() => getQueryParam('af') || getQueryParam('referrer'), AFFILIATE_ID_KEY);
+export const getReferrerUrl = () => document.referrer;
+export const getTrafficSource = () => getCurrentOrStored(() => detectSource(), TRAFFIC_SOURCE_KEY);
+export const getTrafficCategory = () => getCurrentOrStored(() => getQueryParam('category'), TRAFFIC_CATEGORY_KEY);
+export const getTrafficTitle = () => getCurrentOrStored(() => getQueryParam('title'), TRAFFIC_TITLE_KEY);
+export const getTrafficTag = () => getCurrentOrStored(() => getQueryParam('tag'), TRAFFIC_TAG_KEY);
 
-function getTrackingParam(key: string, initFn: () => string) {
-  const lsValue = localStorage.getItem(key);
-  if (lsValue) {
-    return lsValue;
+function getStoredOrcurrent(key: string, currentValueFn: () => string | null) {
+  const storedValue = localStorage.getItem(key);
+
+  if (storedValue) {
+    return storedValue;
+  } else {
+    const currentValue = currentValueFn();
+    return localStorage.setItem(key, currentValue || '');
+    return currentValue;
   }
+}
 
-  const newVal = initFn();
-  localStorage.setItem(key, newVal);
-  return newVal;
+function getCurrentOrStored(currentValueFn: () => string | null, key: string) {
+  const currentValue = currentValueFn();
+
+  if (currentValue) {
+    localStorage.setItem(key, currentValue);
+    return currentValue;
+  } else {
+    return localStorage.getItem(key);
+  }
 }
 
 function getQueryParam(key: string) {
@@ -34,15 +47,10 @@ function getQueryParam(key: string) {
   return queryParams.get(key);
 }
 
-function getAffiliate(): string | null {
-  const queryParams = new URLSearchParams(window.location.search);
-  return queryParams.get('affiliate') ?? queryParams.get('referrer');
-}
-
 function detectSource(): string {
-  const queryParams = new URLSearchParams(window.location.search);
-  const source = queryParams.get('source');
-  const affiliate = getAffiliate();
+  const source = getQueryParam('source');
+  const affiliate = getQueryParam('af') || getQueryParam('referrer');
+  console.log('DETECT SOURCE', affiliate);
 
   if (source) {
     return source;
