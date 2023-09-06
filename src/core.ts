@@ -118,7 +118,7 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
     fuulEvent.metadata.tag = tag;
   }
 
-  _eventService.sendEvent(fuulEvent, _httpClient);
+  _eventService.sendEvent(fuulEvent);
 }
 
 /**

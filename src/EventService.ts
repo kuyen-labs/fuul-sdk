@@ -1,4 +1,3 @@
-import { HttpStatusCode } from 'axios';
 import { HttpClient } from './HttpClient';
 import { FuulEvent } from './types/api';
 
@@ -12,20 +11,20 @@ export type EventServiceSettings = {
 
 export class EventService {
   private readonly debug: boolean;
-  private readonly httpService: HttpClient;
+  private readonly httpClient: HttpClient;
 
   constructor(settings: EventServiceSettings) {
-    this.httpService = settings.httpClient;
+    this.httpClient = settings.httpClient;
     this.debug = !!settings.debug;
   }
 
-  public async sendEvent(event: FuulEvent, httpClient: HttpClient): Promise<void> {
+  public async sendEvent(event: FuulEvent): Promise<void> {
     if (!this.shouldSendEvent(event)) {
       this.debug && console.debug(`Fuul SDK: Event is considered duplicate and will not be sent`);
       return;
     }
 
-    await httpClient.post('events', event);
+    await this.httpClient.post('events', event);
     this.debug && console.debug(`Fuul SDK: Sent '${event.name}' event`);
 
     this.saveSentEvent(event);
