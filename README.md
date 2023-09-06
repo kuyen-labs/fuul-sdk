@@ -54,6 +54,7 @@ Projects must send this event every time users connect a wallet to their website
 
 NOTE: Make sure to send the event when connecting a wallet for the first time as well as when changing wallets during the session.
 
+
 ```tsx
 import { Fuul } from ('@fuul/sdk');
 
