@@ -19,7 +19,9 @@ export class HttpClient {
   constructor(options: HttpClientOptions) {
     this.client = axios.create({
       ...options,
-      headers: options.apiKey ? this._getHeaders(options.apiKey) : {},
+      headers: {
+        Authorization: `Bearer ${options.apiKey}`,
+      },
     });
     this.queryParams = options.queryParams ? this.buildQueryParams(options.queryParams) : '';
   }
@@ -59,13 +61,5 @@ export class HttpClient {
 
   async delete<T>(path: string): Promise<AxiosResponse<T>> {
     return this.client.delete<T>(path + this.queryParams);
-  }
-
-  _getHeaders(apiKey: string): RawAxiosRequestHeaders {
-    const headers: RawAxiosRequestHeaders = {};
-
-    headers.Authorization = `Bearer ${apiKey}`;
-
-    return headers;
   }
 }

@@ -19,7 +19,7 @@ export class EventService {
   }
 
   public async sendEvent(event: FuulEvent): Promise<void> {
-    if (!this.isDuplicate(event)) {
+    if (this.isDuplicate(event)) {
       this.debug && console.debug(`Fuul SDK: Event is considered duplicate and will not be sent`);
       return;
     }
