@@ -153,13 +153,18 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
 
 /**
  * Generates a tracking link for an affiliate
- * @param {string} landingUrl - Landing URL of your project
+ * @param {string} baseUrl - Base url of the project
  * @param {string} affiliateAddress - Affiliate wallet address
- * @param {string} projectId - Project ID
  * @returns {string} Tracking link
+ * @example
+ * ```typescript
+ * const trackingLink = Fuul.generateTrackingLink('https://myproject.com', '0x12345')
+ * console.log(trackingLink) // https://myproject.com?af=0x12345
+ * ```
+ * @see https://docs.fuul.xyz/technical-guide-for-projects/creating-partners-tracking-links-using-the-fuul-sdk
  **/
-export function generateTrackingLink(landingUrl: string, affiliateAddress: string, projectId: string): string {
-  return `${landingUrl}?p=${projectId}&source=fuul&referrer=${affiliateAddress}`;
+export function generateTrackingLink(baseUrl: string, affiliateAddress: string): string {
+  return `${baseUrl}?af=${affiliateAddress}`;
 }
 
 export async function getConversions(): Promise<Conversion[]> {
