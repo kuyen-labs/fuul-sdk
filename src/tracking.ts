@@ -9,6 +9,8 @@ const TRAFFIC_TAG_KEY = 'fuul.traffic_tag';
 
 const SEARCH_ENGINE_URLS = ['google.com', 'bing.com', 'yahoo.com'];
 
+const toResetKeys = [AFFILIATE_ID_KEY, TRAFFIC_SOURCE_KEY, TRAFFIC_CATEGORY_KEY, TRAFFIC_TITLE_KEY, TRAFFIC_TAG_KEY];
+
 export const getTrackingId = () => getStoredOrcurrent(TRACKING_ID_KEY, () => nanoid());
 export const getAffiliateId = () =>
   getCurrentOrStored(() => getQueryParam('af') || getQueryParam('referrer'), AFFILIATE_ID_KEY);
@@ -17,8 +19,9 @@ export const getTrafficSource = () => getCurrentOrStored(() => detectSource(), T
 export const getTrafficCategory = () => getCurrentOrStored(() => getQueryParam('category'), TRAFFIC_CATEGORY_KEY);
 export const getTrafficTitle = () => getCurrentOrStored(() => getQueryParam('title'), TRAFFIC_TITLE_KEY);
 export const getTrafficTag = () => getCurrentOrStored(() => getQueryParam('tag'), TRAFFIC_TAG_KEY);
+export const resetTrackingData = () => toResetKeys.forEach((key) => localStorage.removeItem(key));
 
-function getStoredOrcurrent(key: string, currentValueFn: () => string | null) {
+const getStoredOrcurrent = (key: string, currentValueFn: () => string | null) => {
   const storedValue = localStorage.getItem(key);
 
   if (storedValue) {
@@ -32,9 +35,9 @@ function getStoredOrcurrent(key: string, currentValueFn: () => string | null) {
     }
     return currentValue;
   }
-}
+};
 
-function getCurrentOrStored(currentValueFn: () => string | null, key: string) {
+const getCurrentOrStored = (currentValueFn: () => string | null, key: string) => {
   const currentValue = currentValueFn();
 
   if (currentValue) {
@@ -43,14 +46,14 @@ function getCurrentOrStored(currentValueFn: () => string | null, key: string) {
   } else {
     return localStorage.getItem(key);
   }
-}
+};
 
-function getQueryParam(key: string) {
+const getQueryParam = (key: string) => {
   const queryParams = new URLSearchParams(window.location.search);
   return queryParams.get(key);
-}
+};
 
-function detectSource(): string {
+const detectSource = (): string => {
   const source = getQueryParam('source');
   const affiliate = getQueryParam('af') || getQueryParam('referrer');
 
@@ -68,4 +71,4 @@ function detectSource(): string {
   }
 
   return 'direct';
-}
+};

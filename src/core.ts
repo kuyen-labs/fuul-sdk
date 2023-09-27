@@ -9,6 +9,7 @@ import {
   getTrafficSource,
   getTrafficTag,
   getTrafficTitle,
+  resetTrackingData,
 } from './tracking';
 import { Conversion, FuulEvent } from './types/api';
 import { EventArgs, FuulSettings, UserMetadata } from './types/sdk';
@@ -63,6 +64,7 @@ function assertInitialized() {
 export async function sendEvent(name: string, args?: EventArgs, userMetadata?: UserMetadata): Promise<void> {
   assertInitialized();
   assertBrowserContext();
+  resetTrackingData();
 
   const trackingId = getTrackingId();
   const affiliateId = getAffiliateId();
