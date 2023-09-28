@@ -1,25 +1,16 @@
 import { nanoid } from 'nanoid';
 
 const TRACKING_ID_KEY = 'fuul.tracking_id';
-const AFFILIATE_ID_KEY = 'fuul.affiliate_id';
-const TRAFFIC_SOURCE_KEY = 'fuul.traffic_source';
-const TRAFFIC_CATEGORY_KEY = 'fuul.traffic_category';
-const TRAFFIC_TITLE_KEY = 'fuul.traffic_title';
-const TRAFFIC_TAG_KEY = 'fuul.traffic_tag';
 
 const SEARCH_ENGINE_URLS = ['google.com', 'bing.com', 'yahoo.com'];
 
-const toResetKeys = [AFFILIATE_ID_KEY, TRAFFIC_SOURCE_KEY, TRAFFIC_CATEGORY_KEY, TRAFFIC_TITLE_KEY, TRAFFIC_TAG_KEY];
-
 export const getTrackingId = () => getStoredOrcurrent(TRACKING_ID_KEY, () => nanoid());
-export const getAffiliateId = () =>
-  getCurrentOrStored(() => getQueryParam('af') || getQueryParam('referrer'), AFFILIATE_ID_KEY);
+export const getAffiliateId = () => getQueryParam('af') || getQueryParam('referrer');
 export const getReferrerUrl = () => document.referrer;
-export const getTrafficSource = () => getCurrentOrStored(() => detectSource(), TRAFFIC_SOURCE_KEY);
-export const getTrafficCategory = () => getCurrentOrStored(() => getQueryParam('category'), TRAFFIC_CATEGORY_KEY);
-export const getTrafficTitle = () => getCurrentOrStored(() => getQueryParam('title'), TRAFFIC_TITLE_KEY);
-export const getTrafficTag = () => getCurrentOrStored(() => getQueryParam('tag'), TRAFFIC_TAG_KEY);
-export const resetTrackingData = () => toResetKeys.forEach((key) => localStorage.removeItem(key));
+export const getTrafficSource = () => detectSource();
+export const getTrafficCategory = () => getQueryParam('category');
+export const getTrafficTitle = () => getQueryParam('title');
+export const getTrafficTag = () => getQueryParam('tag');
 
 const getStoredOrcurrent = (key: string, currentValueFn: () => string | null) => {
   const storedValue = localStorage.getItem(key);
@@ -34,17 +25,6 @@ const getStoredOrcurrent = (key: string, currentValueFn: () => string | null) =>
       localStorage.removeItem(key);
     }
     return currentValue;
-  }
-};
-
-const getCurrentOrStored = (currentValueFn: () => string | null, key: string) => {
-  const currentValue = currentValueFn();
-
-  if (currentValue) {
-    localStorage.setItem(key, currentValue);
-    return currentValue;
-  } else {
-    return localStorage.getItem(key);
   }
 };
 
