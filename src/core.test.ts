@@ -5,8 +5,8 @@
 
 import 'jest-localstorage-mock';
 
-import * as tracking from './tracking';
 import { EventService } from './EventService';
+import * as tracking from './tracking';
 jest.mock('./EventService');
 
 import { Fuul } from './index';
@@ -20,8 +20,6 @@ jest.mock('nanoid', () => ({
 }));
 
 describe('SDK core', () => {
-  const testApiKey = 'your-api-key';
-
   beforeEach(() => {
     jest.resetModules();
     localStorage.clear();
