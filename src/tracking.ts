@@ -28,12 +28,12 @@ const getStoredOrcurrent = (key: string, currentValueFn: () => string | null) =>
   }
 };
 
-const getQueryParam = (key: string) => {
+export const getQueryParam = (key: string) => {
   const queryParams = new URLSearchParams(window.location.search);
   return queryParams.get(key);
 };
 
-const detectSource = (): string => {
+export const detectSource = (): string => {
   const source = getQueryParam('source');
   const affiliate = getQueryParam('af') || getQueryParam('referrer');
 
@@ -45,10 +45,16 @@ const detectSource = (): string => {
     return 'affiliate';
   }
 
-  const referrerUrl = document.referrer;
-  if (SEARCH_ENGINE_URLS.includes(referrerUrl)) {
+  const domain = extractDomain(document.referrer);
+  if (SEARCH_ENGINE_URLS.includes(domain)) {
     return 'organic';
   }
 
   return 'direct';
+};
+
+const extractDomain = (urlString: string): string => {
+  const url = new URL(urlString);
+  const domain = url.hostname?.split('.').slice(-2).join('.');
+  return domain;
 };
