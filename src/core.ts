@@ -11,7 +11,7 @@ import {
   getTrafficTitle,
 } from './tracking';
 import { Conversion, FuulEvent } from './types/api';
-import { EventArgs, FuulSettings, UserMetadata } from './types/sdk';
+import { AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
 
@@ -155,6 +155,7 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
  * Generates a tracking link for an affiliate
  * @param {string} baseUrl - Base url of the project
  * @param {string} affiliateAddress - Affiliate wallet address
+ * @param {AffiliateLinkParams} params - Optional tracking parameters
  * @returns {string} Tracking link
  * @example
  * ```typescript
@@ -163,8 +164,22 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
  * ```
  * @see https://docs.fuul.xyz/technical-guide-for-projects/creating-partners-tracking-links-using-the-fuul-sdk
  **/
-export function generateTrackingLink(baseUrl: string, affiliateAddress: string): string {
-  return `${baseUrl}?af=${affiliateAddress}`;
+export function generateTrackingLink(baseUrl: string, affiliateAddress: string, params?: AffiliateLinkParams): string {
+  const qp = new URLSearchParams({
+    af: affiliateAddress,
+  });
+
+  if (params?.title) {
+    qp.append('af_title', params.title);
+  }
+  if (params?.format) {
+    qp.append('af_format', params.format);
+  }
+  if (params?.place) {
+    qp.append('af_place', params.place);
+  }
+
+  return `${baseUrl}?${qp.toString()}`;
 }
 
 export async function getConversions(): Promise<Conversion[]> {

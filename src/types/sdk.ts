@@ -14,3 +14,9 @@ export type UserMetadata = {
 export type EventArgs = {
   [key: string]: unknown;
 };
+
+export type AffiliateLinkParams = {
+  title?: string;
+  format?: string;
+  place?: string;
+};

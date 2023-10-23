@@ -156,4 +156,32 @@ describe('SDK core', () => {
       expect(createdEvent.signature_message).toBe('some-message');
     });
   });
+
+  describe('generateTrackingLink()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+
+    it('generates basic tracking link', () => {
+      // Act
+      const generatedLink = Fuul.generateTrackingLink('https://www.google.com', '0x124');
+
+      // Assert
+      expect(generatedLink).toBe('https://www.google.com?af=0x124');
+    });
+
+    it('generates link with tracking params', () => {
+      // Act
+      const generatedLink = Fuul.generateTrackingLink('https://www.google.com', '0x124', {
+        title: 'test-title',
+        format: 'banner',
+        place: 'upper-banner',
+      });
+
+      // Assert
+      expect(generatedLink).toBe(
+        'https://www.google.com?af=0x124&af_title=test-title&af_format=banner&af_place=upper-banner',
+      );
+    });
+  });
 });
