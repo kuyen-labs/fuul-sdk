@@ -1,3 +1,4 @@
+import { AffiliateService } from './AffiliateService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
@@ -20,6 +21,7 @@ let _initialized = false;
 let _apiKey: string;
 let _httpClient: HttpClient;
 let _conversionService: ConversionService;
+let _affiliateService: AffiliateService;
 let _eventService: EventService;
 
 export function init(settings: FuulSettings) {
@@ -39,6 +41,7 @@ export function init(settings: FuulSettings) {
 
   _conversionService = new ConversionService({ httpClient: _httpClient, debug: _debug });
   _eventService = new EventService({ httpClient: _httpClient, debug: _debug });
+  _affiliateService = new AffiliateService({ httpClient: _httpClient, debug: _debug });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -164,9 +167,14 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
  * ```
  * @see https://docs.fuul.xyz/technical-guide-for-projects/creating-partners-tracking-links-using-the-fuul-sdk
  **/
-export function generateTrackingLink(baseUrl: string, affiliateAddress: string, params?: AffiliateLinkParams): string {
+export async function generateTrackingLink(
+  baseUrl: string,
+  affiliateAddress: string,
+  params?: AffiliateLinkParams,
+): Promise<string> {
+  const affiliateCode = await _affiliateService.getCode(affiliateAddress);
   const qp = new URLSearchParams({
-    af: affiliateAddress,
+    af: affiliateCode ?? affiliateAddress,
   });
 
   if (params?.title) {
