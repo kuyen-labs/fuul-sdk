@@ -93,6 +93,10 @@ type ProjectTeamMember = {
   enabled: boolean;
 };
 
+export type Affiliate = {
+  code: string;
+};
+
 export type Project = {
   category: string;
   conversions: Conversion[] | [];

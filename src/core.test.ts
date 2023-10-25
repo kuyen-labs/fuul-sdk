@@ -162,17 +162,17 @@ describe('SDK core', () => {
       Fuul.init({ apiKey: 'test-key' });
     });
 
-    it('generates basic tracking link', () => {
+    it('generates basic tracking link', async () => {
       // Act
-      const generatedLink = Fuul.generateTrackingLink('https://www.google.com', '0x124');
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124');
 
       // Assert
       expect(generatedLink).toBe('https://www.google.com?af=0x124');
     });
 
-    it('generates link with tracking params', () => {
+    it('generates link with tracking params', async () => {
       // Act
-      const generatedLink = Fuul.generateTrackingLink('https://www.google.com', '0x124', {
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', {
         title: 'test-title',
         format: 'banner',
         place: 'upper-banner',
