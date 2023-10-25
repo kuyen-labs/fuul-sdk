@@ -7,6 +7,16 @@ export type AffiliateServiceSettings = {
   debug?: boolean;
 };
 
+export class ValidationError extends Error {
+  public readonly errors: string[];
+
+  constructor(errors: string[]) {
+    super(errors.join(', '));
+    this.name = 'ValidationError';
+    this.errors = errors;
+  }
+}
+
 export class AddressInUseError extends Error {
   public readonly address: string;
 
@@ -35,7 +45,7 @@ export class InvalidSignatureError extends Error {
 }
 
 interface ApiError {
-  message: string;
+  message: string | string[];
 }
 
 export class AffiliateService {
@@ -56,12 +66,10 @@ export class AffiliateService {
         signature,
         signature_message: signatureMessage,
       });
-    } catch (e) {
-      console.error(`Fuul SDK: Could not create affiliate code`, e);
-
+    } catch (e: unknown) {
       if (e instanceof AxiosError) {
         const data = e.response?.data;
-        if (data?.message) {
+        if (typeof data?.message === 'string') {
           const message = data.message.toLowerCase();
 
           if (message == 'invalid signature') {
@@ -73,6 +81,8 @@ export class AffiliateService {
           } else {
             throw new Error(message);
           }
+        } else if (data?.message instanceof Array) {
+          throw new ValidationError(data.message);
         }
       }
 

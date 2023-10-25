@@ -163,7 +163,6 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
  * ```typescript
  * await Fuul.createAffiliateCode('0x12345', 'my-cool-code', '<signature>')
  * ```
- * @see https://docs.fuul.xyz/technical-guide-for-projects/creating-partners-tracking-links-using-the-fuul-sdk
  **/
 export async function createAffiliateCode(address: string, code: string, signature: string): Promise<void> {
   const signatureMessage = `I confirm that I am creating the ${code} code on Fuul`;
