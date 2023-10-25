@@ -21,7 +21,7 @@ export class HttpClient {
       ...options,
       headers: {
         Authorization: `Bearer ${options.apiKey}`,
-        'X-Fuul-Sdk-Version': `1.0`,
+        'X-Fuul-Sdk-Version': '3.0.1',
       },
     });
     this.queryParams = options.queryParams ? this.buildQueryParams(options.queryParams) : '';
