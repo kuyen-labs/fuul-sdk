@@ -155,6 +155,21 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
 }
 
 /**
+ * Creates an affiliate code that maps to an affiliate address
+ * @param {string} address - Affiliate wallet address
+ * @param {string} code - Affiliate code to map address to
+ * @param {string} signature - Signed message authenticating address ownership
+ * @example
+ * ```typescript
+ * await Fuul.createAffiliateCode('0x12345', 'my-cool-code', '<signature>')
+ * ```
+ **/
+export async function createAffiliateCode(address: string, code: string, signature: string): Promise<void> {
+  const signatureMessage = `I confirm that I am creating the ${code} code on Fuul`;
+  await _affiliateService.create(address, code, signature, signatureMessage);
+}
+
+/**
  * Generates a tracking link for an affiliate
  * @param {string} baseUrl - Base url of the project
  * @param {string} affiliateAddress - Affiliate wallet address
@@ -223,4 +238,5 @@ export default {
   sendConnectWallet,
   generateTrackingLink,
   getConversions,
+  createAffiliateCode,
 };
