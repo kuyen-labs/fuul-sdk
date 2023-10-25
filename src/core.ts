@@ -205,6 +205,10 @@ export async function generateTrackingLink(
   return `${baseUrl}?${qp.toString()}`;
 }
 
+export async function getAffiliateCode(affiliateAddress: string): Promise<string | null> {
+  return await _affiliateService.getCode(affiliateAddress);
+}
+
 export async function getConversions(): Promise<Conversion[]> {
   assertInitialized();
   return _conversionService.getAll();
@@ -239,4 +243,5 @@ export default {
   generateTrackingLink,
   getConversions,
   createAffiliateCode,
+  getAffiliateCode,
 };
