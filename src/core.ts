@@ -169,6 +169,19 @@ export async function createAffiliateCode(address: string, code: string, signatu
   await _affiliateService.create(address, code, signature, signatureMessage);
 }
 
+export async function updateAffiliateCode(address: string, code: string, signature: string): Promise<void> {
+  const signatureMessage = `I confirm that I am updating my code to ${code} on Fuul`;
+  await _affiliateService.update(address, code, signature, signatureMessage);
+}
+
+export async function getAffiliateCode(address: string): Promise<string | null> {
+  return await _affiliateService.getCode(address);
+}
+
+export async function isAffiliateCodeFree(code: string): Promise<boolean> {
+  return await _affiliateService.isCodeFree(code);
+}
+
 /**
  * Generates a tracking link for an affiliate
  * @param {string} baseUrl - Base url of the project
@@ -203,10 +216,6 @@ export async function generateTrackingLink(
   }
 
   return `${baseUrl}?${qp.toString()}`;
-}
-
-export async function getAffiliateCode(affiliateAddress: string): Promise<string | null> {
-  return await _affiliateService.getCode(affiliateAddress);
 }
 
 export async function getConversions(): Promise<Conversion[]> {

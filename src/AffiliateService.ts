@@ -57,14 +57,14 @@ export class AffiliateService {
     this._debug = settings.debug;
   }
 
-  public async create(address: string, code: string, signature: string, signatureMessage: string): Promise<void> {
+  public async create(address: string, code: string, signature: string, signature_message: string): Promise<void> {
     try {
       await this.httpClient.post<ApiError>(`/affiliates`, {
         address,
         name: code,
         code,
         signature,
-        signature_message: signatureMessage,
+        signature_message,
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
@@ -87,6 +87,51 @@ export class AffiliateService {
       }
 
       throw e;
+    }
+  }
+
+  public async update(address: string, code: string, signature: string, signature_message: string): Promise<void> {
+    try {
+      await this.httpClient.post<ApiError>(`/affiliates/${address}`, {
+        code,
+        address,
+        signature,
+        signature_message,
+      });
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        const data = e.response?.data;
+        if (typeof data?.message === 'string') {
+          const message = data.message.toLowerCase();
+
+          if (message == 'invalid signature') {
+            throw new InvalidSignatureError();
+          } else if (message == 'address in use') {
+            throw new AddressInUseError(address);
+          } else if (message == 'code in use') {
+            throw new CodeInUseError(code);
+          } else {
+            throw new Error(message);
+          }
+        } else if (data?.message instanceof Array) {
+          throw new ValidationError(data.message);
+        }
+      }
+
+      throw e;
+    }
+  }
+
+  public async isCodeFree(code: string): Promise<boolean> {
+    try {
+      const res = await this.httpClient.get<Affiliate>(`/affiliates/codes/${code}`);
+      if (res.status !== 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error(`Fuul SDK: Error checking code usage: ${code}`, e);
+      return true;
     }
   }
 
