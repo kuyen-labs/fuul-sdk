@@ -5,12 +5,7 @@
 
 import 'jest-localstorage-mock';
 
-import { EventService } from './EventService';
 import * as tracking from './tracking';
-jest.mock('./EventService');
-
-import { Fuul } from './index';
-
 jest.mock('./EventService');
 jest.mock('./HttpClient');
 jest.mock('./ConversionService');
@@ -108,7 +103,7 @@ describe('tracking', () => {
     it(`should return direct`, () => {
       // Arrange
       jest.spyOn(document, 'referrer', 'get').mockReturnValue('http://www.sarasa.com/');
-      jest.spyOn(tracking, 'getQueryParam').mockImplementation((key: string): string | null => {
+      jest.spyOn(tracking, 'getQueryParam').mockImplementation((): string | null => {
         return null;
       });
 

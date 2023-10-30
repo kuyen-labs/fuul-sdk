@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse, RawAxiosRequestHeaders } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 interface HttpClientOptions {
   baseURL: string;

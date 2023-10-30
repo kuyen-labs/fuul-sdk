@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios';
+
 import { HttpClient } from './HttpClient';
 import { Affiliate } from './types/api';
 
