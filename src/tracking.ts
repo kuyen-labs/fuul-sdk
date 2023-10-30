@@ -46,15 +46,19 @@ export const detectSource = (): string => {
   }
 
   const domain = extractDomain(document.referrer);
-  if (SEARCH_ENGINE_URLS.includes(domain)) {
+  if (domain && SEARCH_ENGINE_URLS.includes(domain)) {
     return 'organic';
   }
 
   return 'direct';
 };
 
-const extractDomain = (urlString: string): string => {
-  const url = new URL(urlString);
-  const domain = url.hostname?.split('.').slice(-2).join('.');
-  return domain;
+const extractDomain = (urlString: string): string | null => {
+  try {
+    const url = new URL(urlString);
+    const domain = url.hostname?.split('.').slice(-2).join('.');
+    return domain;
+  } catch (e) {
+    return null;
+  }
 };
