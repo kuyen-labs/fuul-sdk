@@ -22,7 +22,7 @@ export class AddressInUseError extends Error {
   public readonly address: string;
 
   constructor(address: string) {
-    super(`Address already used: ${address}`);
+    super(`Address already registered.`);
     this.name = 'AddressInUseError';
     this.address = address;
   }
@@ -32,7 +32,7 @@ export class CodeInUseError extends Error {
   public readonly code: string;
 
   constructor(code: string) {
-    super(`Code already used: ${code}`);
+    super(`Code already registered.`);
     this.name = 'CodeInUseError';
     this.code = code;
   }
@@ -58,14 +58,13 @@ export class AffiliateService {
     this._debug = settings.debug;
   }
 
-  public async create(address: string, code: string, signature: string, signature_message: string): Promise<void> {
+  public async create(address: string, code: string, signature: string): Promise<void> {
     try {
       await this.httpClient.post<ApiError>(`/affiliates`, {
         address,
         name: code,
         code,
         signature,
-        signature_message,
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
@@ -91,13 +90,12 @@ export class AffiliateService {
     }
   }
 
-  public async update(address: string, code: string, signature: string, signature_message: string): Promise<void> {
+  public async update(address: string, code: string, signature: string): Promise<void> {
     try {
       await this.httpClient.post<ApiError>(`/affiliates/${address}`, {
         code,
         address,
         signature,
-        signature_message,
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError) {

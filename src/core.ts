@@ -158,30 +158,28 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
  * Creates a code registered to an affiliate address
  * @param {string} address Affiliate wallet address
  * @param {string} code Affiliate code to map address to
- * @param {string} signature Signed message authenticating address ownership
+ * @param {string} signature Signed message authenticating address ownership. Message to be signed: `I confirm that I am creating the ${code} code on Fuul`
  * @example
  * ```typescript
  * await Fuul.createAffiliateCode('0x12345', 'my-cool-code', '<signature>')
  * ```
  **/
 export async function createAffiliateCode(address: string, code: string, signature: string): Promise<void> {
-  const signatureMessage = `I confirm that I am creating the ${code} code on Fuul`;
-  await _affiliateService.create(address, code, signature, signatureMessage);
+  await _affiliateService.create(address, code, signature);
 }
 
 /**
  * Updates the code registered to an affiliate address
  * @param {string} address Affiliate wallet address
  * @param {string} code New affiliate code
- * @param {string} signature Signed message authenticating code update
+ * @param {string} signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
  * @example
  * ```typescript
  * await Fuul.updateAffiliateCode('0x12345', 'my-new-cool-code', '<signature>')
  * ```
  **/
 export async function updateAffiliateCode(address: string, code: string, signature: string): Promise<void> {
-  const signatureMessage = `I confirm that I am updating my code to ${code} on Fuul`;
-  await _affiliateService.update(address, code, signature, signatureMessage);
+  await _affiliateService.update(address, code, signature);
 }
 
 /**
