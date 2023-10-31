@@ -1,4 +1,4 @@
-import { AffiliateService } from './AffiliateService';
+import { AffiliateService } from './affiliates/AffiliateService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
@@ -155,25 +155,66 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
 }
 
 /**
- * Creates an affiliate code that maps to an affiliate address
- * @param {string} address - Affiliate wallet address
- * @param {string} code - Affiliate code to map address to
- * @param {string} signature - Signed message authenticating address ownership
+ * Creates a code registered to an affiliate address
+ * @param {string} address Affiliate wallet address
+ * @param {string} code Affiliate code to map address to
+ * @param {string} signature Signed message authenticating address ownership. Message to be signed: `I confirm that I am creating the ${code} code on Fuul`
  * @example
  * ```typescript
  * await Fuul.createAffiliateCode('0x12345', 'my-cool-code', '<signature>')
  * ```
  **/
 export async function createAffiliateCode(address: string, code: string, signature: string): Promise<void> {
-  const signatureMessage = `I confirm that I am creating the ${code} code on Fuul`;
-  await _affiliateService.create(address, code, signature, signatureMessage);
+  await _affiliateService.create(address, code, signature);
+}
+
+/**
+ * Updates the code registered to an affiliate address
+ * @param {string} address Affiliate wallet address
+ * @param {string} code New affiliate code
+ * @param {string} signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
+ * @example
+ * ```typescript
+ * await Fuul.updateAffiliateCode('0x12345', 'my-new-cool-code', '<signature>')
+ * ```
+ **/
+export async function updateAffiliateCode(address: string, code: string, signature: string): Promise<void> {
+  await _affiliateService.update(address, code, signature);
+}
+
+/**
+ * Gets the code registered to an affiliate address
+ * @param {string} address Affiliate wallet address
+ * @returns {string} Affiliate code
+ * @example
+ * ```typescript
+ * const code = await Fuul.getAffiliateCode('0x12345');
+ * ```
+ **/
+export async function getAffiliateCode(address: string): Promise<string | null> {
+  return await _affiliateService.getCode(address);
+}
+
+/**
+ * Checks if an affiliate code is free to use
+ * @param {string} code Affiliate code to check
+ * @returns {boolean}
+ * @example
+ * ```typescript
+ * if (await Fuul.isAffiliateCodeFree('my-cool-code')) {
+ *   // Code is free to use
+ * }
+ * ```
+ **/
+export async function isAffiliateCodeFree(code: string): Promise<boolean> {
+  return await _affiliateService.isCodeFree(code);
 }
 
 /**
  * Generates a tracking link for an affiliate
- * @param {string} baseUrl - Base url of the project
- * @param {string} affiliateAddress - Affiliate wallet address
- * @param {AffiliateLinkParams} params - Optional tracking parameters
+ * @param {string} baseUrl Base url of the project
+ * @param {string} affiliateAddress Affiliate wallet address
+ * @param {AffiliateLinkParams} params Optional tracking parameters
  * @returns {string} Tracking link
  * @example
  * ```typescript
@@ -203,10 +244,6 @@ export async function generateTrackingLink(
   }
 
   return `${baseUrl}?${qp.toString()}`;
-}
-
-export async function getAffiliateCode(affiliateAddress: string): Promise<string | null> {
-  return await _affiliateService.getCode(affiliateAddress);
 }
 
 export async function getConversions(): Promise<Conversion[]> {
@@ -243,5 +280,7 @@ export default {
   generateTrackingLink,
   getConversions,
   createAffiliateCode,
+  updateAffiliateCode,
   getAffiliateCode,
+  isAffiliateCodeFree,
 };
