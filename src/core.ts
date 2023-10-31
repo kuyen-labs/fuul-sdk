@@ -1,4 +1,4 @@
-import { AffiliateService } from './AffiliateService';
+import { AffiliateService } from './affiliates/AffiliateService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';

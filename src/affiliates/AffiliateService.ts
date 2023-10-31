@@ -1,53 +1,13 @@
 import { AxiosError } from 'axios';
 
-import { HttpClient } from './HttpClient';
-import { Affiliate } from './types/api';
+import { HttpClient } from '../HttpClient';
+import { Affiliate } from '../types/api';
+import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
 export type AffiliateServiceSettings = {
   httpClient: HttpClient;
   debug?: boolean;
 };
-
-export class ValidationError extends Error {
-  public readonly errors: string[];
-
-  constructor(errors: string[]) {
-    super(errors.join(', '));
-    this.name = 'ValidationError';
-    this.errors = errors;
-  }
-}
-
-export class AddressInUseError extends Error {
-  public readonly address: string;
-
-  constructor(address: string) {
-    super(`Address already registered.`);
-    this.name = 'AddressInUseError';
-    this.address = address;
-  }
-}
-
-export class CodeInUseError extends Error {
-  public readonly code: string;
-
-  constructor(code: string) {
-    super(`Code already registered.`);
-    this.name = 'CodeInUseError';
-    this.code = code;
-  }
-}
-
-export class InvalidSignatureError extends Error {
-  constructor() {
-    super(`Invalid signature provided`);
-    this.name = 'InvalidSignatureError';
-  }
-}
-
-interface ApiError {
-  message: string | string[];
-}
 
 export class AffiliateService {
   private readonly httpClient: HttpClient;
@@ -60,7 +20,7 @@ export class AffiliateService {
 
   public async create(address: string, code: string, signature: string): Promise<void> {
     try {
-      await this.httpClient.post<ApiError>(`/affiliates`, {
+      await this.httpClient.post<void>(`/affiliates`, {
         address,
         name: code,
         code,
@@ -92,7 +52,7 @@ export class AffiliateService {
 
   public async update(address: string, code: string, signature: string): Promise<void> {
     try {
-      await this.httpClient.post<ApiError>(`/affiliates/${address}`, {
+      await this.httpClient.post<void>(`/affiliates/${address}`, {
         code,
         address,
         signature,
