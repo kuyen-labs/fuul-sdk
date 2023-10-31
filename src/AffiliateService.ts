@@ -125,23 +125,22 @@ export class AffiliateService {
 
   public async isCodeFree(code: string): Promise<boolean> {
     try {
-      const res = await this.httpClient.get<Affiliate>(`/affiliates/codes/${code}`);
-      if (res.status !== 200) {
-        return true;
-      }
+      await this.httpClient.get<Affiliate>(`/affiliates/codes/${code}`);
       return false;
     } catch (e) {
-      console.error(`Fuul SDK: Error checking code usage: ${code}`, e);
-      return true;
+      if (e instanceof AxiosError) {
+        if (e.response?.status === 404) {
+          return true;
+        }
+      }
+      console.error(`Fuul SDK: Could not check affiliate code`, e);
+      return false;
     }
   }
 
   public async getCode(address: string): Promise<string | null> {
     try {
       const res = await this.httpClient.get<Affiliate>(`/affiliates/${address}`);
-      if (res.status !== 200) {
-        return null;
-      }
       return res.data.code;
     } catch (e) {
       console.error(`Fuul SDK: Could not get affiliate code`, e);
