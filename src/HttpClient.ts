@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import release from './release.json';
 
 interface HttpClientOptions {
   baseURL: string;
@@ -21,7 +22,7 @@ export class HttpClient {
       ...options,
       headers: {
         Authorization: `Bearer ${options.apiKey}`,
-        'X-Fuul-Sdk-Version': '3.3.0',
+        'X-Fuul-Sdk-Version': release.version,
       },
     });
     this.queryParams = options.queryParams ? this.buildQueryParams(options.queryParams) : '';

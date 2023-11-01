@@ -30,6 +30,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@semantic-release/exec": "^6.0.3",
     "axios": "^1.2.2",
     "nanoid": "^4.0.0"
   },
