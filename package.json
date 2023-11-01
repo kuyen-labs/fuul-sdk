@@ -14,7 +14,6 @@
     "lint:fix": "eslint --fix 'src/**/*.{js,json,ts}'",
     "format": "prettier --write 'src/**/*.{js,json,ts}' --config ./.prettierrc",
     "semantic-release": "semantic-release",
-    "semantic-release-dry": "semantic-release --dry-run",
     "test": "jest --coverage",
     "test:ci": "jest --ci --passWithNoTests"
   },
