@@ -165,6 +165,7 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
  * ```
  **/
 export async function createAffiliateCode(address: string, code: string, signature: string): Promise<void> {
+  assertInitialized();
   await _affiliateService.create(address, code, signature);
 }
 
@@ -179,6 +180,7 @@ export async function createAffiliateCode(address: string, code: string, signatu
  * ```
  **/
 export async function updateAffiliateCode(address: string, code: string, signature: string): Promise<void> {
+  assertInitialized();
   await _affiliateService.update(address, code, signature);
 }
 
@@ -192,6 +194,7 @@ export async function updateAffiliateCode(address: string, code: string, signatu
  * ```
  **/
 export async function getAffiliateCode(address: string): Promise<string | null> {
+  assertInitialized();
   return await _affiliateService.getCode(address);
 }
 
@@ -207,6 +210,7 @@ export async function getAffiliateCode(address: string): Promise<string | null> 
  * ```
  **/
 export async function isAffiliateCodeFree(code: string): Promise<boolean> {
+  assertInitialized();
   return await _affiliateService.isCodeFree(code);
 }
 
@@ -228,6 +232,7 @@ export async function generateTrackingLink(
   affiliateAddress: string,
   params?: AffiliateLinkParams,
 ): Promise<string> {
+  assertInitialized();
   const affiliateCode = await _affiliateService.getCode(affiliateAddress);
   const qp = new URLSearchParams({
     af: affiliateCode ?? affiliateAddress,
