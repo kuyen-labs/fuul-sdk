@@ -12,7 +12,7 @@ export const getTrafficCategory = () => getQueryParam('category');
 export const getTrafficTitle = () => getQueryParam('title');
 export const getTrafficTag = () => getQueryParam('tag');
 
-const getStoredOrcurrent = (key: string, currentValueFn: () => string | null) => {
+const getStoredOrcurrent = (key: string, currentValueFn: () => string): string => {
   const storedValue = localStorage.getItem(key);
 
   if (storedValue) {

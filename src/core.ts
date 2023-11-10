@@ -56,68 +56,25 @@ function assertInitialized() {
 /**
  * @param {string} name Event name
  * @param {EventArgs} args Event arguments
- * @param {UserMetadata} userMetadata User metadata
  * @returns {Promise<void>}
  * @example
  * ```js
- * sendEvent('my_event', { value: 10 }, { userAddress: '0x01' })
+ * sendEvent('my_event', { value: 10 })
  * ```
  */
-export async function sendEvent(name: string, args?: EventArgs, userMetadata?: UserMetadata): Promise<void> {
+export async function sendEvent(name: string, args?: EventArgs): Promise<void> {
   assertInitialized();
   assertBrowserContext();
 
-  const trackingId = getTrackingId();
-  const affiliateId = getAffiliateId();
-  const source = getTrafficSource();
-  const category = getTrafficCategory();
-  const title = getTrafficTitle();
-  const tag = getTrafficTag();
-  const referrerUrl = getReferrerUrl();
-
-  const fuulEvent: FuulEvent = {
+  const event: FuulEvent = {
     name,
-    args: args || {},
+    args: args ?? {},
     metadata: {
-      tracking_id: trackingId ?? '',
+      tracking_id: getTrackingId(),
     },
   };
 
-  if (userMetadata?.address) {
-    fuulEvent.user_address = userMetadata.address;
-  }
-
-  if (userMetadata?.signature) {
-    fuulEvent.signature = userMetadata?.signature;
-    fuulEvent.signature_message = userMetadata?.message;
-  }
-
-  if (affiliateId) {
-    fuulEvent.metadata.referrer = affiliateId;
-    fuulEvent.metadata.affiliate_id = affiliateId;
-  }
-
-  if (referrerUrl) {
-    fuulEvent.metadata.referrer_url = referrerUrl;
-  }
-
-  if (source) {
-    fuulEvent.metadata.source = source;
-  }
-
-  if (category) {
-    fuulEvent.metadata.category = category;
-  }
-
-  if (title) {
-    fuulEvent.metadata.title = title;
-  }
-
-  if (tag) {
-    fuulEvent.metadata.tag = tag;
-  }
-
-  _eventService.sendEvent(fuulEvent);
+  await _eventService.sendEvent(event);
 }
 
 /**
@@ -131,10 +88,28 @@ export async function sendEvent(name: string, args?: EventArgs, userMetadata?: U
  * ```
  */
 export async function sendPageview(pageName?: string): Promise<void> {
-  await sendEvent('pageview', {
-    page: pageName ?? document.location.pathname,
-    locationOrigin: document.location.origin,
-  });
+  assertInitialized();
+  assertBrowserContext();
+
+  const event: FuulEvent = {
+    name: 'pageview',
+    args: {
+      page: pageName ?? document.location.pathname,
+      locationOrigin: document.location.origin,
+    },
+    metadata: {
+      tracking_id: getTrackingId(),
+      referrer_url: getReferrerUrl(),
+      source: getTrafficSource(),
+      affiliate_id: getAffiliateId() ?? undefined,
+      referrer: getAffiliateId() ?? undefined,
+      category: getTrafficCategory() ?? undefined,
+      title: getTrafficTitle() ?? undefined,
+      tag: getTrafficTag() ?? undefined,
+    },
+  };
+
+  await _eventService.sendEvent(event);
 }
 
 /**
@@ -151,7 +126,27 @@ export async function sendPageview(pageName?: string): Promise<void> {
  * ```
  */
 export async function sendConnectWallet(userMetadata: UserMetadata): Promise<void> {
-  await sendEvent('connect_wallet', {}, userMetadata);
+  assertInitialized();
+  assertBrowserContext();
+
+  const event: FuulEvent = {
+    name: 'connect_wallet',
+    args: {},
+    metadata: {
+      tracking_id: getTrackingId(),
+    },
+  };
+
+  if (userMetadata?.address) {
+    event.user_address = userMetadata.address;
+  }
+
+  if (userMetadata?.signature) {
+    event.signature = userMetadata?.signature;
+    event.signature_message = userMetadata?.message;
+  }
+
+  await _eventService.sendEvent(event);
 }
 
 /**
