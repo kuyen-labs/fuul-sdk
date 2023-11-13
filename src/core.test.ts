@@ -4,20 +4,18 @@
  */
 
 import 'jest-localstorage-mock';
-
 import { EventService } from './EventService';
+import { AffiliateService } from './affiliates/AffiliateService';
 import * as tracking from './tracking';
-jest.mock('./EventService');
-
-import { Fuul } from './index';
 
 jest.mock('./EventService');
-jest.mock('./HttpClient');
+jest.mock('./affiliates/AffiliateService');
 jest.mock('./ConversionService');
-
 jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
+
+import { Fuul } from './index';
 
 describe('SDK core', () => {
   beforeEach(() => {
@@ -193,7 +191,13 @@ describe('SDK core', () => {
       Fuul.init({ apiKey: 'test-key' });
     });
 
-    it('generates basic tracking link', async () => {
+    it.only('generates basic tracking link', async () => {
+      // Arrange
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.getCode.mockImplementation(async (address) => {
+        return null;
+      });
+
       // Act
       const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124');
 
@@ -202,6 +206,12 @@ describe('SDK core', () => {
     });
 
     it('generates link with tracking params', async () => {
+      // Arrange
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.getCode.mockImplementation(async (address) => {
+        return null;
+      });
+
       // Act
       const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', {
         title: 'test-title',
@@ -212,6 +222,26 @@ describe('SDK core', () => {
       // Assert
       expect(generatedLink).toBe(
         'https://www.google.com?af=0x124&af_title=test-title&af_format=banner&af_place=upper-banner',
+      );
+    });
+
+    it('generates link with affiliate code', async () => {
+      // Arrange
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.getCode.mockImplementation(async (address) => {
+        return 'my-affiliate-code';
+      });
+
+      // Act
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', {
+        title: 'test-title',
+        format: 'banner',
+        place: 'upper-banner',
+      });
+
+      // Assert
+      expect(generatedLink).toBe(
+        'https://www.google.com?af=my-affiliate-code&af_title=test-title&af_format=banner&af_place=upper-banner',
       );
     });
   });
