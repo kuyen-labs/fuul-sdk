@@ -4,8 +4,9 @@
  */
 
 import 'jest-localstorage-mock';
-import { EventService } from './EventService';
+
 import { AffiliateService } from './affiliates/AffiliateService';
+import { EventService } from './EventService';
 import * as tracking from './tracking';
 
 jest.mock('./EventService');
@@ -82,8 +83,6 @@ describe('SDK core', () => {
 
       // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
-      const eventMetadata = createdEvent.metadata;
-
       expect(createdEvent.name).toBe('pageview');
       expect(createdEvent.args).toStrictEqual({
         page: '/test-page',
@@ -194,7 +193,7 @@ describe('SDK core', () => {
     it.only('generates basic tracking link', async () => {
       // Arrange
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
-      affiliateServiceMock.prototype.getCode.mockImplementation(async (address) => {
+      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
         return null;
       });
 
@@ -208,7 +207,7 @@ describe('SDK core', () => {
     it('generates link with tracking params', async () => {
       // Arrange
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
-      affiliateServiceMock.prototype.getCode.mockImplementation(async (address) => {
+      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
         return null;
       });
 
@@ -228,7 +227,7 @@ describe('SDK core', () => {
     it('generates link with affiliate code', async () => {
       // Arrange
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
-      affiliateServiceMock.prototype.getCode.mockImplementation(async (address) => {
+      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
         return 'my-affiliate-code';
       });
 
