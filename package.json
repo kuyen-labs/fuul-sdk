@@ -30,11 +30,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@semantic-release/exec": "^6.0.3",
     "axios": "^1.2.2",
     "nanoid": "^4.0.0"
   },
   "devDependencies": {
+    "@golevelup/ts-jest": "^0.4.0",
+    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/npm": "^9.0.2",
     "@types/jest": "^29.5.4",

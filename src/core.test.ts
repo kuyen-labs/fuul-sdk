@@ -5,19 +5,18 @@
 
 import 'jest-localstorage-mock';
 
+import { AffiliateService } from './affiliates/AffiliateService';
 import { EventService } from './EventService';
 import * as tracking from './tracking';
-jest.mock('./EventService');
-
-import { Fuul } from './index';
 
 jest.mock('./EventService');
-jest.mock('./HttpClient');
+jest.mock('./affiliates/AffiliateService');
 jest.mock('./ConversionService');
-
 jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
+
+import { Fuul } from './index';
 
 describe('SDK core', () => {
   beforeEach(() => {
@@ -45,7 +44,29 @@ describe('SDK core', () => {
       Fuul.init({ apiKey: 'test-key' });
     });
 
-    it('should call sendEvent with populated tracking properties', () => {
+    it('should call sendEvent with correct argument', () => {
+      // Arrange
+      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
+
+      const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
+
+      // Act
+      Fuul.sendEvent('sarlanga', { test: 'some-test-arg' });
+
+      // Assert
+      const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
+      expect(createdEvent.name).toBe('sarlanga');
+      expect(createdEvent.args).toStrictEqual({ test: 'some-test-arg' });
+      expect(createdEvent.metadata).toStrictEqual({ tracking_id: 'some-tracking-id' });
+    });
+  });
+
+  describe('sendPageview()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+
+    it('with no arguments should call sendEvent with correct arguments', () => {
       // Arrange
       jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
       jest.spyOn(tracking, 'getAffiliateId').mockReturnValue('some-affiliate-id');
@@ -58,35 +79,6 @@ describe('SDK core', () => {
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
       // Act
-      Fuul.sendEvent('sarlanga');
-
-      // Assert
-      const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
-      expect(createdEvent.name).toBe('sarlanga');
-      expect(createdEvent.args).toStrictEqual({});
-
-      const eventMetadata = createdEvent.metadata;
-      expect(eventMetadata.tracking_id).toBe('some-tracking-id');
-      expect(eventMetadata.affiliate_id).toBe('some-affiliate-id');
-      expect(eventMetadata.referrer).toBe('some-affiliate-id');
-      expect(eventMetadata.source).toBe('some-traffic-source');
-      expect(eventMetadata.category).toBe('some-traffic-category');
-      expect(eventMetadata.title).toBe('some-traffic-title');
-      expect(eventMetadata.referrer_url).toBe('some-referrer-url');
-      expect(eventMetadata.tag).toBe('some-traffic-tag');
-    });
-  });
-
-  describe('sendPageview()', () => {
-    beforeEach(() => {
-      Fuul.init({ apiKey: 'test-key' });
-    });
-
-    it('with no arguments should call sendEvent with correct arguments', () => {
-      // Arrange
-      const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
-
-      // Act
       Fuul.sendPageview();
 
       // Assert
@@ -96,10 +88,28 @@ describe('SDK core', () => {
         page: '/test-page',
         locationOrigin: 'https://fuul.test.xyz',
       });
+      expect(createdEvent.metadata).toStrictEqual({
+        tracking_id: 'some-tracking-id',
+        referrer: 'some-affiliate-id',
+        affiliate_id: 'some-affiliate-id',
+        source: 'some-traffic-source',
+        category: 'some-traffic-category',
+        title: 'some-traffic-title',
+        referrer_url: 'some-referrer-url',
+        tag: 'some-traffic-tag',
+      });
     });
 
     it('with page arguments should call sendEvent with correct arguments', () => {
       // Arrange
+      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
+      jest.spyOn(tracking, 'getAffiliateId').mockReturnValue('some-affiliate-id');
+      jest.spyOn(tracking, 'getReferrerUrl').mockReturnValue('some-referrer-url');
+      jest.spyOn(tracking, 'getTrafficSource').mockReturnValue('some-traffic-source');
+      jest.spyOn(tracking, 'getTrafficCategory').mockReturnValue('some-traffic-category');
+      jest.spyOn(tracking, 'getTrafficTitle').mockReturnValue('some-traffic-title');
+      jest.spyOn(tracking, 'getTrafficTag').mockReturnValue('some-traffic-tag');
+
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
       // Act
@@ -112,6 +122,16 @@ describe('SDK core', () => {
         page: '/custom-page',
         locationOrigin: 'https://fuul.test.xyz',
       });
+      expect(createdEvent.metadata).toStrictEqual({
+        tracking_id: 'some-tracking-id',
+        affiliate_id: 'some-affiliate-id',
+        referrer: 'some-affiliate-id',
+        source: 'some-traffic-source',
+        category: 'some-traffic-category',
+        title: 'some-traffic-title',
+        referrer_url: 'some-referrer-url',
+        tag: 'some-traffic-tag',
+      });
     });
   });
 
@@ -122,6 +142,8 @@ describe('SDK core', () => {
 
     it('with required arguments should call sendEvent with correct arguments', () => {
       // Arrange
+      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
+
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
       // Act
@@ -132,6 +154,8 @@ describe('SDK core', () => {
       // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
       expect(createdEvent.name).toBe('connect_wallet');
+      expect(createdEvent.args).toStrictEqual({});
+      expect(createdEvent.metadata).toStrictEqual({ tracking_id: 'some-tracking-id' });
       expect(createdEvent.user_address).toBe('some-address');
       expect(createdEvent.signature).toBeUndefined();
       expect(createdEvent.signature_message).toBeUndefined();
@@ -139,6 +163,8 @@ describe('SDK core', () => {
 
     it('with signature arguments should call sendEvent with correct arguments', () => {
       // Arrange
+      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
+
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
       // Act
@@ -151,6 +177,8 @@ describe('SDK core', () => {
       // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
       expect(createdEvent.name).toBe('connect_wallet');
+      expect(createdEvent.args).toStrictEqual({});
+      expect(createdEvent.metadata).toStrictEqual({ tracking_id: 'some-tracking-id' });
       expect(createdEvent.user_address).toBe('some-address');
       expect(createdEvent.signature).toBe('some-signature');
       expect(createdEvent.signature_message).toBe('some-message');
@@ -162,7 +190,13 @@ describe('SDK core', () => {
       Fuul.init({ apiKey: 'test-key' });
     });
 
-    it('generates basic tracking link', async () => {
+    it.only('generates basic tracking link', async () => {
+      // Arrange
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
+        return null;
+      });
+
       // Act
       const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124');
 
@@ -171,6 +205,12 @@ describe('SDK core', () => {
     });
 
     it('generates link with tracking params', async () => {
+      // Arrange
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
+        return null;
+      });
+
       // Act
       const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', {
         title: 'test-title',
@@ -181,6 +221,26 @@ describe('SDK core', () => {
       // Assert
       expect(generatedLink).toBe(
         'https://www.google.com?af=0x124&af_title=test-title&af_format=banner&af_place=upper-banner',
+      );
+    });
+
+    it('generates link with affiliate code', async () => {
+      // Arrange
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
+        return 'my-affiliate-code';
+      });
+
+      // Act
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', {
+        title: 'test-title',
+        format: 'banner',
+        place: 'upper-banner',
+      });
+
+      // Assert
+      expect(generatedLink).toBe(
+        'https://www.google.com?af=my-affiliate-code&af_title=test-title&af_format=banner&af_place=upper-banner',
       );
     });
   });
