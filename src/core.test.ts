@@ -17,6 +17,7 @@ jest.mock('nanoid', () => ({
 }));
 
 import { Fuul } from './index';
+import { PayoutService } from './payouts/PayoutService';
 
 describe('SDK core', () => {
   beforeEach(() => {
@@ -190,7 +191,7 @@ describe('SDK core', () => {
       Fuul.init({ apiKey: 'test-key' });
     });
 
-    it.only('generates basic tracking link', async () => {
+    it('generates basic tracking link', async () => {
       // Arrange
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
       affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
@@ -244,4 +245,64 @@ describe('SDK core', () => {
       );
     });
   });
+
+  describe('getUserPayouts()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+
+    it('should call getUserPayouts with correct arguments', async () => {
+      const getUserPayoutsSpy = jest.spyOn(PayoutService.prototype, 'getUserPayouts').mockResolvedValueOnce({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: [],
+      })
+  
+      const payouts = await Fuul.getUserPayouts({
+        user_address: '0x123'
+      })
+  
+      expect(getUserPayoutsSpy).toHaveBeenCalledWith({
+        user_address: '0x123'
+      })
+  
+      expect(payouts).toEqual({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: []
+      })
+    })
+  })
+
+  describe('getProjectPayoutsLeaderboard()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+    
+    it('should call getProjectPayoutsLeaderboard with correct arguments', async () => {
+      const getProjectPayoutsLeaderboardSpy = jest.spyOn(PayoutService.prototype, 'getProjectPayoutsLeaderboard').mockResolvedValueOnce({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: [],
+      })
+  
+      const payouts = await Fuul.getProjectPayoutsLeaderboard({
+        currency_address: '0x123'
+      })
+  
+      expect(getProjectPayoutsLeaderboardSpy).toHaveBeenCalledWith({
+        currency_address: '0x123'
+      })
+  
+      expect(payouts).toEqual({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: []
+      })
+    })
+  })
 });

@@ -2,6 +2,7 @@ import { AffiliateService } from './affiliates/AffiliateService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
+import { PayoutService } from './payouts/PayoutService';
 import {
   getAffiliateId,
   getReferrerUrl,
@@ -11,7 +12,7 @@ import {
   getTrafficTag,
   getTrafficTitle,
 } from './tracking';
-import { Conversion, FuulEvent } from './types/api';
+import { Conversion, FuulEvent, GetProjectPayoutsLeaderboardParams, GetUserPayoutsParams, ProjectPayoutsLeaderboardResponse, UserPayoutsResponse } from './types/api';
 import { AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
@@ -23,6 +24,7 @@ let _httpClient: HttpClient;
 let _conversionService: ConversionService;
 let _affiliateService: AffiliateService;
 let _eventService: EventService;
+let _payoutService: PayoutService;
 
 export function init(settings: FuulSettings) {
   _debug = !!settings.debug;
@@ -42,6 +44,7 @@ export function init(settings: FuulSettings) {
   _conversionService = new ConversionService({ httpClient: _httpClient, debug: _debug });
   _eventService = new EventService({ httpClient: _httpClient, debug: _debug });
   _affiliateService = new AffiliateService({ httpClient: _httpClient, debug: _debug });
+  _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug })
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -246,6 +249,32 @@ export async function generateTrackingLink(
   return `${baseUrl}?${qp.toString()}`;
 }
 
+/**
+ * Gets the project payouts leaderboard
+ * @param {GetProjectPayoutsLeaderboardParams} params The search params
+ * @returns {ProjectPayoutsLeaderboardResponse} Project payouts leaderboard
+ * @example
+ * ```typescript
+ * const results = await Fuul.getProjectPayoutsLeaderboard({ currency_address: '0x12345' }});
+ * ```
+ **/
+export function getProjectPayoutsLeaderboard(params: GetProjectPayoutsLeaderboardParams): Promise<ProjectPayoutsLeaderboardResponse> {
+  return _payoutService.getProjectPayoutsLeaderboard(params);
+}
+
+/**
+ * Gets the project payouts leaderboard
+ * @param {GetUserPayoutsParams} params The search params
+ * @returns {UserPayoutsResponse} Project payouts leaderboard
+ * @example
+ * ```typescript
+ * const results = await Fuul.getUserPayouts({ user_address: '0x12345' }});
+ * ```
+ **/
+export function getUserPayouts(params: GetUserPayoutsParams): Promise<UserPayoutsResponse> {
+  return _payoutService.getUserPayouts(params);
+}
+
 export async function getConversions(): Promise<Conversion[]> {
   assertInitialized();
   return _conversionService.getAll();
@@ -283,4 +312,6 @@ export default {
   updateAffiliateCode,
   getAffiliateCode,
   isAffiliateCodeFree,
+  getUserPayouts,
+  getProjectPayoutsLeaderboard,
 };
