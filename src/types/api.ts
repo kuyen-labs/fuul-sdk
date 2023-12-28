@@ -23,50 +23,35 @@ export type FuulEvent = {
   metadata: FuulEventMetadata;
 };
 
-type ConversionPaymentActionArgs = {
-  payment_type: string;
-  payment_currency: string;
-  referral_amount?: string;
-  referrer_amount?: string;
-  referrer_amount_percentage?: number;
-  referral_amount_percentage?: number;
-  payment_argument?: string;
-};
-
-export type Contract = {
-  address: string;
-  createdAt: string;
-  deletedAt: null;
-  id: string;
-  network: string;
-  sentinelId: null;
-  updatedAt: string;
-};
-
 export type AbiInput = {
   name: string;
   type: string;
   internalType: string;
 };
 
-export type Trigger = {
+enum EventType {
+  OnChainFunction = 'on-chain-function',
+  OnChainInternalFunction = 'on-chain-internal-function',
+  OnChainEvent = 'on-chain-event',
+  OffChainEvent = 'off-chain-event',
+}
+
+interface Contract {
+  address: string;
+  network: string;
+}
+
+export interface Trigger {
   id: string;
-  projectId: string;
   name: string;
   description: string;
-  type: string;
-  networks: string[];
-  signature: string;
   ref: string;
-  contractAddress: string;
-  contract_address: string;
+  signature: string;
+  type: EventType;
+  condition_expression: string;
+  end_user_argument: string;
   contracts?: Contract[];
-  createdAt: string;
-  updatedAt: string;
-  deletedAt?: string;
-  arguments?: AbiInput[];
-  condition_expression?: string;
-};
+}
 
 enum ProjectIntegrationType {
   FUUL_HOSTED = 'FUUL_HOSTED',
@@ -114,28 +99,100 @@ export type Project = {
   team_members: ProjectTeamMember[] | [];
 };
 
-export type Conversion = {
-  action_args?: ConversionPaymentActionArgs;
-  action_type?: string;
-  attribution_type: string;
-  conversion_window: number;
-  created_at: string;
+export interface Rule {
+  expression: string;
+  prettified_expression: string;
+  timeframe_seconds: number;
+}
+
+interface ProjectInvestor {
+  name: string;
+  url?: string;
+}
+
+interface ProjectGeoRestriction {
+  name: string;
+  flag: string;
+}
+
+interface ProjectOtherLink {
+  name: string;
+  url: string;
+}
+
+interface PayoutTermTriggerArgument {
+  trigger_id: string;
+  amount_argument: string;
+  currency_argument: string;
+}
+interface PayoutTermPayoutGroup {
+  id: string;
+  affiliate_amount?: string;
+  end_user_amount?: string;
+  affiliate_amount_percentage?: number;
+  end_user_amount_percentage?: number;
+}
+interface PayoutTermResponse {
+  /**
+   * @deprecated This parameter will be removed after front-end migration
+   */
+  payment_type: string;
+  payout_type: string;
+  /**
+   * @deprecated This parameter will be removed after front-end migration
+   */
+  payment_currency: string;
+  payout_currency: string;
+  referral_amount?: string | null;
+  referrer_amount?: string | null;
+
+  /**
+   * @deprecated This parameter will be removed after front-end migration
+   */
+  payment_argument?: string | null;
+  trigger_arguments?: PayoutTermTriggerArgument[];
+
+  payout_groups: PayoutTermPayoutGroup[];
+}
+
+export interface Conversion {
   id: string;
   name: string;
-  project: Project;
-  rule: {
-    expression: string;
-    prettified_expression: string;
-    timeframe_seconds: number;
-  };
+  slug: string;
+  conversion_window: number;
+  attribution_type: string;
   triggers: Trigger[];
-  total_converted?: number;
+  created_at: Date;
+  updated_at: Date;
+  rule: Rule;
+  project?: {
+    name: string;
+    slug: string;
+    id: string;
+    thumbnail_url: string;
+    integration_type: string;
+    user_landing_page_url?: string;
+    partner_landing_page_url?: string;
+    user_onboarding_page_url?: string;
+    contract_chain_id: number | null;
+    github_account?: string;
+    whitepaper_url?: string;
+    investors?: ProjectInvestor[];
+    geo_restrictions?: ProjectGeoRestriction[];
+    assets_url?: string;
+    documentation_url?: string;
+    other_links?: ProjectOtherLink[];
+  };
+  action_id?: string;
+  action_type?: string;
+  action_args?: PayoutTermResponse;
   conversion_rate?: number;
-  payout?: {
+  total_converted?: number;
+  total_payout?: {
     amount: number;
     currency: string;
   };
-};
+}
 
 export interface GetProjectPayoutsLeaderboardParams {
   currency_address: string;
