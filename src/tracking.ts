@@ -2,8 +2,6 @@ import { nanoid } from 'nanoid';
 
 const TRACKING_ID_KEY = 'fuul.tracking_id';
 
-const SEARCH_ENGINE_URLS = ['google.com', 'bing.com', 'yahoo.com'];
-
 export const getTrackingId = () => getStoredOrcurrent(TRACKING_ID_KEY, () => nanoid());
 export const getAffiliateId = () => getQueryParam('af') || getQueryParam('referrer');
 export const getReferrerUrl = () => document.referrer;
@@ -33,32 +31,9 @@ export const getQueryParam = (key: string) => {
   return queryParams.get(key);
 };
 
-export const detectSource = (): string => {
-  const source = getQueryParam('source');
-  const affiliate = getQueryParam('af') || getQueryParam('referrer');
-
-  if (source) {
-    return source;
-  }
-
-  if (affiliate) {
-    return 'affiliate';
-  }
-
-  const domain = extractDomain(document.referrer);
-  if (domain && SEARCH_ENGINE_URLS.includes(domain)) {
-    return 'organic';
-  }
-
-  return 'direct';
-};
-
-const extractDomain = (urlString: string): string | null => {
-  try {
-    const url = new URL(urlString);
-    const domain = url.hostname?.split('.').slice(-2).join('.');
-    return domain;
-  } catch (e) {
-    return null;
+export const detectSource = (): string | undefined => {
+  const sourceParam = getQueryParam('source');
+  if (sourceParam) {
+    return sourceParam;
   }
 };
