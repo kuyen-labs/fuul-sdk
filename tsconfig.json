@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
@@ -17,7 +16,9 @@
     "esModuleInterop": true,
     "declarationMap": true,
     "baseUrl": ".",
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types"],
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false
   },
   "include": ["src", "lib"]
 }
