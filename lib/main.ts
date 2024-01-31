@@ -1,6 +1,5 @@
-import { Conversion } from 'src/modules/conversions/types';
-import { EventArgs, UserMetadata } from 'src/modules/events/types';
-
+import { Conversion } from '../src/modules/conversions/types';
+import { EventArgs, UserMetadata } from '../src/modules/events/types';
 import Fuul, { FuulSettings } from './core';
 
 export * from '../src/modules/affiliates/infra/errors';

@@ -1,7 +1,3 @@
-function test() {
-  console.log('hello from test');
-
-  return 'test';
-}
-
-export { test };
+export const popupModal = () => {
+  return 'Should open a modal...';
+};

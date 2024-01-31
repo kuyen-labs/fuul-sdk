@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
-import { HttpClient } from 'src/modules/http/client';
 
+import { HttpClient } from '../../http/client';
 import { Affiliate } from '../types';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 

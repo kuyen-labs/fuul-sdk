@@ -14,10 +14,9 @@ jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
-import { AffiliateService } from 'src/modules/affiliates/infra/service';
-import { EventService } from 'src/modules/events/infra/service';
-import { PayoutService } from 'src/modules/payouts/infra/service';
-
+import { AffiliateService } from '../../src/modules/affiliates/infra/service';
+import { EventService } from '../../src/modules/events/infra/service';
+import { PayoutService } from '../../src/modules/payouts/infra/service';
 import * as queryParams from '../../src/utils/query-params';
 import * as storage from '../../src/utils/storage';
 

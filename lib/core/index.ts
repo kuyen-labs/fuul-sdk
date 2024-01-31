@@ -1,17 +1,16 @@
-import { AffiliateService } from 'src/modules/affiliates/infra/service';
-import { AffiliateLinkParams } from 'src/modules/affiliates/types';
-import { ConversionService } from 'src/modules/conversions/infra/service';
-import { Conversion } from 'src/modules/conversions/types';
-import { EventService } from 'src/modules/events/infra/service';
-import { EventArgs, FuulEvent, UserMetadata } from 'src/modules/events/types';
-import { HttpClient } from 'src/modules/http/client';
-import { PayoutService } from 'src/modules/payouts/infra/service';
+import { AffiliateService } from '../../src/modules/affiliates/infra/service';
+import { AffiliateLinkParams } from '../../src/modules/affiliates/types';
+import { ConversionService } from '../../src/modules/conversions/infra/service';
+import { EventService } from '../../src/modules/events/infra/service';
+import { FuulEvent } from '../../src/modules/events/types';
+import { HttpClient } from '../../src/modules/http/client';
+import { PayoutService } from '../../src/modules/payouts/infra/service';
 import {
   GetProjectPayoutsLeaderboardParams,
   GetUserPayoutsParams,
   ProjectPayoutsLeaderboardResponse,
   UserPayoutsResponse,
-} from 'src/modules/payouts/types';
+} from '../../src/modules/payouts/types';
 import {
   getAffiliateId,
   getReferrerUrl,
@@ -19,8 +18,9 @@ import {
   getTrafficSource,
   getTrafficTag,
   getTrafficTitle,
-} from 'src/utils/query-params';
-import { getTrackingId } from 'src/utils/storage';
+} from '../../src/utils/query-params';
+import { getTrackingId } from '../../src/utils/storage';
+import { Conversion, EventArgs, UserMetadata } from '../main';
 
 export type FuulSettings = {
   debug?: boolean;
