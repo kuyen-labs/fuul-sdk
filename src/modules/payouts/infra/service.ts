@@ -1,10 +1,11 @@
+import { HttpClient } from 'src/modules/http/client';
+
 import {
   GetProjectPayoutsLeaderboardParams,
   GetUserPayoutsParams,
   ProjectPayoutsLeaderboardResponse,
   UserPayoutsResponse,
-} from '@payouts/types';
-import { HttpClient } from 'lib/modules/http/client';
+} from '../types';
 
 export type PayoutServiceSettings = {
   httpClient: HttpClient;

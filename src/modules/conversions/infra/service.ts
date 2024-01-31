@@ -1,5 +1,6 @@
-import { Conversion } from '@conversions/types';
-import { HttpClient } from 'lib/modules/http/client';
+import { HttpClient } from 'src/modules/http/client';
+
+import { Conversion } from '../types';
 
 export type ConversionServiceSettings = {
   httpClient: HttpClient;

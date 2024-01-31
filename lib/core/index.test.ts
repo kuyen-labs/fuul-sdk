@@ -5,21 +5,21 @@
 
 import 'jest-localstorage-mock';
 
-import { AffiliateService } from '@affiliates/infra/service';
-import { EventService } from '@events/infra/service';
-import { PayoutService } from '@payouts/infra/service';
+import Fuul from '.';
 
-import { Fuul } from '..';
-
-jest.mock('../../lib/modules/events/infra/service');
-jest.mock('../../lib/modules/affiliates/infra/service');
-jest.mock('../../lib/modules/conversions/infra/service');
+jest.mock('../../src/modules/events/infra/service');
+jest.mock('../../src/modules/affiliates/infra/service');
+jest.mock('../../src/modules/conversions/infra/service');
 jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
-import * as queryParams from '../../lib/utils/query-params';
-import * as storage from '../../lib/utils/storage';
+import { AffiliateService } from 'src/modules/affiliates/infra/service';
+import { EventService } from 'src/modules/events/infra/service';
+import { PayoutService } from 'src/modules/payouts/infra/service';
+
+import * as queryParams from '../../src/utils/query-params';
+import * as storage from '../../src/utils/storage';
 
 describe('SDK core', () => {
   beforeEach(() => {

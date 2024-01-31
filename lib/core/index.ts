@@ -1,16 +1,17 @@
-import { AffiliateService } from '@affiliates/infra/service';
-import { AffiliateLinkParams } from '@affiliates/types';
-import { ConversionService } from '@conversions/infra/service';
-import { EventService } from '@events/infra/service';
-import { FuulEvent } from '@events/types';
-import { PayoutService } from '@payouts/infra/service';
+import { AffiliateService } from 'src/modules/affiliates/infra/service';
+import { AffiliateLinkParams } from 'src/modules/affiliates/types';
+import { ConversionService } from 'src/modules/conversions/infra/service';
+import { Conversion } from 'src/modules/conversions/types';
+import { EventService } from 'src/modules/events/infra/service';
+import { EventArgs, FuulEvent, UserMetadata } from 'src/modules/events/types';
+import { HttpClient } from 'src/modules/http/client';
+import { PayoutService } from 'src/modules/payouts/infra/service';
 import {
   GetProjectPayoutsLeaderboardParams,
   GetUserPayoutsParams,
   ProjectPayoutsLeaderboardResponse,
   UserPayoutsResponse,
-} from '@payouts/types';
-import { HttpClient } from 'lib/modules/http/client';
+} from 'src/modules/payouts/types';
 import {
   getAffiliateId,
   getReferrerUrl,
@@ -18,10 +19,8 @@ import {
   getTrafficSource,
   getTrafficTag,
   getTrafficTitle,
-} from 'lib/utils/query-params';
-import { getTrackingId } from 'lib/utils/storage';
-
-import { Conversion, EventArgs, UserMetadata } from '..';
+} from 'src/utils/query-params';
+import { getTrackingId } from 'src/utils/storage';
 
 export type FuulSettings = {
   debug?: boolean;
