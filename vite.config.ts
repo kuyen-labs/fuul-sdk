@@ -5,11 +5,14 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   build: {
+    sourcemap: true,
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(__dirname, './src'),
+      formats: ['es', 'cjs'],
       name: 'Fuul',
       fileName: 'index',
     },
+    outDir: 'dist',
   },
   plugins: [
     tsconfigPaths(),
@@ -19,6 +22,7 @@ export default defineConfig({
         sourceMap: false,
       },
       copyDtsFiles: true,
+      outputDir: 'dist',
     }),
   ],
 });

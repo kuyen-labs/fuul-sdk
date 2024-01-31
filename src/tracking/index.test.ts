@@ -5,19 +5,21 @@
 
 import 'jest-localstorage-mock';
 
-import { AffiliateService } from './affiliates/AffiliateService';
-import { EventService } from './EventService';
-import * as tracking from './tracking';
+import { AffiliateService } from '@affiliates/infra/service';
+import { EventService } from '@events/infra/service';
+import { PayoutService } from '@payouts/infra/service';
 
-jest.mock('./EventService');
-jest.mock('./affiliates/AffiliateService');
-jest.mock('./ConversionService');
+import { Fuul } from '..';
+
+jest.mock('../../lib/modules/events/infra/service');
+jest.mock('../../lib/modules/affiliates/infra/service');
+jest.mock('../../lib/modules/conversions/infra/service');
 jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
-import { Fuul } from './index';
-import { PayoutService } from './payouts/PayoutService';
+import * as queryParams from '../../lib/utils/query-params';
+import * as storage from '../../lib/utils/storage';
 
 describe('SDK core', () => {
   beforeEach(() => {
@@ -47,7 +49,7 @@ describe('SDK core', () => {
 
     it('should call sendEvent with correct argument', () => {
       // Arrange
-      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
+      jest.spyOn(storage, 'getTrackingId').mockReturnValue('some-tracking-id');
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
@@ -69,13 +71,13 @@ describe('SDK core', () => {
 
     it('with no arguments should call sendEvent with correct arguments', () => {
       // Arrange
-      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
-      jest.spyOn(tracking, 'getAffiliateId').mockReturnValue('some-affiliate-id');
-      jest.spyOn(tracking, 'getReferrerUrl').mockReturnValue('some-referrer-url');
-      jest.spyOn(tracking, 'getTrafficSource').mockReturnValue('some-traffic-source');
-      jest.spyOn(tracking, 'getTrafficCategory').mockReturnValue('some-traffic-category');
-      jest.spyOn(tracking, 'getTrafficTitle').mockReturnValue('some-traffic-title');
-      jest.spyOn(tracking, 'getTrafficTag').mockReturnValue('some-traffic-tag');
+      jest.spyOn(storage, 'getTrackingId').mockReturnValue('some-tracking-id');
+      jest.spyOn(queryParams, 'getAffiliateId').mockReturnValue('some-affiliate-id');
+      jest.spyOn(queryParams, 'getReferrerUrl').mockReturnValue('some-referrer-url');
+      jest.spyOn(queryParams, 'getTrafficSource').mockReturnValue('some-traffic-source');
+      jest.spyOn(queryParams, 'getTrafficCategory').mockReturnValue('some-traffic-category');
+      jest.spyOn(queryParams, 'getTrafficTitle').mockReturnValue('some-traffic-title');
+      jest.spyOn(queryParams, 'getTrafficTag').mockReturnValue('some-traffic-tag');
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
@@ -103,13 +105,13 @@ describe('SDK core', () => {
 
     it('with page arguments should call sendEvent with correct arguments', () => {
       // Arrange
-      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
-      jest.spyOn(tracking, 'getAffiliateId').mockReturnValue('some-affiliate-id');
-      jest.spyOn(tracking, 'getReferrerUrl').mockReturnValue('some-referrer-url');
-      jest.spyOn(tracking, 'getTrafficSource').mockReturnValue('some-traffic-source');
-      jest.spyOn(tracking, 'getTrafficCategory').mockReturnValue('some-traffic-category');
-      jest.spyOn(tracking, 'getTrafficTitle').mockReturnValue('some-traffic-title');
-      jest.spyOn(tracking, 'getTrafficTag').mockReturnValue('some-traffic-tag');
+      jest.spyOn(storage, 'getTrackingId').mockReturnValue('some-tracking-id');
+      jest.spyOn(queryParams, 'getAffiliateId').mockReturnValue('some-affiliate-id');
+      jest.spyOn(queryParams, 'getReferrerUrl').mockReturnValue('some-referrer-url');
+      jest.spyOn(queryParams, 'getTrafficSource').mockReturnValue('some-traffic-source');
+      jest.spyOn(queryParams, 'getTrafficCategory').mockReturnValue('some-traffic-category');
+      jest.spyOn(queryParams, 'getTrafficTitle').mockReturnValue('some-traffic-title');
+      jest.spyOn(queryParams, 'getTrafficTag').mockReturnValue('some-traffic-tag');
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
@@ -143,7 +145,7 @@ describe('SDK core', () => {
 
     it('with required arguments should call sendEvent with correct arguments', () => {
       // Arrange
-      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
+      jest.spyOn(storage, 'getTrackingId').mockReturnValue('some-tracking-id');
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
@@ -164,7 +166,7 @@ describe('SDK core', () => {
 
     it('with signature arguments should call sendEvent with correct arguments', () => {
       // Arrange
-      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
+      jest.spyOn(storage, 'getTrackingId').mockReturnValue('some-tracking-id');
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
@@ -257,52 +259,54 @@ describe('SDK core', () => {
         page_size: 10,
         total_results: 100,
         results: [],
-      })
-  
+      });
+
       const payouts = await Fuul.getUserPayouts({
-        user_address: '0x123'
-      })
-  
+        user_address: '0x123',
+      });
+
       expect(getUserPayoutsSpy).toHaveBeenCalledWith({
-        user_address: '0x123'
-      })
-  
+        user_address: '0x123',
+      });
+
       expect(payouts).toEqual({
         page: 1,
         page_size: 10,
         total_results: 100,
-        results: []
-      })
-    })
-  })
+        results: [],
+      });
+    });
+  });
 
   describe('getProjectPayoutsLeaderboard()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });
     });
-    
+
     it('should call getProjectPayoutsLeaderboard with correct arguments', async () => {
-      const getProjectPayoutsLeaderboardSpy = jest.spyOn(PayoutService.prototype, 'getProjectPayoutsLeaderboard').mockResolvedValueOnce({
-        page: 1,
-        page_size: 10,
-        total_results: 100,
-        results: [],
-      })
-  
+      const getProjectPayoutsLeaderboardSpy = jest
+        .spyOn(PayoutService.prototype, 'getProjectPayoutsLeaderboard')
+        .mockResolvedValueOnce({
+          page: 1,
+          page_size: 10,
+          total_results: 100,
+          results: [],
+        });
+
       const payouts = await Fuul.getProjectPayoutsLeaderboard({
-        currency_address: '0x123'
-      })
-  
+        currency_address: '0x123',
+      });
+
       expect(getProjectPayoutsLeaderboardSpy).toHaveBeenCalledWith({
-        currency_address: '0x123'
-      })
-  
+        currency_address: '0x123',
+      });
+
       expect(payouts).toEqual({
         page: 1,
         page_size: 10,
         total_results: 100,
-        results: []
-      })
-    })
-  })
+        results: [],
+      });
+    });
+  });
 });

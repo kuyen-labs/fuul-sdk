@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
-import release from './release.json';
+import release from '../../../src/release.json';
 
 interface HttpClientOptions {
   baseURL: string;

@@ -1,5 +1,5 @@
-import { HttpClient } from './HttpClient';
-import { FuulEvent } from './types/api';
+import { HttpClient } from '../../http/client';
+import { FuulEvent } from '../types';
 
 export const SENT_EVENT_ID_KEY = 'fuul.sent';
 export const SENT_EVENT_VALIDITY_PERIOD_SECONDS = 60;

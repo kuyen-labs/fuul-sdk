@@ -1,7 +1,9 @@
-import Fuul from './core';
+import { Conversion } from '@conversions/types';
+import { EventArgs, UserMetadata } from '@events/types';
 
-export * from './affiliates/errors';
-export type { Conversion } from './types/api';
-export type { EventArgs, FuulSettings, UserMetadata } from './types/sdk';
+import Fuul, { FuulSettings } from './tracking';
+
+export * from '@affiliates/infra/errors';
+export type { Conversion, EventArgs, FuulSettings, UserMetadata };
 
 export { Fuul };

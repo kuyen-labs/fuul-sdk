@@ -1,7 +1,7 @@
+import { Affiliate } from '@affiliates/types';
 import { AxiosError } from 'axios';
+import { HttpClient } from 'lib/modules/http/client';
 
-import { HttpClient } from '../HttpClient';
-import { Affiliate } from '../types/api';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
 export type AffiliateServiceSettings = {

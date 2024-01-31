@@ -1,8 +1,8 @@
 import 'jest-localstorage-mock';
 
-import { EventService, SENT_EVENT_ID_KEY, SENT_EVENT_VALIDITY_PERIOD_SECONDS } from './EventService';
-import { HttpClient } from './HttpClient';
-import { FuulEvent } from './types/api';
+import { HttpClient } from '../../http/client';
+import { FuulEvent } from '../types';
+import { EventService, SENT_EVENT_ID_KEY, SENT_EVENT_VALIDITY_PERIOD_SECONDS } from './service';
 
 beforeEach(() => {
   localStorage.clear();

@@ -18,9 +18,15 @@
     "declarationMap": true,
     "baseUrl": ".",
     "paths": {
-      "fuul-sdk": ["src/index.ts"]
+      "@/*": ["src/*"],
+      "@affiliates/*": ["lib/modules/affiliates/*"],
+      "@conversions/*": ["lib/modules/conversions/*"],
+      "@events/*": ["lib/modules/events/*"],
+      "@payouts/*": ["lib/modules/payouts/*"],
+      "@projects/*": ["lib/modules/projects/*"],
+      "@triggers/*": ["lib/modules/triggers/*"]
     },
     "typeRoots": ["node_modules/@types", "src/index.d.ts"]
   },
-  "include": ["src"]
+  "include": ["src", "lib"]
 }
