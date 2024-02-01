@@ -1,3 +1,9 @@
-import { Modal } from './modal';
+import { FuulModal } from './modal';
 
-export { Modal };
+declare global {
+  interface HTMLElementTagNameMap {
+    'fuul-modal': FuulModal;
+  }
+}
+
+export { FuulModal };

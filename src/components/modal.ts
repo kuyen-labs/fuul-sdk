@@ -4,15 +4,25 @@ import { customElement, property } from 'lit/decorators.js';
 import { getQueryParam } from '../utils/query-params';
 import { TWStyles } from './styles/main';
 
-@customElement('fuul-modal')
-export class Modal extends LitElement {
-  @property()
-  title = 'You have been referred by ';
+const DEFAULT_TITLE = 'You have been referred by a Fuul powered affiliate program!';
+const DEFAULT_SUBTITLE = 'You will now be redirected to the website.';
 
-  @property()
-  subtitle = 'Subtitle';
+@customElement('fuul-modal')
+export class FuulModal extends LitElement {
+  @property({ type: String })
+  modalTitle?: string;
+
+  @property({ type: String })
+  modalSubtitle?: string;
 
   static styles = [TWStyles];
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.modalTitle = this.getAttribute('modal-title') ?? DEFAULT_TITLE;
+    this.modalSubtitle = this.getAttribute('modal-subtitle') ?? DEFAULT_SUBTITLE;
+  }
 
   protected render() {
     return html`<div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -43,14 +53,9 @@ export class Modal extends LitElement {
                   </svg>
                 </div>
                 <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                  <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
-                    ${this.title} ${getQueryParam('af') || getQueryParam('referrer')}
-                  </h3>
+                  <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">${this.modalTitle}</h3>
                   <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      Are you sure you want to deactivate your account? All of your data will be permanently removed.
-                      This action cannot be undone.
-                    </p>
+                    <p class="text-sm text-gray-500">${this.modalSubtitle}</p>
                   </div>
                 </div>
               </div>
@@ -58,15 +63,9 @@ export class Modal extends LitElement {
             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
                 type="button"
-                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                class="inline-flex w-full justify-center rounded-md bg-slate-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-400 sm:ml-3 sm:w-auto"
               >
-                You have been refered by 0x123456
-              </button>
-              <button
-                type="button"
-                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-              >
-                Cancel
+                CTA Button
               </button>
             </div>
           </div>
@@ -78,18 +77,29 @@ export class Modal extends LitElement {
 
 const btn = document.querySelector('#show-modal');
 
+btn?.addEventListener('click', () => {
+  showSuccessfullReferralModal();
+});
+
 interface ModalOptions {
-  title: string;
-  body: string;
-  footer: string;
+  titlePrefix?: string;
+  showAffiliate?: boolean;
+  subtitle?: string;
 }
+
+const buildTitle = (titlePrefix?: string, showAffiliateAddress?: boolean) => {
+  if (showAffiliateAddress) {
+    return `${titlePrefix ?? 'You have been referred by'} ${getQueryParam('af') || getQueryParam('referrer')}!`;
+  }
+
+  return `${titlePrefix ?? 'You have been referred by a Fuul powered affiliate program'}!`;
+};
 
 export const showSuccessfullReferralModal = (options?: ModalOptions) => {
   const modal = document.createElement('fuul-modal');
 
+  modal.setAttribute('modal-title', buildTitle(options?.titlePrefix, options?.showAffiliate));
+  modal.setAttribute('modal-subtitle', options?.subtitle ?? 'You will now be redirected to the website.');
+
   document.body.appendChild(modal);
 };
-
-btn?.addEventListener('click', () => {
-  showSuccessfullReferralModal();
-});
