@@ -12,7 +12,7 @@ import {
   getTrafficTag,
   getTrafficTitle,
 } from './tracking';
-import { Conversion, FuulEvent, GetProjectPayoutsLeaderboardParams, GetUserPayoutsParams, ProjectPayoutsLeaderboardResponse, UserPayoutsResponse } from './types/api';
+import { Conversion, FuulEvent, GetPayoutsLeaderboardParams, GetPointsLeaderboardParams, GetUserPayoutsByConversionParams, GetUserPointsByConversionParams, LeaderboardResponse, PayoutsLeaderboard, PointsLeaderboard, UserPayoutsByConversionResponse, UserPointsByConversionResponse } from './types/api';
 import { AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
@@ -251,28 +251,54 @@ export async function generateTrackingLink(
 
 /**
  * Gets the project payouts leaderboard
- * @param {GetProjectPayoutsLeaderboardParams} params The search params
- * @returns {ProjectPayoutsLeaderboardResponse} Project payouts leaderboard
+ * @param {GetPayoutsLeaderboardParams} params The search params
+ * @returns {LeaderboardResponse<PayoutsLeaderboard>} Payouts leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getProjectPayoutsLeaderboard({ currency_address: '0x12345' }});
+ * const results = await Fuul.getPayoutsLeaderboard({ currency_address: '0x12345' }});
  * ```
  **/
-export function getProjectPayoutsLeaderboard(params: GetProjectPayoutsLeaderboardParams): Promise<ProjectPayoutsLeaderboardResponse> {
-  return _payoutService.getProjectPayoutsLeaderboard(params);
+export function getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
+  return _payoutService.getPayoutsLeaderboard(params);
 }
 
 /**
- * Gets the project payouts leaderboard
- * @param {GetUserPayoutsParams} params The search params
- * @returns {UserPayoutsResponse} Project payouts leaderboard
+ * Gets the project points leaderboard
+ * @param {GetPointsLeaderboardParams} params The search params
+ * @returns {LeaderboardResponse<PointsLeaderboard>} Points leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getUserPayouts({ user_address: '0x12345' }});
+ * const results = await Fuul.getPointsLeaderboard({ currency_address: '0x12345' }});
  * ```
  **/
-export function getUserPayouts(params: GetUserPayoutsParams): Promise<UserPayoutsResponse> {
-  return _payoutService.getUserPayouts(params);
+export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promise<LeaderboardResponse<PointsLeaderboard>> {
+  return _payoutService.getPointsLeaderboard(params);
+}
+
+/**
+ * Gets the user payouts by conversion
+ * @param {GetUserPayoutsByConversionParams} params The search params
+ * @returns {UserPayoutsByConversionResponse} User payouts by conversion
+ * @example
+ * ```typescript
+ * const results = await Fuul.getUserPayoutsByConversion({ user_address: '0x12345' }});
+ * ```
+ **/
+export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionParams): Promise<UserPayoutsByConversionResponse> {
+  return _payoutService.getUserPayoutsByConversion(params);
+}
+
+/**
+ * Gets user points by conversion
+ * @param {GetUserPointsByConversionParams} params The search params
+ * @returns {UserPointsByConversionResponse} User points by conversion
+ * @example
+ * ```typescript
+ * const results = await Fuul.getUserPointsByConversion({ user_address: '0x12345' }});
+ * ```
+ **/
+export function getUserPointsByConversion(params: GetUserPointsByConversionParams): Promise<UserPointsByConversionResponse> {
+  return _payoutService.getUserPointsByConversion(params);
 }
 
 export async function getConversions(): Promise<Conversion[]> {
@@ -312,6 +338,8 @@ export default {
   updateAffiliateCode,
   getAffiliateCode,
   isAffiliateCodeFree,
-  getUserPayouts,
-  getProjectPayoutsLeaderboard,
+  getPayoutsLeaderboard,
+  getPointsLeaderboard,
+  getUserPayoutsByConversion,
+  getUserPointsByConversion
 };

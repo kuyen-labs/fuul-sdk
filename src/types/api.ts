@@ -194,42 +194,77 @@ export interface Conversion {
   };
 }
 
-export interface GetProjectPayoutsLeaderboardParams {
-  currency_address: string;
+export interface GetPayoutsLeaderboardParams {
+  currency_address?: string;
   page?: number;
   page_size?: number;
 }
 
-export interface ProjectPayoutsLeaderboardResponse {
+export interface GetPointsLeaderboardParams {
+  page?: number;
+  page_size?: number;
+}
+
+export interface LeaderboardResponse<T> {
   total_results: number;
   page: number;
   page_size: number;
-  results: ProjectPayoutsLeaderboardResponseResult[];
+  results: T[];
 }
 
-export interface ProjectPayoutsLeaderboardResponseResult {
+export interface PayoutsLeaderboard {
   address: string;
-  total_paid: number;
+  total_amount: string;
+  chain_id: number;
+  rank: number;
 }
 
-export interface GetUserPayoutsParams {
+export interface PointsLeaderboard {
+  address: string;
+  total_amount: string;
+  rank: number;
+}
+
+export interface GetUserPayoutsByConversionParams {
   user_address: string;
   page?: number;
   page_size?: number;
   group_by?: string;
 }
 
-export interface UserPayoutsResponse {
+export interface GetUserPointsByConversionParams {
+  user_address: string;
+  page?: number;
+  page_size?: number;
+  group_by?: string;
+}
+
+export interface UserPayoutsByConversionResponse {
   total_results: number;
   page: number;
   page_size: number;
-  results: UserPayoutsResponseResult[];
+  results: UserConversionPayout[];
 }
 
-export interface UserPayoutsResponseResult {
+export interface UserConversionPayout {
   is_referrer: boolean;
-  total_paid: number;
+  total_amount: string;
+  conversion_id: string;
+  conversion_name: string;
   currency_address: string;
-  conversion_id?: string;
-  conversion_name?: string;
+  chain_id: number;
+}
+
+export interface UserPointsByConversionResponse {
+  total_results: number;
+  page: number;
+  page_size: number;
+  results: UserConversionPoints[];
+}
+
+export interface UserConversionPoints {
+  is_referrer: boolean;
+  total_amount: string;
+  conversion_id: string;
+  conversion_name: string;
 }
