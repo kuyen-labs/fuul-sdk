@@ -1,5 +1,5 @@
 import { HttpClient } from '../HttpClient';
-import { GetProjectPayoutsLeaderboardParams, GetUserPayoutsParams, ProjectPayoutsLeaderboardResponse, UserPayoutsResponse } from '../types/api';
+import {  GetPayoutsLeaderboardParams, GetPointsLeaderboardParams, GetUserPayoutsByConversionParams, GetUserPointsByConversionParams, LeaderboardResponse, PayoutsLeaderboard, PointsLeaderboard, UserPayoutsByConversionResponse, UserPointsByConversionResponse} from '../types/api';
 
 export type PayoutServiceSettings = {
   httpClient: HttpClient;
@@ -17,13 +17,23 @@ export class PayoutService {
     this._debug = settings.debug;
   }
 
-  public async getProjectPayoutsLeaderboard(params: GetProjectPayoutsLeaderboardParams): Promise<ProjectPayoutsLeaderboardResponse> {
-    const results = await this.httpClient.get<ProjectPayoutsLeaderboardResponse>(`${basePath}/leaderboard`, params);
+  public async getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
+    const results = await this.httpClient.get<LeaderboardResponse<PayoutsLeaderboard>>(`${basePath}/leaderboard`, params);
     return results.data;
   }
 
-  public async getUserPayouts(params: GetUserPayoutsParams): Promise<UserPayoutsResponse> {
-    const results = await this.httpClient.get<UserPayoutsResponse>(basePath, params);
+  public async getPointsLeaderboard(params: GetPointsLeaderboardParams): Promise<LeaderboardResponse<PointsLeaderboard>> {
+    const results = await this.httpClient.get<LeaderboardResponse<PointsLeaderboard>>(`${basePath}/leaderboard`, params);
+    return results.data;
+  }
+
+  public async getUserPayoutsByConversion(params: GetUserPayoutsByConversionParams): Promise<UserPayoutsByConversionResponse> {
+    const results = await this.httpClient.get<UserPayoutsByConversionResponse>(basePath, {...params, type: 'onchain-currency' });
+    return results.data;
+  }
+
+  public async getUserPointsByConversion(params: GetUserPointsByConversionParams): Promise<UserPointsByConversionResponse> {
+    const results = await this.httpClient.get<UserPointsByConversionResponse>(basePath, {...params, type: 'point' });
     return results.data;
   }
 }

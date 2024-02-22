@@ -246,25 +246,117 @@ describe('SDK core', () => {
     });
   });
 
-  describe('getUserPayouts()', () => {
+  describe('getUserPayoutsByConversion()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });
     });
 
-    it('should call getUserPayouts with correct arguments', async () => {
-      const getUserPayoutsSpy = jest.spyOn(PayoutService.prototype, 'getUserPayouts').mockResolvedValueOnce({
+    it('should call getUserPayoutsByConversion with correct arguments', async () => {
+      const getUserPayoutsByConversionSpy = jest.spyOn(PayoutService.prototype, 'getUserPayoutsByConversion').mockResolvedValueOnce({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: [
+          {
+            is_referrer: true,
+            total_amount: '100',
+            conversion_id: 'conversion-1',
+            conversion_name: 'buy',
+            currency_address: '0x1',
+            chain_id: 1,
+          }
+        ],
+      })
+  
+      const payouts = await Fuul.getUserPayoutsByConversion({
+        user_address: '0x123'
+      })
+  
+      expect(getUserPayoutsByConversionSpy).toHaveBeenCalledWith({
+        user_address: '0x123'
+      })
+  
+      expect(payouts).toEqual({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: [
+          {
+            is_referrer: true,
+            total_amount: '100',
+            conversion_id: 'conversion-1',
+            conversion_name: 'buy',
+            currency_address: '0x1',
+            chain_id: 1,
+          }
+        ]
+      })
+    })
+  })
+
+  describe('getUserPointsByConversion()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+
+    it('should call getUserPointsByConversion with correct arguments', async () => {
+      const getUserPointsByConversionSpy = jest.spyOn(PayoutService.prototype, 'getUserPointsByConversion').mockResolvedValueOnce({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: [
+          {
+            is_referrer: true,
+            total_amount: '100',
+            conversion_id: 'conversion-1',
+            conversion_name: 'buy',
+          }
+        ],
+      })
+  
+      const payouts = await Fuul.getUserPointsByConversion({
+        user_address: '0x123'
+      })
+  
+      expect(getUserPointsByConversionSpy).toHaveBeenCalledWith({
+        user_address: '0x123',
+      })
+  
+      expect(payouts).toEqual({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: [
+          {
+            is_referrer: true,
+            total_amount: '100',
+            conversion_id: 'conversion-1',
+            conversion_name: 'buy',
+          }
+        ]
+      })
+    })
+  })
+
+  describe('getPayoutsLeaderboard()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+    
+    it('should call getPayoutsLeaderboard with correct arguments', async () => {
+      const getPayoutsLeaderboardSpy = jest.spyOn(PayoutService.prototype, 'getPayoutsLeaderboard').mockResolvedValueOnce({
         page: 1,
         page_size: 10,
         total_results: 100,
         results: [],
       })
   
-      const payouts = await Fuul.getUserPayouts({
-        user_address: '0x123'
+      const payouts = await Fuul.getPayoutsLeaderboard({
+        currency_address: '0x123'
       })
   
-      expect(getUserPayoutsSpy).toHaveBeenCalledWith({
-        user_address: '0x123'
+      expect(getPayoutsLeaderboardSpy).toHaveBeenCalledWith({
+        currency_address: '0x123'
       })
   
       expect(payouts).toEqual({
@@ -276,25 +368,27 @@ describe('SDK core', () => {
     })
   })
 
-  describe('getProjectPayoutsLeaderboard()', () => {
+  describe('getPointsLeaderboard()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });
     });
     
-    it('should call getProjectPayoutsLeaderboard with correct arguments', async () => {
-      const getProjectPayoutsLeaderboardSpy = jest.spyOn(PayoutService.prototype, 'getProjectPayoutsLeaderboard').mockResolvedValueOnce({
+    it('should call getPointsLeaderboard with correct arguments', async () => {
+      const getPointsLeaderboardSpy = jest.spyOn(PayoutService.prototype, 'getPointsLeaderboard').mockResolvedValueOnce({
         page: 1,
         page_size: 10,
         total_results: 100,
         results: [],
       })
   
-      const payouts = await Fuul.getProjectPayoutsLeaderboard({
-        currency_address: '0x123'
+      const payouts = await Fuul.getPointsLeaderboard({
+        page: 1,
+        page_size: 10,
       })
   
-      expect(getProjectPayoutsLeaderboardSpy).toHaveBeenCalledWith({
-        currency_address: '0x123'
+      expect(getPointsLeaderboardSpy).toHaveBeenCalledWith({
+        page: 1,
+        page_size: 10,
       })
   
       expect(payouts).toEqual({
