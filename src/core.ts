@@ -12,7 +12,7 @@ import {
   getTrafficTag,
   getTrafficTitle,
 } from './tracking';
-import { Conversion, FuulEvent, GetPayoutsLeaderboardParams, GetPointsLeaderboardParams, GetUserPayoutsByConversionParams, GetUserPointsByConversionParams, LeaderboardResponse, PayoutsLeaderboard, PointsLeaderboard, UserPayoutsByConversionResponse, UserPointsByConversionResponse } from './types/api';
+import { Conversion, FuulEvent, GetPayoutsLeaderboardParams, GetPointsLeaderboardParams, GetUserPayoutMovementsParams, GetUserPayoutsByConversionParams, GetUserPointsByConversionParams, GetUserPointsMovementsParams, LeaderboardResponse, PayoutsLeaderboard, PointsLeaderboard, UserPayoutMovementsResponse, UserPayoutsByConversionResponse, UserPointsByConversionResponse, UserPointsMovementsResponse } from './types/api';
 import { AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
@@ -299,6 +299,33 @@ export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionPar
  **/
 export function getUserPointsByConversion(params: GetUserPointsByConversionParams): Promise<UserPointsByConversionResponse> {
   return _payoutService.getUserPointsByConversion(params);
+}
+
+/**
+ * Gets user payout movements
+ * @param {UserPayoutMovementsParams} params The search params
+ * @returns {UserPayoutMovementsResponse} User payout movements
+ * @example
+ * ```typescript
+ * const results = await Fuul.getUserPayoutMovements({ user_address: '0x12345' }});
+ * ```
+ **/
+export function getUserPayoutMovements(params: GetUserPayoutMovementsParams): Promise<UserPayoutMovementsResponse> {
+  return _payoutService.getUserPayoutMovements(params);
+}
+
+
+/**
+ * Gets user point movements
+ * @param {UserPointsMovementsParams} params The search params
+ * @returns {UserPointsMovementsResponse} User payout movements
+ * @example
+ * ```typescript
+ * const results = await Fuul.getUserPointsMovements({ user_address: '0x12345' }});
+ * ```
+ **/
+export function getUserPointsMovements(params: GetUserPointsMovementsParams): Promise<UserPointsMovementsResponse> {
+  return _payoutService.getUserPointsMovements(params);
 }
 
 export async function getConversions(): Promise<Conversion[]> {
