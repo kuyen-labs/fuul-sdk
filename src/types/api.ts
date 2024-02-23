@@ -203,6 +203,8 @@ export interface GetPayoutsLeaderboardParams {
 export interface GetPointsLeaderboardParams {
   page?: number;
   page_size?: number;
+  currency_address?: string;
+  user_address?: string;
 }
 
 export interface LeaderboardResponse<T> {
