@@ -196,15 +196,18 @@ export interface Conversion {
 
 export interface GetPayoutsLeaderboardParams {
   currency_address?: string;
+  project_id?: string;
+  user_address?: string;
   page?: number;
   page_size?: number;
 }
 
 export interface GetPointsLeaderboardParams {
+  currency_address?: string;
+  project_id?: string;
+  user_address?: string;
   page?: number;
   page_size?: number;
-  currency_address?: string;
-  user_address?: string;
 }
 
 export interface LeaderboardResponse<T> {
@@ -229,16 +232,18 @@ export interface PointsLeaderboard {
 
 export interface GetUserPayoutsByConversionParams {
   user_address: string;
+  project_id?: string;
+  group_by?: string;
   page?: number;
   page_size?: number;
-  group_by?: string;
 }
 
 export interface GetUserPointsByConversionParams {
   user_address: string;
+  project_id?: string;
+  group_by?: string;
   page?: number;
   page_size?: number;
-  group_by?: string;
 }
 
 export interface UserPayoutsByConversionResponse {
@@ -269,4 +274,46 @@ export interface UserConversionPoints {
   total_amount: string;
   conversion_id: string;
   conversion_name: string;
+}
+
+export interface GetUserPayoutMovementsParams {
+  user_address: string;
+  project_id?: string;
+}
+
+export interface UserPayoutMovementsResponse {
+  total_results: number;
+  page: number;
+  page_size: number;
+  results: UserPayoutMovement[];
+}
+
+export interface UserPayoutMovement {
+  date: string;
+  currency_address: string;
+  chain_id: number;
+  is_referrer: boolean;
+  conversion_id: string;
+  conversion_name: string;
+  total_amount: string;
+}
+
+export interface GetUserPointsMovementsParams {
+  user_address: string;
+  project_id?: string;
+}
+
+export interface UserPointsMovementsResponse {
+  total_results: number;
+  page: number;
+  page_size: number;
+  results: UserPointsMovement[];
+}
+
+export interface UserPointsMovement {
+  date: string;
+  is_referrer: boolean;
+  conversion_id: string;
+  conversion_name: string;
+  total_amount: string;
 }
