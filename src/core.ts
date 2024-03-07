@@ -12,7 +12,23 @@ import {
   getTrafficTag,
   getTrafficTitle,
 } from './tracking';
-import { Conversion, FuulEvent, GetPayoutsLeaderboardParams, GetPointsLeaderboardParams, GetUserPayoutMovementsParams, GetUserPayoutsByConversionParams, GetUserPointsByConversionParams, GetUserPointsMovementsParams, LeaderboardResponse, PayoutsLeaderboard, PointsLeaderboard, UserPayoutMovementsResponse, UserPayoutsByConversionResponse, UserPointsByConversionResponse, UserPointsMovementsResponse } from './types/api';
+import {
+  Conversion,
+  FuulEvent,
+  GetPayoutsLeaderboardParams,
+  GetPointsLeaderboardParams,
+  GetUserPayoutMovementsParams,
+  GetUserPayoutsByConversionParams,
+  GetUserPointsByConversionParams,
+  GetUserPointsMovementsParams,
+  LeaderboardResponse,
+  PayoutsLeaderboard,
+  PointsLeaderboard,
+  UserPayoutMovementsResponse,
+  UserPayoutsByConversionResponse,
+  UserPointsByConversionResponse,
+  UserPointsMovementsResponse,
+} from './types/api';
 import { AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
@@ -44,7 +60,7 @@ export function init(settings: FuulSettings) {
   _conversionService = new ConversionService({ httpClient: _httpClient, debug: _debug });
   _eventService = new EventService({ httpClient: _httpClient, debug: _debug });
   _affiliateService = new AffiliateService({ httpClient: _httpClient, debug: _debug });
-  _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug })
+  _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -258,7 +274,9 @@ export async function generateTrackingLink(
  * const results = await Fuul.getPayoutsLeaderboard({ currency_address: '0x12345' }});
  * ```
  **/
-export function getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
+export function getPayoutsLeaderboard(
+  params: GetPayoutsLeaderboardParams,
+): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
   return _payoutService.getPayoutsLeaderboard(params);
 }
 
@@ -271,7 +289,9 @@ export function getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Prom
  * const results = await Fuul.getPointsLeaderboard({ currency_address: '0x12345' }});
  * ```
  **/
-export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promise<LeaderboardResponse<PointsLeaderboard>> {
+export function getPointsLeaderboard(
+  params: GetPointsLeaderboardParams,
+): Promise<LeaderboardResponse<PointsLeaderboard>> {
   return _payoutService.getPointsLeaderboard(params);
 }
 
@@ -284,7 +304,9 @@ export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promis
  * const results = await Fuul.getUserPayoutsByConversion({ user_address: '0x12345' }});
  * ```
  **/
-export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionParams): Promise<UserPayoutsByConversionResponse> {
+export function getUserPayoutsByConversion(
+  params: GetUserPayoutsByConversionParams,
+): Promise<UserPayoutsByConversionResponse> {
   return _payoutService.getUserPayoutsByConversion(params);
 }
 
@@ -297,7 +319,9 @@ export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionPar
  * const results = await Fuul.getUserPointsByConversion({ user_address: '0x12345' }});
  * ```
  **/
-export function getUserPointsByConversion(params: GetUserPointsByConversionParams): Promise<UserPointsByConversionResponse> {
+export function getUserPointsByConversion(
+  params: GetUserPointsByConversionParams,
+): Promise<UserPointsByConversionResponse> {
   return _payoutService.getUserPointsByConversion(params);
 }
 
@@ -313,7 +337,6 @@ export function getUserPointsByConversion(params: GetUserPointsByConversionParam
 export function getUserPayoutMovements(params: GetUserPayoutMovementsParams): Promise<UserPayoutMovementsResponse> {
   return _payoutService.getUserPayoutMovements(params);
 }
-
 
 /**
  * Gets user point movements
@@ -368,5 +391,7 @@ export default {
   getPayoutsLeaderboard,
   getPointsLeaderboard,
   getUserPayoutsByConversion,
-  getUserPointsByConversion
+  getUserPointsByConversion,
+  getUserPointsMovements,
+  getUserPayoutMovements,
 };
