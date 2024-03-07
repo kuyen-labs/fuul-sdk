@@ -219,6 +219,7 @@ export interface LeaderboardResponse<T> {
 
 export interface PayoutsLeaderboard {
   address: string;
+  affiliate_code?: string;
   total_amount: string;
   chain_id: number;
   rank: number;
@@ -226,6 +227,7 @@ export interface PayoutsLeaderboard {
 
 export interface PointsLeaderboard {
   address: string;
+  affiliate_code?: string;
   total_amount: string;
   rank: number;
 }
