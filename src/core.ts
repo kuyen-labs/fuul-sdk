@@ -150,7 +150,10 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
 
   const event: FuulEvent = {
     name: 'connect_wallet',
-    args: {},
+    args: {
+      page: document.location.pathname,
+      locationOrigin: document.location.origin,
+    },
     metadata: {
       tracking_id: getTrackingId(),
     },
