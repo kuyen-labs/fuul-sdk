@@ -200,6 +200,8 @@ export interface GetPayoutsLeaderboardParams {
   user_address?: string;
   page?: number;
   page_size?: number;
+  from?: Date;
+  to?: Date;
 }
 
 export interface GetPointsLeaderboardParams {
@@ -208,6 +210,8 @@ export interface GetPointsLeaderboardParams {
   user_address?: string;
   page?: number;
   page_size?: number;
+  from?: Date;
+  to?: Date;
 }
 
 export interface LeaderboardResponse<T> {
