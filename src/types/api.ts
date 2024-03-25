@@ -214,6 +214,10 @@ export interface GetPointsLeaderboardParams {
   to?: Date;
 }
 
+export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
+  currency_address: string;
+}
+
 export interface LeaderboardResponse<T> {
   total_results: number;
   page: number;
@@ -225,6 +229,14 @@ export interface PayoutsLeaderboard {
   address: string;
   affiliate_code?: string;
   total_amount: string;
+  chain_id: number;
+  rank: number;
+}
+
+export interface VolumeLeaderboard {
+  address: string;
+  affiliate_code?: string;
+  total_amount: number;
   chain_id: number;
   rank: number;
 }

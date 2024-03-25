@@ -3,15 +3,7 @@ import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
 import { PayoutService } from './payouts/PayoutService';
-import {
-  getAffiliateId,
-  getReferrerUrl,
-  getTrackingId,
-  getTrafficCategory,
-  getTrafficSource,
-  getTrafficTag,
-  getTrafficTitle,
-} from './tracking';
+import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getTrafficSource, getTrafficTag, getTrafficTitle } from './tracking';
 import {
   Conversion,
   FuulEvent,
@@ -21,6 +13,7 @@ import {
   GetUserPayoutsByConversionParams,
   GetUserPointsByConversionParams,
   GetUserPointsMovementsParams,
+  GetVolumeLeaderboardParams,
   LeaderboardResponse,
   PayoutsLeaderboard,
   PointsLeaderboard,
@@ -28,6 +21,7 @@ import {
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
   UserPointsMovementsResponse,
+  VolumeLeaderboard,
 } from './types/api';
 import { AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
 
@@ -52,10 +46,7 @@ export function init(settings: FuulSettings) {
   _apiKey = settings.apiKey;
   assertValidApiKey();
 
-  _httpClient = createApiClient(
-    settings.baseApiUrl ?? FUUL_API_DEFAULT_ENDPOINT_URI,
-    settings.defaultQueryParams ?? {},
-  );
+  _httpClient = createApiClient(settings.baseApiUrl ?? FUUL_API_DEFAULT_ENDPOINT_URI, settings.defaultQueryParams ?? {});
 
   _conversionService = new ConversionService({ httpClient: _httpClient, debug: _debug });
   _eventService = new EventService({ httpClient: _httpClient, debug: _debug });
@@ -244,11 +235,7 @@ export async function isAffiliateCodeFree(code: string): Promise<boolean> {
  * ```
  * @see https://docs.fuul.xyz/technical-guide-for-projects/creating-partners-tracking-links-using-the-fuul-sdk
  **/
-export async function generateTrackingLink(
-  baseUrl: string,
-  affiliateAddress: string,
-  params?: AffiliateLinkParams,
-): Promise<string> {
+export async function generateTrackingLink(baseUrl: string, affiliateAddress: string, params?: AffiliateLinkParams): Promise<string> {
   assertInitialized();
   const affiliateCode = await _affiliateService.getCode(affiliateAddress);
   const qp = new URLSearchParams({
@@ -277,9 +264,7 @@ export async function generateTrackingLink(
  * const results = await Fuul.getPayoutsLeaderboard({ currency_address: '0x12345' }});
  * ```
  **/
-export function getPayoutsLeaderboard(
-  params: GetPayoutsLeaderboardParams,
-): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
+export function getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
   return _payoutService.getPayoutsLeaderboard(params);
 }
 
@@ -292,10 +277,21 @@ export function getPayoutsLeaderboard(
  * const results = await Fuul.getPointsLeaderboard({ currency_address: '0x12345' }});
  * ```
  **/
-export function getPointsLeaderboard(
-  params: GetPointsLeaderboardParams,
-): Promise<LeaderboardResponse<PointsLeaderboard>> {
+export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promise<LeaderboardResponse<PointsLeaderboard>> {
   return _payoutService.getPointsLeaderboard(params);
+}
+
+/**
+ * Gets the project value leaderboard, the amounts are converted into UDSC
+ * @param {GetVolumeLeaderboardParams} params The search params
+ * @returns {LeaderboardResponse<VolumeLeaderboard>} Value leaderboard response
+ * @example
+ * ```typescript
+ * const results = await Fuul.getVolumeLeaderboard({ currency_address: '0x12345' }});
+ * ```
+ **/
+export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
+  return _payoutService.getVolumeLeaderboard(params);
 }
 
 /**
@@ -307,9 +303,7 @@ export function getPointsLeaderboard(
  * const results = await Fuul.getUserPayoutsByConversion({ user_address: '0x12345' }});
  * ```
  **/
-export function getUserPayoutsByConversion(
-  params: GetUserPayoutsByConversionParams,
-): Promise<UserPayoutsByConversionResponse> {
+export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionParams): Promise<UserPayoutsByConversionResponse> {
   return _payoutService.getUserPayoutsByConversion(params);
 }
 
@@ -322,9 +316,7 @@ export function getUserPayoutsByConversion(
  * const results = await Fuul.getUserPointsByConversion({ user_address: '0x12345' }});
  * ```
  **/
-export function getUserPointsByConversion(
-  params: GetUserPointsByConversionParams,
-): Promise<UserPointsByConversionResponse> {
+export function getUserPointsByConversion(params: GetUserPointsByConversionParams): Promise<UserPointsByConversionResponse> {
   return _payoutService.getUserPointsByConversion(params);
 }
 
@@ -397,4 +389,5 @@ export default {
   getUserPointsByConversion,
   getUserPointsMovements,
   getUserPayoutMovements,
+  getVolumeLeaderboard,
 };
