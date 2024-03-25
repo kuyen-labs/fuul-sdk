@@ -287,7 +287,7 @@ export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promis
  * @returns {LeaderboardResponse<VolumeLeaderboard>} Value leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getVolumeLeaderboard({ currency_address: '0x12345' }});
+ * const results = await Fuul.getVolumeLeaderboard({ currency_address: '0x12345' }})
  * ```
  **/
 export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
