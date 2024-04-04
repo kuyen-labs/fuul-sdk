@@ -24,6 +24,7 @@ export class HttpClient {
       headers: {
         Authorization: `Bearer ${options.apiKey}`,
         'X-Fuul-Sdk-Version': release.version,
+        'x-api-key': options.apiKey,
       },
     });
     this.queryParams = options.queryParams ? this.buildQueryParams(options.queryParams) : '';
@@ -33,8 +34,7 @@ export class HttpClient {
     let queryParams = '';
 
     Object.keys(args).forEach((key) => {
-      queryParams =
-        queryParams === '' ? queryParams + `?${key}=${args[key]}` : queryParams + '&' + `${key}=${args[key]}`;
+      queryParams = queryParams === '' ? queryParams + `?${key}=${args[key]}` : queryParams + '&' + `${key}=${args[key]}`;
     });
 
     return queryParams;
