@@ -356,7 +356,7 @@ export function getUserPointsMovements(params: GetUserPointsMovementsParams): Pr
  * const results = await Fuul.getConversions({ user_address: '0x12345' }});
  * ```
  **/
-export async function getConversions(params: GetConversionsParams): Promise<Conversion[]> {
+export async function getConversions(params?: GetConversionsParams): Promise<Conversion[]> {
   assertInitialized();
   return _conversionService.getAll(params);
 }

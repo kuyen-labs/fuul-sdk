@@ -13,7 +13,7 @@ export class ConversionService {
     this.httpClient = settings.httpClient;
   }
 
-  async getAll(params: GetConversionsParams): Promise<Conversion[]> {
+  async getAll(params?: GetConversionsParams): Promise<Conversion[]> {
     const { data } = await this.httpClient.get<Conversion[]>('conversions', params);
 
     return data;
