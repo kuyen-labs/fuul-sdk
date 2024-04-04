@@ -336,3 +336,7 @@ export interface UserPointsMovement {
   conversion_name: string;
   total_amount: string;
 }
+
+export interface GetConversionsParams {
+  user_address?: string;
+}

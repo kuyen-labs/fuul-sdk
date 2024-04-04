@@ -7,6 +7,7 @@ import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getT
 import {
   Conversion,
   FuulEvent,
+  GetConversionsParams,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
   GetUserPayoutMovementsParams,
@@ -346,9 +347,18 @@ export function getUserPointsMovements(params: GetUserPointsMovementsParams): Pr
   return _payoutService.getUserPointsMovements(params);
 }
 
-export async function getConversions(): Promise<Conversion[]> {
+/**
+ * Gets user point movements
+ * @param {GetConversionsParams} params The search params
+ * @returns {Conversion[]} List of conversions
+ * @example
+ * ```typescript
+ * const results = await Fuul.getConversions({ user_address: '0x12345' }});
+ * ```
+ **/
+export async function getConversions(params: GetConversionsParams): Promise<Conversion[]> {
   assertInitialized();
-  return _conversionService.getAll();
+  return _conversionService.getAll(params);
 }
 
 function assertBrowserContext(): void {

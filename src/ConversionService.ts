@@ -1,5 +1,5 @@
 import { HttpClient } from './HttpClient';
-import { Conversion } from './types/api';
+import { Conversion, GetConversionsParams } from './types/api';
 
 export type ConversionServiceSettings = {
   httpClient: HttpClient;
@@ -13,8 +13,8 @@ export class ConversionService {
     this.httpClient = settings.httpClient;
   }
 
-  async getAll(): Promise<Conversion[]> {
-    const { data } = await this.httpClient.get<Conversion[]>('conversions');
+  async getAll(params: GetConversionsParams): Promise<Conversion[]> {
+    const { data } = await this.httpClient.get<Conversion[]>('conversions', params);
 
     return data;
   }
