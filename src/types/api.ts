@@ -192,6 +192,7 @@ export interface Conversion {
     amount: number;
     currency: string;
   };
+  converted?: boolean;
 }
 
 export interface GetPayoutsLeaderboardParams {
