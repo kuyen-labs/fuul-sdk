@@ -195,20 +195,27 @@ export interface Conversion {
   converted?: boolean;
 }
 
+type LeaderboardUserType = 'affiliate' | 'end_user';
+
+type LeaderboardField = 'tier' | 'total_volume';
+
 export interface GetPayoutsLeaderboardParams {
   currency_address?: string;
   project_id?: string;
   user_address?: string;
+  user_type?: LeaderboardUserType;
   page?: number;
   page_size?: number;
   from?: Date;
   to?: Date;
+  fields?: LeaderboardField[];
 }
 
 export interface GetPointsLeaderboardParams {
   currency_address?: string;
   project_id?: string;
   user_address?: string;
+  user_type?: LeaderboardUserType;
   page?: number;
   page_size?: number;
   from?: Date;
