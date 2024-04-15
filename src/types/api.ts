@@ -220,10 +220,12 @@ export interface GetPointsLeaderboardParams {
   page_size?: number;
   from?: Date;
   to?: Date;
+  fields?: LeaderboardField[];
 }
 
 export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
   currency_address: string;
+  payment_status?: 'paid' | 'unpaid' | 'all';
 }
 
 export interface LeaderboardResponse<T> {
