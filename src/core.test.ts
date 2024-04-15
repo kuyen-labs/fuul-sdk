@@ -365,10 +365,12 @@ describe('SDK core', () => {
 
       const payouts = await Fuul.getPayoutsLeaderboard({
         currency_address: '0x123',
+        user_type: 'affiliate',
       });
 
       expect(getPayoutsLeaderboardSpy).toHaveBeenCalledWith({
         currency_address: '0x123',
+        user_type: 'affiliate'
       });
 
       expect(payouts).toEqual({
@@ -398,11 +400,13 @@ describe('SDK core', () => {
       const payouts = await Fuul.getPointsLeaderboard({
         page: 1,
         page_size: 10,
+        user_type: 'affiliate'
       });
 
       expect(getPointsLeaderboardSpy).toHaveBeenCalledWith({
         page: 1,
         page_size: 10,
+        user_type: 'affiliate'
       });
 
       expect(payouts).toEqual({
