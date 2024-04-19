@@ -21,6 +21,7 @@ export type FuulEvent = {
   signature_message?: string;
   args?: FuulEventArgs;
   metadata: FuulEventMetadata;
+  account_chain_id?: number;
 };
 
 export type AbiInput = {

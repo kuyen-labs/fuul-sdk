@@ -9,6 +9,7 @@ export type UserMetadata = {
   address: string;
   signature?: string;
   message?: string;
+  accountChainId?: number;
 };
 
 export type EventArgs = {

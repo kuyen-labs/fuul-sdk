@@ -134,6 +134,15 @@ export async function sendPageview(pageName?: string): Promise<void> {
  *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
  *   signatureMessage: 'Accept referral from Fuul'
  * })
+ *
+ *
+ * // You can also send the account chain id if you are using a smart contract account
+ * sendConnectWallet({
+ *  userAddress: '0x12345',
+ *  signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
+ *  signatureMessage: 'Accept referral from Fuul'
+ *  accountChainId: 8453,
+ * })
  * ```
  */
 export async function sendConnectWallet(userMetadata: UserMetadata): Promise<void> {
@@ -158,6 +167,10 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
   if (userMetadata?.signature) {
     event.signature = userMetadata?.signature;
     event.signature_message = userMetadata?.message;
+  }
+
+  if (userMetadata?.accountChainId) {
+    event.account_chain_id = userMetadata.accountChainId;
   }
 
   await _eventService.sendEvent(event);
