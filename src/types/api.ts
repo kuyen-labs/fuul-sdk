@@ -198,8 +198,6 @@ export interface Conversion {
 
 type LeaderboardUserType = 'affiliate' | 'end_user';
 
-type LeaderboardField = 'tier' | 'total_volume';
-
 export interface GetPayoutsLeaderboardParams {
   currency_address?: string;
   project_id?: string;
@@ -209,7 +207,7 @@ export interface GetPayoutsLeaderboardParams {
   page_size?: number;
   from?: Date;
   to?: Date;
-  fields?: LeaderboardField[];
+  fields?: string;
 }
 
 export interface GetPointsLeaderboardParams {
@@ -221,7 +219,7 @@ export interface GetPointsLeaderboardParams {
   page_size?: number;
   from?: Date;
   to?: Date;
-  fields?: LeaderboardField[];
+  fields?: string;
 }
 
 export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
