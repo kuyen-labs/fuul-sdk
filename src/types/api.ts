@@ -240,6 +240,9 @@ export interface PayoutsLeaderboard {
   total_amount: string;
   chain_id: number;
   rank: number;
+  total_attributions: number;
+  tiers?: Record<string, string>;
+  referred_volume?: string;
 }
 
 export interface VolumeLeaderboard {
@@ -255,6 +258,9 @@ export interface PointsLeaderboard {
   affiliate_code?: string;
   total_amount: string;
   rank: number;
+  total_attributions: number;
+  tiers?: Record<string, string>;
+  referred_volume?: string;
 }
 
 export interface GetUserPayoutsByConversionParams {
