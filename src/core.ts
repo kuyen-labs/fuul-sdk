@@ -25,6 +25,8 @@ import {
   VolumeLeaderboard,
 } from './types/api';
 import { AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
+import { GetUserAffiliatesParams, UserAffiliate } from './user/types';
+import { UserService } from './user/UserService';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
 
@@ -33,6 +35,7 @@ let _initialized = false;
 let _apiKey: string;
 let _httpClient: HttpClient;
 let _conversionService: ConversionService;
+let _userService: UserService;
 let _affiliateService: AffiliateService;
 let _eventService: EventService;
 let _payoutService: PayoutService;
@@ -53,6 +56,7 @@ export function init(settings: FuulSettings) {
   _eventService = new EventService({ httpClient: _httpClient, debug: _debug });
   _affiliateService = new AffiliateService({ httpClient: _httpClient, debug: _debug });
   _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug });
+  _userService = new UserService({ httpClient: _httpClient });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -374,6 +378,21 @@ export async function getConversions(params?: GetConversionsParams): Promise<Con
   return _conversionService.getAll(params);
 }
 
+/**
+ * 
+ * @param {GetUserAffiliatesParams} params The query params
+ * @returns {Promise<UserAffiliate[]>} List of user affiliates
+ * @example
+ * ```typescript
+ * const results = await Fuul.getUserAffiliates({ user_address: '0x12345' });
+ * ```
+ */
+
+export async function getUserAffiliates(params: GetUserAffiliatesParams): Promise<UserAffiliate[]> {
+  assertInitialized();
+  return _userService.getUserAffiliates(params);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -412,5 +431,6 @@ export default {
   getUserPointsByConversion,
   getUserPointsMovements,
   getUserPayoutMovements,
+  getUserAffiliates,
   getVolumeLeaderboard,
 };
