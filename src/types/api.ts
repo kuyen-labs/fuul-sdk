@@ -329,6 +329,7 @@ export interface UserPayoutMovement {
   conversion_id: string;
   conversion_name: string;
   total_amount: string;
+  project_name: string;
   payout_status: string;
   payout_status_details: string | null;
 }
@@ -351,6 +352,9 @@ export interface UserPointsMovement {
   conversion_id: string;
   conversion_name: string;
   total_amount: string;
+  project_name: string;
+  payout_status: string;
+  payout_status_details: string | null;
 }
 
 export interface GetConversionsParams {
