@@ -92,7 +92,7 @@ export class AffiliateService {
         }
       }
       console.error(`Fuul SDK: Could not check affiliate code`, e);
-      return false;
+      throw e;
     }
   }
 
@@ -107,7 +107,7 @@ export class AffiliateService {
         }
       }
       console.error(`Fuul SDK: Could not get affiliate code`, e);
-      return null;
+      throw e;
     }
   }
 }
