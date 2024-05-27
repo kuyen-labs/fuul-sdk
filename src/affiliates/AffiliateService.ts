@@ -101,6 +101,11 @@ export class AffiliateService {
       const res = await this.httpClient.get<Affiliate>(`/affiliates/${address}`);
       return res.data.code;
     } catch (e) {
+      if (e instanceof AxiosError) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
       console.error(`Fuul SDK: Could not get affiliate code`, e);
       return null;
     }
