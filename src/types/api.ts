@@ -243,6 +243,7 @@ export interface PayoutsLeaderboard {
   total_attributions: number;
   tiers?: Record<string, string>;
   referred_volume?: string;
+  referred_users?: number;
 }
 
 export interface VolumeLeaderboard {
