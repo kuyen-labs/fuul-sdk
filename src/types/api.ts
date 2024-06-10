@@ -223,7 +223,6 @@ export interface GetPointsLeaderboardParams {
 }
 
 export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
-  currency_address: string;
   payment_status?: 'paid' | 'confirmed' | 'all';
 }
 
