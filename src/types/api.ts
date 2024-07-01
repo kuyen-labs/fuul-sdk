@@ -208,6 +208,7 @@ export interface GetPayoutsLeaderboardParams {
   from?: Date;
   to?: Date;
   fields?: string;
+  conversions?: string;
 }
 
 export interface GetPointsLeaderboardParams {
@@ -220,6 +221,7 @@ export interface GetPointsLeaderboardParams {
   from?: Date;
   to?: Date;
   fields?: string;
+  conversions?: string;
 }
 
 export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
