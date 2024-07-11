@@ -80,6 +80,7 @@ function assertInitialized() {
 export async function sendEvent(name: string, args?: EventArgs): Promise<void> {
   assertInitialized();
   assertBrowserContext();
+  detectAutomation();
 
   const event: FuulEvent = {
     name,
@@ -105,6 +106,7 @@ export async function sendEvent(name: string, args?: EventArgs): Promise<void> {
 export async function sendPageview(pageName?: string): Promise<void> {
   assertInitialized();
   assertBrowserContext();
+  detectAutomation();
 
   const event: FuulEvent = {
     name: 'pageview',
@@ -152,6 +154,7 @@ export async function sendPageview(pageName?: string): Promise<void> {
 export async function sendConnectWallet(userMetadata: UserMetadata): Promise<void> {
   assertInitialized();
   assertBrowserContext();
+  detectAutomation();
 
   const event: FuulEvent = {
     name: 'connect_wallet',
@@ -305,7 +308,7 @@ export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promis
  * @returns {LeaderboardResponse<VolumeLeaderboard>} Value leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getVolumeLeaderboard({ currency_address: '0x12345' }})
+ * const results = await Fuul.getVolumeLeaderboard({ user_address: '0x12345' }})
  * ```
  **/
 export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
@@ -379,7 +382,7 @@ export async function getConversions(params?: GetConversionsParams): Promise<Con
 }
 
 /**
- * 
+ *
  * @param {GetUserAffiliatesParams} params The query params
  * @returns {Promise<UserAffiliate[]>} List of user affiliates
  * @example
@@ -387,7 +390,6 @@ export async function getConversions(params?: GetConversionsParams): Promise<Con
  * const results = await Fuul.getUserAffiliates({ user_address: '0x12345' });
  * ```
  */
-
 export async function getUserAffiliates(params: GetUserAffiliatesParams): Promise<UserAffiliate[]> {
   assertInitialized();
   return _userService.getUserAffiliates(params);
@@ -396,6 +398,12 @@ export async function getUserAffiliates(params: GetUserAffiliatesParams): Promis
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
+  }
+}
+
+function detectAutomation(): void {
+  if (navigator.webdriver) {
+    throw new Error(`Fuul SDK: You are using a browser automation tool`);
   }
 }
 

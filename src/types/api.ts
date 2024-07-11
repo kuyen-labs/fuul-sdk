@@ -208,6 +208,7 @@ export interface GetPayoutsLeaderboardParams {
   from?: Date;
   to?: Date;
   fields?: string;
+  conversions?: string;
 }
 
 export interface GetPointsLeaderboardParams {
@@ -220,10 +221,10 @@ export interface GetPointsLeaderboardParams {
   from?: Date;
   to?: Date;
   fields?: string;
+  conversions?: string;
 }
 
 export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
-  currency_address: string;
   payment_status?: 'paid' | 'confirmed' | 'all';
 }
 
@@ -243,6 +244,7 @@ export interface PayoutsLeaderboard {
   total_attributions: number;
   tiers?: Record<string, string>;
   referred_volume?: string;
+  referred_users?: number;
 }
 
 export interface VolumeLeaderboard {
