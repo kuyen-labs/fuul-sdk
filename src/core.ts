@@ -1,4 +1,5 @@
 import { AffiliateService } from './affiliates/AffiliateService';
+import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
@@ -10,6 +11,8 @@ import {
   GetConversionsParams,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
+  GetUserAudiencesParams,
+  GetUserAudiencesResponse,
   GetUserPayoutMovementsParams,
   GetUserPayoutsByConversionParams,
   GetUserPointsByConversionParams,
@@ -39,6 +42,7 @@ let _userService: UserService;
 let _affiliateService: AffiliateService;
 let _eventService: EventService;
 let _payoutService: PayoutService;
+let _audienceService: AudienceService;
 
 export function init(settings: FuulSettings) {
   _debug = !!settings.debug;
@@ -57,6 +61,7 @@ export function init(settings: FuulSettings) {
   _affiliateService = new AffiliateService({ httpClient: _httpClient, debug: _debug });
   _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug });
   _userService = new UserService({ httpClient: _httpClient });
+  _audienceService = new AudienceService({ httpClient: _httpClient, debug: _debug });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -395,6 +400,20 @@ export async function getUserAffiliates(params: GetUserAffiliatesParams): Promis
   return _userService.getUserAffiliates(params);
 }
 
+/**
+ * 
+ * @param {GetUserAudiencesParams} params The query params
+ * @returns {Promise<GetUserAudiencesResponse>} List of user audiences
+ * ```typescript
+ * const results = await Fuul.getUserAudiences({ user_address: '0x12345' });
+ * ```
+ * 
+ */
+export async function getUserAudiences(params: GetUserAudiencesParams): Promise<GetUserAudiencesResponse> {
+  assertInitialized();
+  return _audienceService.getUserAudiences(params);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -435,6 +454,7 @@ export default {
   isAffiliateCodeFree,
   getPayoutsLeaderboard,
   getPointsLeaderboard,
+  getUserAudiences,
   getUserPayoutsByConversion,
   getUserPointsByConversion,
   getUserPointsMovements,
