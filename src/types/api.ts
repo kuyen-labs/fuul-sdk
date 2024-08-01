@@ -362,3 +362,12 @@ export interface UserPointsMovement {
 export interface GetConversionsParams {
   user_address?: string;
 }
+
+export interface GetUserAudiencesParams {
+  user_address: string;
+}
+
+export type GetUserAudiencesResponse = { 
+  id: string; 
+  name: string
+}[];
