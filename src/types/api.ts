@@ -271,6 +271,8 @@ export interface GetUserPayoutsByConversionParams {
   group_by?: string;
   page?: number;
   page_size?: number;
+  from: Date;
+  to: Date;
 }
 
 export interface GetUserPointsByConversionParams {
@@ -279,6 +281,8 @@ export interface GetUserPointsByConversionParams {
   group_by?: string;
   page?: number;
   page_size?: number;
+  from: Date;
+  to: Date;
 }
 
 export interface UserPayoutsByConversionResponse {
@@ -367,7 +371,7 @@ export interface GetUserAudiencesParams {
   user_address: string;
 }
 
-export type GetUserAudiencesResponse = { 
-  id: string; 
-  name: string
+export type GetUserAudiencesResponse = {
+  id: string;
+  name: string;
 }[];
