@@ -8,8 +8,6 @@ import {
   GetUserPointsMovementsParams,
   GetVolumeLeaderboardParams,
   LeaderboardResponse,
-  PayoutsLeaderboard,
-  PointsLeaderboard,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
@@ -31,16 +29,6 @@ export class PayoutService {
   constructor(settings: PayoutServiceSettings) {
     this.httpClient = settings.httpClient;
     this._debug = settings.debug;
-  }
-
-  public async getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
-    const results = await this.httpClient.get<LeaderboardResponse<PayoutsLeaderboard>>(`${basePath}/leaderboard`, params);
-    return results.data;
-  }
-
-  public async getPointsLeaderboard(params: GetPointsLeaderboardParams): Promise<LeaderboardResponse<PointsLeaderboard>> {
-    const results = await this.httpClient.get<LeaderboardResponse<PointsLeaderboard>>(`${basePath}/leaderboard`, params);
-    return results.data;
   }
 
   public async getUserPayoutsByConversion(params: GetUserPayoutsByConversionParams): Promise<UserPayoutsByConversionResponse> {

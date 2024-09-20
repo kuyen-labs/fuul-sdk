@@ -17,6 +17,7 @@ jest.mock('nanoid', () => ({
 }));
 
 import { Fuul } from './index';
+import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
 
 describe('SDK core', () => {
@@ -354,7 +355,7 @@ describe('SDK core', () => {
     });
 
     it('should call getPayoutsLeaderboard with correct arguments', async () => {
-      const getPayoutsLeaderboardSpy = jest.spyOn(PayoutService.prototype, 'getPayoutsLeaderboard').mockResolvedValueOnce({
+      const getPayoutsLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getPayoutsLeaderboard').mockResolvedValueOnce({
         page: 1,
         page_size: 10,
         total_results: 100,
@@ -386,7 +387,7 @@ describe('SDK core', () => {
     });
 
     it('should call getPointsLeaderboard with correct arguments', async () => {
-      const getPointsLeaderboardSpy = jest.spyOn(PayoutService.prototype, 'getPointsLeaderboard').mockResolvedValueOnce({
+      const getPointsLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getPointsLeaderboard').mockResolvedValueOnce({
         page: 1,
         page_size: 10,
         total_results: 100,
@@ -413,4 +414,58 @@ describe('SDK core', () => {
       });
     });
   });
+
+  describe('getReferredUsersLeaderboard()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    })
+
+    it('should call getReferredUsersLeaderboard with correct arguments', async () => {
+      const getReferredUsersLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getReferredUsersLeaderboard').mockResolvedValueOnce({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: [
+          {
+            address: '0x123',
+            rank: 1,
+            total_referred_users: 10,
+          },
+          {
+            address: '0x124',
+            rank: 2,
+            total_referred_users: 9,
+          }
+        ],
+      });
+
+      const payouts = await Fuul.getReferredUsersLeaderboard({
+        page: 1,
+        page_size: 10,
+      });
+
+      expect(getReferredUsersLeaderboardSpy).toHaveBeenCalledWith({
+        page: 1,
+        page_size: 10,
+      });
+
+      expect(payouts).toEqual({
+        page: 1,
+        page_size: 10,
+        total_results: 100,
+        results: [
+          {
+            address: '0x123',
+            rank: 1,
+            total_referred_users: 10,
+          },
+          {
+            address: '0x124',
+            rank: 2,
+            total_referred_users: 9,
+          }
+        ],
+      });
+    });
+  })
 });
