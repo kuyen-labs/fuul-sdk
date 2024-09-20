@@ -265,6 +265,17 @@ export interface PointsLeaderboard {
   referred_volume?: string;
 }
 
+export interface ReferredUsersLeaderboard {
+  address: string;
+  total_referred_users: number;
+  rank: number;
+}
+
+export interface GetReferredUsersLeaderboardParams {
+  page?: number;
+  page_size?: number;
+}
+
 export interface GetUserPayoutsByConversionParams {
   user_address: string;
   project_id?: string;

@@ -3,6 +3,7 @@ import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
+import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
 import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getTrafficSource, getTrafficTag, getTrafficTitle } from './tracking';
 import {
@@ -11,6 +12,7 @@ import {
   GetConversionsParams,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
+  GetReferredUsersLeaderboardParams,
   GetUserAudiencesParams,
   GetUserAudiencesResponse,
   GetUserPayoutMovementsParams,
@@ -21,6 +23,7 @@ import {
   LeaderboardResponse,
   PayoutsLeaderboard,
   PointsLeaderboard,
+  ReferredUsersLeaderboard,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
@@ -43,6 +46,7 @@ let _affiliateService: AffiliateService;
 let _eventService: EventService;
 let _payoutService: PayoutService;
 let _audienceService: AudienceService;
+let _leaderboardService: LeaderboardService;
 
 export function init(settings: FuulSettings) {
   _debug = !!settings.debug;
@@ -62,6 +66,7 @@ export function init(settings: FuulSettings) {
   _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug });
   _userService = new UserService({ httpClient: _httpClient });
   _audienceService = new AudienceService({ httpClient: _httpClient, debug: _debug });
+  _leaderboardService = new LeaderboardService({ httpClient: _httpClient });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -287,11 +292,11 @@ export async function generateTrackingLink(baseUrl: string, affiliateAddress: st
  * @returns {LeaderboardResponse<PayoutsLeaderboard>} Payouts leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getPayoutsLeaderboard({ currency_address: '0x12345' }});
+ * const results = await Fuul.getPayoutsLeaderboard({ currency_address: '0x12345', page: 1, page_size: 10 });
  * ```
  **/
 export function getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
-  return _payoutService.getPayoutsLeaderboard(params);
+  return _leaderboardService.getPayoutsLeaderboard(params);
 }
 
 /**
@@ -300,11 +305,24 @@ export function getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Prom
  * @returns {LeaderboardResponse<PointsLeaderboard>} Points leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getPointsLeaderboard({ currency_address: '0x12345' }});
+ * const results = await Fuul.getPointsLeaderboard({ currency_address: '0x12345', page: 1, page_size: 10 });
  * ```
  **/
 export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promise<LeaderboardResponse<PointsLeaderboard>> {
-  return _payoutService.getPointsLeaderboard(params);
+  return _leaderboardService.getPointsLeaderboard(params);
+}
+
+/**
+ * Gets the referred users leaderboard
+ * @param params {GetReferredUsersLeaderboardParams} The search params
+ * @returns {LeaderboardResponse<ReferredUsersLeaderboard>} Referred users leaderboard response
+ * @example
+ * ```typescript
+ * const results = await Fuul.getReferredUsersLeaderboard({ page: 1, page_size: 10 });;
+ * ```
+ */
+export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardParams): Promise<LeaderboardResponse<ReferredUsersLeaderboard>> {
+  return _leaderboardService.getReferredUsersLeaderboard(params);
 }
 
 /**
@@ -454,6 +472,7 @@ export default {
   isAffiliateCodeFree,
   getPayoutsLeaderboard,
   getPointsLeaderboard,
+  getReferredUsersLeaderboard,
   getUserAudiences,
   getUserPayoutsByConversion,
   getUserPointsByConversion,
