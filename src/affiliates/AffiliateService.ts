@@ -18,13 +18,14 @@ export class AffiliateService {
     this._debug = settings.debug;
   }
 
-  public async create(address: string, code: string, signature: string): Promise<void> {
+  public async create(address: string, code: string, signature: string, accountChainId?: number): Promise<void> {
     try {
       await this.httpClient.post<void>(`/affiliates`, {
         address,
         name: code,
         code,
         signature,
+        account_chain_id: accountChainId,
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
@@ -50,12 +51,13 @@ export class AffiliateService {
     }
   }
 
-  public async update(address: string, code: string, signature: string): Promise<void> {
+  public async update(address: string, code: string, signature: string, accountChainId?: number): Promise<void> {
     try {
       await this.httpClient.post<void>(`/affiliates/${address}`, {
         code,
         address,
         signature,
+        account_chain_id: accountChainId,
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
