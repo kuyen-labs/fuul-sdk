@@ -30,7 +30,7 @@ import {
   UserPointsMovementsResponse,
   VolumeLeaderboard,
 } from './types/api';
-import { AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
+import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
 import { GetUserAffiliatesParams, UserAffiliate } from './user/types';
 import { UserService } from './user/UserService';
 
@@ -152,7 +152,7 @@ export async function sendPageview(pageName?: string): Promise<void> {
  * })
  *
  *
- * // You can also send the account chain id if you are using a smart contract account
+ * // You can also send the account chain id if you are using a smart contract account (EIP-1271)
  * sendConnectWallet({
  *  userAddress: '0x12345',
  *  signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
@@ -195,32 +195,44 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
 
 /**
  * Creates a code registered to an affiliate address
- * @param {string} address Affiliate wallet address
- * @param {string} code Affiliate code to map address to
- * @param {string} signature Signed message authenticating address ownership. Message to be signed: `I confirm that I am creating the ${code} code on Fuul`
+ * @param {object} params Create affiliate code parameters
+ * @param {string} params.address Affiliate wallet address
+ * @param {string} params.code Affiliate code to map address to
+ * @param {string} params.signature Signed message authenticating address ownership. Message to be signed: `I confirm that I am creating the ${code} code on Fuul`
+ * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
  * @example
  * ```typescript
- * await Fuul.createAffiliateCode('0x12345', 'my-cool-code', '<signature>')
+ * await Fuul.createAffiliateCode({
+ *   address: '0x12345',
+ *   code: 'my-cool-code',
+ *   signature: '<signature>'
+ * })
  * ```
  **/
-export async function createAffiliateCode(address: string, code: string, signature: string): Promise<void> {
+export async function createAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.create(address, code, signature);
+  await _affiliateService.create(params.address, params.code, params.signature, params.accountChainId);
 }
 
 /**
  * Updates the code registered to an affiliate address
- * @param {string} address Affiliate wallet address
- * @param {string} code New affiliate code
- * @param {string} signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
+ * @param {object} params Update affiliate code parameters
+ * @param {string} params.address Affiliate wallet address
+ * @param {string} params.code New affiliate code
+ * @param {string} params.signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
+ * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
  * @example
  * ```typescript
- * await Fuul.updateAffiliateCode('0x12345', 'my-new-cool-code', '<signature>')
+ * await Fuul.updateAffiliateCode({
+ *   address: '0x12345',
+ *   code: 'my-new-cool-code',
+ *   signature: '<signature>'
+ * })
  * ```
  **/
-export async function updateAffiliateCode(address: string, code: string, signature: string): Promise<void> {
+export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.update(address, code, signature);
+  await _affiliateService.update(params.address, params.code, params.signature, params.accountChainId);
 }
 
 /**
@@ -419,13 +431,13 @@ export async function getUserAffiliates(params: GetUserAffiliatesParams): Promis
 }
 
 /**
- * 
+ *
  * @param {GetUserAudiencesParams} params The query params
  * @returns {Promise<GetUserAudiencesResponse>} List of user audiences
  * ```typescript
  * const results = await Fuul.getUserAudiences({ user_address: '0x12345' });
  * ```
- * 
+ *
  */
 export async function getUserAudiences(params: GetUserAudiencesParams): Promise<GetUserAudiencesResponse> {
   assertInitialized();

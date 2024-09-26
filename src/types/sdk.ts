@@ -21,3 +21,10 @@ export type AffiliateLinkParams = {
   format?: string;
   place?: string;
 };
+
+export type AffiliateCodeParams = {
+  address: string;
+  code: string;
+  signature: string;
+  accountChainId?: number;
+};

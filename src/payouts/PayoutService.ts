@@ -1,7 +1,5 @@
 import { HttpClient } from '../HttpClient';
 import {
-  GetPayoutsLeaderboardParams,
-  GetPointsLeaderboardParams,
   GetUserPayoutMovementsParams,
   GetUserPayoutsByConversionParams,
   GetUserPointsByConversionParams,
