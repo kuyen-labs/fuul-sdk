@@ -16,6 +16,7 @@ jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
+import { ExplorerService } from './explorer/ExplorerService';
 import { Fuul } from './index';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
@@ -468,4 +469,298 @@ describe('SDK core', () => {
       });
     });
   })
+
+  describe('getIncentiveRewards()', () => {
+    it('should call getIncentiveRewards with correct arguments', async () => {
+      const getIncentiveRewardsSpy = jest.spyOn(ExplorerService.prototype, 'getIncentiveRewards').mockResolvedValueOnce({
+        page: 1,
+        page_size: 25,
+        total_items: 100,
+        calculation_date: '2024-10-29T15:09:54.752Z',
+        items: [{
+          conversion_id: '052cb741-18de-4bf2-bce2-93ecc10a0601',
+          conversion_external_id: 1,
+          project_id: '50ef5d87-b7b3-495f-9820-921d01116fec',
+          project_slug: 'test-project',
+          project_thumbnail_url: 'https://www.some-url.com/thumb.png',
+          project_name: 'Test project',
+          project_contract_address: '0xE8BF39dCd16CF20d39006ba3C722A02e701bf0ed',
+          project_chain_id: '1',
+          conversion_name: 'ETH held in wallet',
+          action_name: 'Example action',
+          reward_description: 'Example reward description',
+          currency: 'ETH',
+          affiliate_amount: '0',
+          enduser_amount: '198582',
+          total_amount: '198582'
+        }]
+      });
+
+      const rewards = await Fuul.getIncentiveRewards({
+        page: 1,
+        page_size: 25,
+        trigger_chain_id: 1,
+        payout_chain_id: 1
+      });
+
+      expect(getIncentiveRewardsSpy).toHaveBeenCalledWith({
+        page: 1,
+        page_size: 25,
+        trigger_chain_id: 1,
+        payout_chain_id: 1
+      });
+
+      expect(rewards).toEqual({
+        page: 1,
+        page_size: 25,
+        total_items: 100,
+        calculation_date: '2024-10-29T15:09:54.752Z',
+        items: [{
+          conversion_id: '052cb741-18de-4bf2-bce2-93ecc10a0601',
+          conversion_external_id: 1,
+          project_id: '50ef5d87-b7b3-495f-9820-921d01116fec',
+          project_slug: 'test-project',
+          project_thumbnail_url: 'https://www.some-url.com/thumb.png',
+          project_name: 'Test project',
+          project_contract_address: '0xE8BF39dCd16CF20d39006ba3C722A02e701bf0ed',
+          project_chain_id: '1',
+          conversion_name: 'ETH held in wallet',
+          action_name: 'Example action',
+          reward_description: 'Example reward description',
+          currency: 'ETH',
+          affiliate_amount: '0',
+          enduser_amount: '198582',
+          total_amount: '198582'
+        }]
+      });
+    });
+  });
+
+  describe('getReferralRewards()', () => {
+    it('should call getReferralRewards with correct arguments', async () => {
+      const getReferralRewardsSpy = jest.spyOn(ExplorerService.prototype, 'getReferralRewards').mockResolvedValueOnce({
+        page: 1,
+        page_size: 25,
+        total_items: 100,
+        calculation_date: '2024-10-29T15:09:54.752Z',
+        items: [{
+          conversion_id: '052cb741-18de-4bf2-bce2-93ecc10a0601',
+          conversion_external_id: 1,
+          project_id: '50ef5d87-b7b3-495f-9820-921d01116fec',
+          project_slug: 'test-project',
+          project_thumbnail_url: 'https://www.some-url.com/thumb.png',
+          project_name: 'Test project',
+          project_contract_address: '0xE8BF39dCd16CF20d39006ba3C722A02e701bf0ed',
+          project_chain_id: '1',
+          conversion_name: 'ETH held in wallet',
+          action_name: 'Example action',
+          reward_description: 'Example reward description',
+          currency: 'ETH',
+          affiliate_amount: '0',
+          enduser_amount: '198582',
+          total_amount: '198582'
+        }]
+      });
+
+      const rewards = await Fuul.getReferralRewards({
+        page: 1,
+        page_size: 25,
+        trigger_chain_id: 1,
+        payout_chain_id: 1
+      });
+
+      expect(getReferralRewardsSpy).toHaveBeenCalledWith({
+        page: 1,
+        page_size: 25,
+        trigger_chain_id: 1,
+        payout_chain_id: 1
+      });
+
+      expect(rewards).toEqual({
+        page: 1,
+        page_size: 25,
+        total_items: 100,
+        calculation_date: '2024-10-29T15:09:54.752Z',
+        items: [{
+          conversion_id: '052cb741-18de-4bf2-bce2-93ecc10a0601',
+          conversion_external_id: 1,
+          project_id: '50ef5d87-b7b3-495f-9820-921d01116fec',
+          project_slug: 'test-project',
+          project_thumbnail_url: 'https://www.some-url.com/thumb.png',
+          project_name: 'Test project',
+          project_contract_address: '0xE8BF39dCd16CF20d39006ba3C722A02e701bf0ed',
+          project_chain_id: '1',
+          conversion_name: 'ETH held in wallet',
+          action_name: 'Example action',
+          reward_description: 'Example reward description',
+          currency: 'ETH',
+          affiliate_amount: '0',
+          enduser_amount: '198582',
+          total_amount: '198582'
+        }]
+      });
+    });
+  });
+
+  describe('getRewardDetails()', () => {
+    it('should call getRewardDetails with correct arguments', async () => {
+      const getRewardDetailsSpy = jest.spyOn(ExplorerService.prototype, 'getRewardDetails').mockResolvedValueOnce({
+        project_id: 'e3f96f0d-4234-4204-a3d1-f88c2ab1cad2',
+        conversion_external_id: 1,
+        project_name: 'Test project',
+        project_chain_id: 1,
+        project_contract_address: '0xE8BF39dCd16CF20d39006ba3C722A02e701bf0ed',
+        conversion_name: 'Test conversion',
+        action_name: 'Test action',
+        reward_description: 'Test reward',
+        calculation_date: '2024-10-29T15:09:54.752Z',
+        totals: {
+          all_time: {
+            currency: 'ETH',
+            affiliate_amount: '132141245',
+            enduser_amount: '132141245',
+            total_amount: '132141245'
+          },
+          last_seven_days: {
+            currency: 'ETH',
+            affiliate_amount: '132141245',
+            enduser_amount: '132141245',
+            total_amount: '132141245'
+          }
+        },
+        payouts: {
+          id: 'e3f96f0d-4234-4204-a3d1-f88c2ab1cad2',
+          tiers: {
+            id: 'tier-1',
+            name: 'Example payout',
+            affiliate_amount: '213414',
+            affiliate_percentage: 0.1,
+            enduser_amount: '213414',
+            enduser_percentage: 0.2
+          },
+          is_tiered: true,
+          calculation_strategy: 'fixed',
+          payout_currency: 'ETH',
+          base_currency: 'ETH',
+          affiliate_amount: '213214',
+          affiliate_percentage: 0.1,
+          enduser_amount: '34235266',
+          enduser_percentage: 0.5
+        },
+        triggers: {
+          type: 'liquidity_pool',
+          name: 'Example trigger',
+          signature: 'Deposit(uint256,address,address,uint256)',
+          contract_address: '0x66f911B7443818bB3A72F9943d0c92BFE2937D85',
+          contract_chain_id: 1
+        }
+      });
+
+      const details = await Fuul.getRewardDetails({
+        type: 'incentive',
+        project_id: 'e3f96f0d-4234-4204-a3d1-f88c2ab1cad2',
+        conversion_external_id: '1'
+      });
+
+      expect(getRewardDetailsSpy).toHaveBeenCalledWith({
+        type: 'incentive',
+        project_id: 'e3f96f0d-4234-4204-a3d1-f88c2ab1cad2',
+        conversion_external_id: '1'
+      });
+
+      expect(details).toEqual({
+        project_id: 'e3f96f0d-4234-4204-a3d1-f88c2ab1cad2',
+        conversion_external_id: 1,
+        project_name: 'Test project',
+        project_chain_id: 1,
+        project_contract_address: '0xE8BF39dCd16CF20d39006ba3C722A02e701bf0ed',
+        conversion_name: 'Test conversion',
+        action_name: 'Test action',
+        reward_description: 'Test reward',
+        calculation_date: '2024-10-29T15:09:54.752Z',
+        totals: {
+          all_time: {
+            currency: 'ETH',
+            affiliate_amount: '132141245',
+            enduser_amount: '132141245',
+            total_amount: '132141245'
+          },
+          last_seven_days: {
+            currency: 'ETH',
+            affiliate_amount: '132141245',
+            enduser_amount: '132141245',
+            total_amount: '132141245'
+          }
+        },
+        payouts: {
+          id: 'e3f96f0d-4234-4204-a3d1-f88c2ab1cad2',
+          tiers: {
+            id: 'tier-1',
+            name: 'Example payout',
+            affiliate_amount: '213414',
+            affiliate_percentage: 0.1,
+            enduser_amount: '213414',
+            enduser_percentage: 0.2
+          },
+          is_tiered: true,
+          calculation_strategy: 'fixed',
+          payout_currency: 'ETH',
+          base_currency: 'ETH',
+          affiliate_amount: '213214',
+          affiliate_percentage: 0.1,
+          enduser_amount: '34235266',
+          enduser_percentage: 0.5
+        },
+        triggers: {
+          type: 'liquidity_pool',
+          name: 'Example trigger',
+          signature: 'Deposit(uint256,address,address,uint256)',
+          contract_address: '0x66f911B7443818bB3A72F9943d0c92BFE2937D85',
+          contract_chain_id: 1
+        }
+      });
+    });
+  });
+
+  describe('getProjectDetails()', () => {
+    it('should call getProjectDetails with correct arguments', async () => {
+      const getProjectDetailsSpy = jest.spyOn(ExplorerService.prototype, 'getProjectDetails').mockResolvedValueOnce({
+        id: 'project-1',
+        integration_type: 'incentive',
+        user_onboarding_page_url: 'http://www.page.com',
+        category: 'incentive',
+        description: 'incentive',
+        thumbnail_url: 'http://www.page.com/image.png',
+        website: 'http://www.page.com',
+        twitter_handle: '@example_user',
+        whitepaper_url: 'http://www.page.com/doc.pdf',
+        other_links: [{
+          url: 'http://www.page.com/example.pdf',
+          name: 'Some extra doc'
+        }],
+        calculation_date: '2024-10-29T15:09:54.752Z'
+      });
+
+      const details = await Fuul.getProjectDetails('project-1');
+
+      expect(getProjectDetailsSpy).toHaveBeenCalledWith('project-1');
+
+      expect(details).toEqual({
+        id: 'project-1',
+        integration_type: 'incentive',
+        user_onboarding_page_url: 'http://www.page.com',
+        category: 'incentive',
+        description: 'incentive',
+        thumbnail_url: 'http://www.page.com/image.png',
+        website: 'http://www.page.com',
+        twitter_handle: '@example_user',
+        whitepaper_url: 'http://www.page.com/doc.pdf',
+        other_links: [{
+          url: 'http://www.page.com/example.pdf',
+          name: 'Some extra doc'
+        }],
+        calculation_date: '2024-10-29T15:09:54.752Z'
+      });
+    });
+  });
 });

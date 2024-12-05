@@ -2,6 +2,8 @@ import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
+import { ChainParams, ListingResponse, PaginationParams, ProjectDetails, RewardDetails, RewardItem } from './explorer/explorer.types';
+import { ExplorerService } from './explorer/ExplorerService';
 import { HttpClient } from './HttpClient';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
@@ -45,6 +47,7 @@ let _userService: UserService;
 let _affiliateService: AffiliateService;
 let _eventService: EventService;
 let _payoutService: PayoutService;
+let _explorerService: ExplorerService;
 let _audienceService: AudienceService;
 let _leaderboardService: LeaderboardService;
 
@@ -64,6 +67,7 @@ export function init(settings: FuulSettings) {
   _eventService = new EventService({ httpClient: _httpClient, debug: _debug });
   _affiliateService = new AffiliateService({ httpClient: _httpClient, debug: _debug });
   _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug });
+  _explorerService = new ExplorerService({ httpClient: _httpClient, debug: _debug });
   _userService = new UserService({ httpClient: _httpClient });
   _audienceService = new AudienceService({ httpClient: _httpClient, debug: _debug });
   _leaderboardService = new LeaderboardService({ httpClient: _httpClient });
@@ -444,6 +448,62 @@ export async function getUserAudiences(params: GetUserAudiencesParams): Promise<
   return _audienceService.getUserAudiences(params);
 }
 
+/**
+ * Gets incentive rewards listing
+ * @param {PaginationParams & ChainParams} params The search params
+ * @returns {ListingResponse<RewardItem>} Incentive rewards listing
+ * @example
+ * ```typescript
+ * const results = await Fuul.getIncentiveRewards({ page: 1, page_size: 25 });
+ * ```
+ **/
+export function getIncentiveRewards(params: PaginationParams & ChainParams): Promise<ListingResponse<RewardItem>> {
+  return _explorerService.getIncentiveRewards(params);
+}
+
+/**
+ * Gets referral rewards listing
+ * @param {PaginationParams & ChainParams} params The search params
+ * @returns {ListingResponse<RewardItem>} Referral rewards listing
+ * @example
+ * ```typescript
+ * const results = await Fuul.getReferralRewards({ page: 1, page_size: 25 });
+ * ```
+ **/
+export function getReferralRewards(params: PaginationParams & ChainParams): Promise<ListingResponse<RewardItem>> {
+  return _explorerService.getReferralRewards(params);
+}
+
+/**
+ * Gets reward details
+ * @param {object} params The search params
+ * @returns {RewardDetails} Reward details
+ * @example
+ * ```typescript
+ * const results = await Fuul.getRewardDetails({ type: 'incentive', project_id: '123' });
+ * ```
+ **/
+export function getRewardDetails(params: {
+  type: 'incentive' | 'referral';
+  project_id: string;
+  conversion_external_id?: string;
+}): Promise<RewardDetails> {
+  return _explorerService.getRewardDetails(params);
+}
+
+/**
+ * Gets project details
+ * @param {string} projectId The project ID
+ * @returns {ProjectDetails} Project details
+ * @example
+ * ```typescript
+ * const results = await Fuul.getProjectDetails('123');
+ * ```
+ **/
+export function getProjectDetails(projectId: string): Promise<ProjectDetails> {
+  return _explorerService.getProjectDetails(projectId);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -492,4 +552,8 @@ export default {
   getUserPayoutMovements,
   getUserAffiliates,
   getVolumeLeaderboard,
+  getIncentiveRewards,
+  getReferralRewards,
+  getRewardDetails,
+  getProjectDetails,
 };
