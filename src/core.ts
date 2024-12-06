@@ -493,15 +493,15 @@ export function getRewardDetails(params: {
 
 /**
  * Gets project details
- * @param {string} projectId The project ID
+ * @param {object} params The search params
  * @returns {ProjectDetails} Project details
  * @example
  * ```typescript
- * const results = await Fuul.getProjectDetails('123');
+ * const results = await Fuul.getProjectDetails();
  * ```
  **/
-export function getProjectDetails(projectId: string): Promise<ProjectDetails> {
-  return _explorerService.getProjectDetails(projectId);
+export function getProjectDetails(params: { project_id: string }): Promise<ProjectDetails> {
+  return _explorerService.getProjectDetails(params.project_id);
 }
 
 function assertBrowserContext(): void {

@@ -1,11 +1,5 @@
 import { HttpClient } from '../HttpClient';
-import {
-  ChainParams,
-  ListingResponse,
-  PaginationParams,
-  ProjectDetails,
-  RewardDetails,
-  RewardItem} from './explorer.types';
+import { ChainParams, ListingResponse, PaginationParams, ProjectDetails, RewardDetails, RewardItem } from './explorer.types';
 
 export type ExplorerServiceSettings = {
   httpClient: HttpClient;
