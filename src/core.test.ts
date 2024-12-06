@@ -418,7 +418,7 @@ describe('SDK core', () => {
   describe('getReferredUsersLeaderboard()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });
-    })
+    });
 
     it('should call getReferredUsersLeaderboard with correct arguments', async () => {
       const getReferredUsersLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getReferredUsersLeaderboard').mockResolvedValueOnce({
@@ -435,7 +435,7 @@ describe('SDK core', () => {
             address: '0x124',
             rank: 2,
             total_referred_users: 9,
-          }
+          },
         ],
       });
 
@@ -463,9 +463,9 @@ describe('SDK core', () => {
             address: '0x124',
             rank: 2,
             total_referred_users: 9,
-          }
+          },
         ],
       });
     });
-  })
+  });
 });
