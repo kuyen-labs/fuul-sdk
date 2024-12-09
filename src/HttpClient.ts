@@ -47,12 +47,7 @@ export class HttpClient {
     return this.client.post<T>(path + this.queryParams, data);
   }
 
-  async put<T>(
-    path: string,
-    data: {
-      [key: string]: any;
-    },
-  ): Promise<AxiosResponse<T>> {
+  async put<T>(path: string, data: { [key: string]: any }): Promise<AxiosResponse<T>> {
     return this.client.put<T>(path + this.queryParams, data);
   }
 
