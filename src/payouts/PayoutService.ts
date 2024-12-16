@@ -18,7 +18,7 @@ export type PayoutServiceSettings = {
   debug?: boolean;
 };
 
-const basePath = '/payouts';
+const basePath = '/v1/payouts';
 
 export class PayoutService {
   private readonly httpClient: HttpClient;

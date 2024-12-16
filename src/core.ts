@@ -36,7 +36,7 @@ import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, User
 import { GetUserAffiliatesParams, UserAffiliate } from './user/types';
 import { UserService } from './user/UserService';
 
-const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
+const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/';
 
 let _debug = false;
 let _initialized = false;

@@ -1,12 +1,12 @@
-import { HttpClient } from "../HttpClient";
-import { GetUserAudiencesParams, GetUserAudiencesResponse } from "../types/api";
+import { HttpClient } from '../HttpClient';
+import { GetUserAudiencesParams, GetUserAudiencesResponse } from '../types/api';
 
 export type AudienceServiceSettings = {
   httpClient: HttpClient;
   debug?: boolean;
 };
 
-const basePath = '/audiences';
+const basePath = '/v1/audiences';
 
 export class AudienceService {
   private readonly httpClient: HttpClient;

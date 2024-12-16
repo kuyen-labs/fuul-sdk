@@ -5,7 +5,7 @@ export type UserServiceSettings = {
   httpClient: HttpClient;
 };
 
-const basePath = '/user';
+const basePath = '/v1/user';
 
 export class UserService {
   private readonly httpClient: HttpClient;
