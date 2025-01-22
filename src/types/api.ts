@@ -225,7 +225,6 @@ export interface GetPointsLeaderboardParams {
 }
 
 export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
-  payment_status?: 'paid' | 'confirmed' | 'all';
   conversion_external_ids?: number[];
 }
 
