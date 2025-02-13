@@ -113,7 +113,7 @@ export async function sendEvent(name: string, args?: EventArgs): Promise<void> {
  * sendPageview({ page: '/product/123' })
  * ```
  */
-export async function sendPageview(pageName?: string): Promise<void> {
+export async function sendPageview(pageName?: string, projectIds?: string[]): Promise<void> {
   assertInitialized();
   assertBrowserContext();
   detectAutomation();
@@ -136,7 +136,7 @@ export async function sendPageview(pageName?: string): Promise<void> {
     },
   };
 
-  await _eventService.sendEvent(event);
+  await _eventService.sendEvent(event, projectIds);
 }
 
 /**
@@ -161,7 +161,7 @@ export async function sendPageview(pageName?: string): Promise<void> {
  * })
  * ```
  */
-export async function sendConnectWallet(userMetadata: UserMetadata): Promise<void> {
+export async function sendConnectWallet(userMetadata: UserMetadata, projectIds?: string[]): Promise<void> {
   assertInitialized();
   assertBrowserContext();
   detectAutomation();
@@ -190,7 +190,7 @@ export async function sendConnectWallet(userMetadata: UserMetadata): Promise<voi
     event.account_chain_id = userMetadata.accountChainId;
   }
 
-  await _eventService.sendEvent(event);
+  await _eventService.sendEvent(event, projectIds);
 }
 
 /**
