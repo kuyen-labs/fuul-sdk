@@ -13,6 +13,78 @@ afterEach(() => {
 });
 
 describe('EventService', () => {
+  describe('sendEvent', () => {
+    it(`posts event`, async () => {
+      // Arrange
+      const httpClientMock = {
+        post: jest.fn().mockResolvedValue(null),
+      };
+
+      httpClientMock.post = jest.fn();
+      const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
+
+      const fuulEvent: FuulEvent = {
+        name: 'some-event',
+        args: {},
+        metadata: {
+          tracking_id: '123',
+          project_id: 'test-project-id',
+        },
+      };
+
+      // Act
+      await es.sendEvent(fuulEvent);
+
+      // Assert
+      const postCalls = httpClientMock.post.mock.calls;
+      expect(postCalls.length).toEqual(1);
+
+      expect(postCalls[0][1].project_id).toBeUndefined();
+      expect(postCalls[0][1].metadata).toEqual(expect.objectContaining({ project_id: 'test-project-id' }));
+    });
+
+    describe('multi-project', () => {
+      it(`posts one event per project`, async () => {
+        // Arrange
+        const httpClientMock = {
+          post: jest.fn().mockResolvedValue(null),
+        };
+
+        httpClientMock.post = jest.fn();
+        const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
+
+        const fuulEvent: FuulEvent = {
+          name: 'some-event',
+          args: {},
+          metadata: {
+            tracking_id: '123',
+            project_id: 'test-project-id',
+          },
+        };
+
+        // Act
+        await es.sendEvent(fuulEvent, ['projectId1', 'projectId2']);
+
+        // Assert
+        const postCalls = httpClientMock.post.mock.calls;
+        expect(postCalls.length).toEqual(2);
+
+        expect(postCalls[0][1]).toEqual(
+          expect.objectContaining({
+            project_id: 'projectId1',
+            metadata: expect.objectContaining({ project_id: 'projectId1' }),
+          }),
+        );
+        expect(postCalls[1][1]).toEqual(
+          expect.objectContaining({
+            project_id: 'projectId2',
+            metadata: expect.objectContaining({ project_id: 'projectId2' }),
+          }),
+        );
+      });
+    });
+  });
+
   describe('isDuplicate', () => {
     it('with no previous event should return false', () => {
       // Arrange

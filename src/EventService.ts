@@ -18,13 +18,22 @@ export class EventService {
     this.debug = !!settings.debug;
   }
 
-  public async sendEvent(event: FuulEvent): Promise<void> {
+  public async sendEvent(event: FuulEvent, projectIds?: string[]): Promise<void> {
     if (this.isDuplicate(event)) {
       this.debug && console.debug(`Fuul SDK: Event is considered duplicate and will not be sent`);
       return;
     }
 
-    await this.httpClient.post('events', event);
+    if (!projectIds || !Array.isArray(projectIds) || projectIds.length === 0) {
+      await this.httpClient.post('events', event);
+    } else {
+      for (const projectId of projectIds) {
+        const projEvent = structuredClone({ ...event, project_id: projectId });
+        projEvent.metadata.project_id = projectId;
+        await this.httpClient.post('events', projEvent);
+      }
+    }
+
     this.debug && console.debug(`Fuul SDK: Sent '${event.name}' event`);
 
     this.saveSentEvent(event);
