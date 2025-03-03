@@ -465,7 +465,7 @@ function assertValidApiKey(): void {
 function createApiClient(baseUrl: string, defaultQueryParams: Record<string, string>): HttpClient {
   return new HttpClient({
     baseURL: baseUrl,
-    timeout: 10000,
+    timeout: 30000,
     apiKey: _apiKey,
     queryParams: defaultQueryParams,
   });
