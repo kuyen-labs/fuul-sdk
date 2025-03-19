@@ -14,7 +14,7 @@ export class ConversionService {
   }
 
   async getAll(params?: GetConversionsParams): Promise<Conversion[]> {
-    const { data } = await this.httpClient.get<Conversion[]>('conversions', params);
+    const { data } = await this.httpClient.get<Conversion[]>({ path: 'conversions', queryParams: { ...params } });
 
     return data;
   }

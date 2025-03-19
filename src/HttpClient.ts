@@ -14,9 +14,15 @@ export interface HttpError {
   status?: number;
 }
 
+export interface Request {
+  path: string;
+  postData?: Record<string, unknown>;
+  queryParams?: Record<string, unknown>;
+}
+
 export class HttpClient {
   private readonly client: AxiosInstance;
-  private readonly queryParams: string;
+  private defaultQueryParams: Record<string, unknown>;
 
   constructor(options: HttpClientOptions) {
     this.client = axios.create({
@@ -26,32 +32,45 @@ export class HttpClient {
         'X-Fuul-Sdk-Version': release.version,
       },
     });
-    this.queryParams = options.queryParams ? this.buildQueryParams(options.queryParams) : '';
+
+    this.defaultQueryParams = options.queryParams || {};
   }
 
-  private buildQueryParams(args: Record<string, string>): string {
-    let queryParams = '';
+  private makeQueryParams(queryParams?: Record<string, unknown>): Record<string, unknown> {
+    return Object.assign({}, this.defaultQueryParams || {}, queryParams || {});
+  }
 
-    Object.keys(args).forEach((key) => {
-      queryParams = queryParams === '' ? queryParams + `?${key}=${args[key]}` : queryParams + '&' + `${key}=${args[key]}`;
+  async get<T>(req: Request): Promise<AxiosResponse<T>> {
+    return this.client.request<T>({
+      url: req.path,
+      params: this.makeQueryParams(req.queryParams),
+      method: 'GET',
     });
-
-    return queryParams;
   }
 
-  async get<T>(path: string, params?: any): Promise<AxiosResponse<T>> {
-    return this.client.get<T>(path + this.queryParams, { params });
+  async post<T>(req: Request): Promise<AxiosResponse<T>> {
+    return this.client.request<T>({
+      url: req.path,
+      params: this.makeQueryParams(req.queryParams),
+      data: req.postData,
+      method: 'POST',
+    });
   }
 
-  async post<T>(path: string, data: { [key: string]: any }): Promise<AxiosResponse<T>> {
-    return this.client.post<T>(path + this.queryParams, data);
+  async put<T>(req: Request): Promise<AxiosResponse<T>> {
+    return this.client.request<T>({
+      url: req.path,
+      params: this.makeQueryParams(req.queryParams),
+      data: req.postData,
+      method: 'PUT',
+    });
   }
 
-  async put<T>(path: string, data: { [key: string]: any }): Promise<AxiosResponse<T>> {
-    return this.client.put<T>(path + this.queryParams, data);
-  }
-
-  async delete<T>(path: string): Promise<AxiosResponse<T>> {
-    return this.client.delete<T>(path + this.queryParams);
+  async delete<T>(req: Request): Promise<AxiosResponse<T>> {
+    return this.client.request<T>({
+      url: req.path,
+      params: this.makeQueryParams(req.queryParams),
+      method: 'DELETE',
+    });
   }
 }

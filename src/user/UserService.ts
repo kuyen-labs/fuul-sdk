@@ -15,7 +15,7 @@ export class UserService {
   }
 
   public async getUserAffiliates(params: GetUserAffiliatesParams): Promise<UserAffiliate[]> {
-    const results = await this.httpClient.get<GetUserResponse>(basePath, params);
+    const results = await this.httpClient.get<GetUserResponse>({ path: basePath, queryParams: { ...params } });
     return results.data.affiliates;
   }
 }

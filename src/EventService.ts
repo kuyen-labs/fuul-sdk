@@ -25,12 +25,12 @@ export class EventService {
     }
 
     if (!projectIds || !Array.isArray(projectIds) || projectIds.length === 0) {
-      await this.httpClient.post('events', event);
+      await this.httpClient.post({ path: 'events', postData: event });
     } else {
       for (const projectId of projectIds) {
         const projEvent = structuredClone({ ...event, project_id: projectId });
         projEvent.metadata.project_id = projectId;
-        await this.httpClient.post('events', projEvent);
+        await this.httpClient.post({ path: 'events', postData: projEvent, queryParams: { project_id: projectId } });
       }
     }
 
