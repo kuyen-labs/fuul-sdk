@@ -1,5 +1,5 @@
-import { HttpClient } from "../HttpClient";
-import { GetUserAudiencesParams, GetUserAudiencesResponse } from "../types/api";
+import { HttpClient } from '../HttpClient';
+import { GetUserAudiencesParams, GetUserAudiencesResponse } from '../types/api';
 
 export type AudienceServiceSettings = {
   httpClient: HttpClient;
@@ -18,7 +18,10 @@ export class AudienceService {
   }
 
   public async getUserAudiences(params: GetUserAudiencesParams): Promise<GetUserAudiencesResponse> {
-    const results = await this.httpClient.get<GetUserAudiencesResponse>(`${basePath}/user`, params);
+    const results = await this.httpClient.get<GetUserAudiencesResponse>({
+      path: `${basePath}/user`,
+      queryParams: { ...params },
+    });
     return results.data;
   }
 }

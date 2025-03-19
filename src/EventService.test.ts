@@ -39,8 +39,9 @@ describe('EventService', () => {
       const postCalls = httpClientMock.post.mock.calls;
       expect(postCalls.length).toEqual(1);
 
-      expect(postCalls[0][1].project_id).toBeUndefined();
-      expect(postCalls[0][1].metadata).toEqual(expect.objectContaining({ project_id: 'test-project-id' }));
+      const request = postCalls[0][0];
+      expect(request.postData.project_id).toBeUndefined();
+      expect(request.postData.metadata).toEqual(expect.objectContaining({ project_id: 'test-project-id' }));
     });
 
     describe('multi-project', () => {
@@ -69,13 +70,18 @@ describe('EventService', () => {
         const postCalls = httpClientMock.post.mock.calls;
         expect(postCalls.length).toEqual(2);
 
-        expect(postCalls[0][1]).toEqual(
+        const request1 = postCalls[0][0];
+        expect(request1.queryParams).toEqual({ project_id: 'projectId1' });
+        expect(request1.postData).toEqual(
           expect.objectContaining({
             project_id: 'projectId1',
             metadata: expect.objectContaining({ project_id: 'projectId1' }),
           }),
         );
-        expect(postCalls[1][1]).toEqual(
+
+        const request2 = postCalls[1][0];
+        expect(request2.queryParams).toEqual({ project_id: 'projectId2' });
+        expect(request2.postData).toEqual(
           expect.objectContaining({
             project_id: 'projectId2',
             metadata: expect.objectContaining({ project_id: 'projectId2' }),

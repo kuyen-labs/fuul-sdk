@@ -20,12 +20,15 @@ export class AffiliateService {
 
   public async create(address: string, code: string, signature: string, accountChainId?: number): Promise<void> {
     try {
-      await this.httpClient.post<void>(`/affiliates`, {
-        address,
-        name: code,
-        code,
-        signature,
-        account_chain_id: accountChainId,
+      await this.httpClient.post<void>({
+        path: `/affiliates`,
+        postData: {
+          address,
+          name: code,
+          code,
+          signature,
+          account_chain_id: accountChainId,
+        },
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
@@ -53,11 +56,14 @@ export class AffiliateService {
 
   public async update(address: string, code: string, signature: string, accountChainId?: number): Promise<void> {
     try {
-      await this.httpClient.post<void>(`/affiliates/${address}`, {
-        code,
-        address,
-        signature,
-        account_chain_id: accountChainId,
+      await this.httpClient.post<void>({
+        path: `/affiliates/${address}`,
+        postData: {
+          code,
+          address,
+          signature,
+          account_chain_id: accountChainId,
+        },
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
@@ -85,7 +91,7 @@ export class AffiliateService {
 
   public async isCodeFree(code: string): Promise<boolean> {
     try {
-      await this.httpClient.get<Affiliate>(`/affiliates/codes/${code}`);
+      await this.httpClient.get<Affiliate>({ path: `/affiliates/codes/${code}` });
       return false;
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -100,7 +106,7 @@ export class AffiliateService {
 
   public async getCode(address: string): Promise<string | null> {
     try {
-      const res = await this.httpClient.get<Affiliate>(`/affiliates/${address}`);
+      const res = await this.httpClient.get<Affiliate>({ path: `/affiliates/${address}` });
       return res.data.code;
     } catch (e) {
       if (e instanceof AxiosError) {
