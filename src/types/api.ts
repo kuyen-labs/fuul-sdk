@@ -198,7 +198,7 @@ export interface Conversion {
 
 type LeaderboardUserType = 'affiliate' | 'end_user';
 
-export interface GetPayoutsLeaderboardParams {
+export interface GetRewardsLeaderboardParams {
   currency_address?: string;
   project_id?: string;
   user_address?: string;
@@ -208,23 +208,10 @@ export interface GetPayoutsLeaderboardParams {
   from?: Date;
   to?: Date;
   fields?: string;
-  conversions?: string;
+  conversion_external_id?: string;
 }
 
-export interface GetPointsLeaderboardParams {
-  currency_address?: string;
-  project_id?: string;
-  user_address?: string;
-  user_type?: LeaderboardUserType;
-  page?: number;
-  page_size?: number;
-  from?: Date;
-  to?: Date;
-  fields?: string;
-  conversions?: string;
-}
-
-export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
+export interface GetVolumeLeaderboardParams extends GetRewardsLeaderboardParams {
   conversion_external_ids?: number[];
 }
 
@@ -235,11 +222,11 @@ export interface LeaderboardResponse<T> {
   results: T[];
 }
 
-export interface PayoutsLeaderboard {
+export interface RewardsLeaderboard {
   address: string;
   affiliate_code?: string;
   total_amount: string;
-  chain_id: number;
+  chain_id?: number;
   rank: number;
   total_attributions: number;
   tiers?: Record<string, string>;
@@ -253,16 +240,6 @@ export interface VolumeLeaderboard {
   total_amount: number;
   chain_id: number;
   rank: number;
-}
-
-export interface PointsLeaderboard {
-  address: string;
-  affiliate_code?: string;
-  total_amount: string;
-  rank: number;
-  total_attributions: number;
-  tiers?: Record<string, string>;
-  referred_volume?: string;
 }
 
 export interface ReferredUsersLeaderboard {

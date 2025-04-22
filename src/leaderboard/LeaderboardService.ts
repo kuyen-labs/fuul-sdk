@@ -1,12 +1,10 @@
 import { HttpClient } from '../HttpClient';
 import {
-  GetPayoutsLeaderboardParams,
-  GetPointsLeaderboardParams,
   GetReferredUsersLeaderboardParams,
+  GetRewardsLeaderboardParams,
   LeaderboardResponse,
-  PayoutsLeaderboard,
-  PointsLeaderboard,
   ReferredUsersLeaderboard,
+  RewardsLeaderboard,
 } from '../types/api';
 
 export type LeaderboardServiceSettings = {
@@ -20,17 +18,9 @@ export class LeaderboardService {
     this.httpClient = settings.httpClient;
   }
 
-  public async getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
-    const results = await this.httpClient.get<LeaderboardResponse<PayoutsLeaderboard>>({
-      path: `/payouts/leaderboard/payouts`,
-      queryParams: { ...params },
-    });
-    return results.data;
-  }
-
-  public async getPointsLeaderboard(params: GetPointsLeaderboardParams): Promise<LeaderboardResponse<PointsLeaderboard>> {
-    const results = await this.httpClient.get<LeaderboardResponse<PointsLeaderboard>>({
-      path: `/payouts/leaderboard/points`,
+  public async getRewardsLeaderboard(params: GetRewardsLeaderboardParams): Promise<LeaderboardResponse<RewardsLeaderboard>> {
+    const results = await this.httpClient.get<LeaderboardResponse<RewardsLeaderboard>>({
+      path: `/rewards/leaderboard`,
       queryParams: { ...params },
     });
     return results.data;

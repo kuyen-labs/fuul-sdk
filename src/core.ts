@@ -10,9 +10,8 @@ import {
   Conversion,
   FuulEvent,
   GetConversionsParams,
-  GetPayoutsLeaderboardParams,
-  GetPointsLeaderboardParams,
   GetReferredUsersLeaderboardParams,
+  GetRewardsLeaderboardParams,
   GetUserAudiencesParams,
   GetUserAudiencesResponse,
   GetUserPayoutMovementsParams,
@@ -21,9 +20,8 @@ import {
   GetUserPointsMovementsParams,
   GetVolumeLeaderboardParams,
   LeaderboardResponse,
-  PayoutsLeaderboard,
-  PointsLeaderboard,
   ReferredUsersLeaderboard,
+  RewardsLeaderboard,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
@@ -299,29 +297,16 @@ export async function generateTrackingLink(baseUrl: string, affiliateAddress: st
 }
 
 /**
- * Gets the project payouts leaderboard
- * @param {GetPayoutsLeaderboardParams} params The search params
- * @returns {LeaderboardResponse<PayoutsLeaderboard>} Payouts leaderboard response
+ * Gets the project rewards leaderboard
+ * @param {GetRewardsLeaderboardParams} params The search params
+ * @returns {LeaderboardResponse<RewardsLeaderboard>} Rewards leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getPayoutsLeaderboard({ currency_address: '0x12345', page: 1, page_size: 10 });
+ * const results = await Fuul.getRewardsLeaderboard({ currency_address: '0x12345', page: 1, page_size: 10 });
  * ```
  **/
-export function getPayoutsLeaderboard(params: GetPayoutsLeaderboardParams): Promise<LeaderboardResponse<PayoutsLeaderboard>> {
-  return _leaderboardService.getPayoutsLeaderboard(params);
-}
-
-/**
- * Gets the project points leaderboard
- * @param {GetPointsLeaderboardParams} params The search params
- * @returns {LeaderboardResponse<PointsLeaderboard>} Points leaderboard response
- * @example
- * ```typescript
- * const results = await Fuul.getPointsLeaderboard({ currency_address: '0x12345', page: 1, page_size: 10 });
- * ```
- **/
-export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promise<LeaderboardResponse<PointsLeaderboard>> {
-  return _leaderboardService.getPointsLeaderboard(params);
+export function getRewardsLeaderboard(params: GetRewardsLeaderboardParams): Promise<LeaderboardResponse<RewardsLeaderboard>> {
+  return _leaderboardService.getRewardsLeaderboard(params);
 }
 
 /**
@@ -482,8 +467,7 @@ export default {
   updateAffiliateCode,
   getAffiliateCode,
   isAffiliateCodeFree,
-  getPayoutsLeaderboard,
-  getPointsLeaderboard,
+  getRewardsLeaderboard,
   getReferredUsersLeaderboard,
   getUserAudiences,
   getUserPayoutsByConversion,

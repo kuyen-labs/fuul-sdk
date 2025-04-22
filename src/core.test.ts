@@ -349,60 +349,26 @@ describe('SDK core', () => {
     });
   });
 
-  describe('getPayoutsLeaderboard()', () => {
+  describe('getRewardsLeaderboard()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });
     });
 
-    it('should call getPayoutsLeaderboard with correct arguments', async () => {
-      const getPayoutsLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getPayoutsLeaderboard').mockResolvedValueOnce({
+    it('should call getRewardsLeaderboard with correct arguments', async () => {
+      const getRewardsLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getRewardsLeaderboard').mockResolvedValueOnce({
         page: 1,
         page_size: 10,
         total_results: 100,
         results: [],
       });
 
-      const payouts = await Fuul.getPayoutsLeaderboard({
+      const payouts = await Fuul.getRewardsLeaderboard({
         currency_address: '0x123',
         user_type: 'affiliate',
       });
 
-      expect(getPayoutsLeaderboardSpy).toHaveBeenCalledWith({
+      expect(getRewardsLeaderboardSpy).toHaveBeenCalledWith({
         currency_address: '0x123',
-        user_type: 'affiliate',
-      });
-
-      expect(payouts).toEqual({
-        page: 1,
-        page_size: 10,
-        total_results: 100,
-        results: [],
-      });
-    });
-  });
-
-  describe('getPointsLeaderboard()', () => {
-    beforeEach(() => {
-      Fuul.init({ apiKey: 'test-key' });
-    });
-
-    it('should call getPointsLeaderboard with correct arguments', async () => {
-      const getPointsLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getPointsLeaderboard').mockResolvedValueOnce({
-        page: 1,
-        page_size: 10,
-        total_results: 100,
-        results: [],
-      });
-
-      const payouts = await Fuul.getPointsLeaderboard({
-        page: 1,
-        page_size: 10,
-        user_type: 'affiliate',
-      });
-
-      expect(getPointsLeaderboardSpy).toHaveBeenCalledWith({
-        page: 1,
-        page_size: 10,
         user_type: 'affiliate',
       });
 
@@ -418,7 +384,7 @@ describe('SDK core', () => {
   describe('getReferredUsersLeaderboard()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });
-    })
+    });
 
     it('should call getReferredUsersLeaderboard with correct arguments', async () => {
       const getReferredUsersLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getReferredUsersLeaderboard').mockResolvedValueOnce({
@@ -435,7 +401,7 @@ describe('SDK core', () => {
             address: '0x124',
             rank: 2,
             total_referred_users: 9,
-          }
+          },
         ],
       });
 
@@ -463,9 +429,9 @@ describe('SDK core', () => {
             address: '0x124',
             rank: 2,
             total_referred_users: 9,
-          }
+          },
         ],
       });
     });
-  })
+  });
 });
