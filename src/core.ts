@@ -6,6 +6,7 @@ import { HttpClient } from './HttpClient';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
 import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getTrafficSource, getTrafficTag, getTrafficTitle } from './tracking';
+import { BlockchainType } from './types';
 import {
   Conversion,
   FuulEvent,
@@ -197,6 +198,7 @@ export async function sendConnectWallet(userMetadata: UserMetadata, projectIds?:
  * Creates a code registered to an affiliate address
  * @param {object} params Create affiliate code parameters
  * @param {string} params.address Affiliate wallet address
+ * @param {BlockchainType} params.blockchain Blockchain type of the affiliate address
  * @param {string} params.code Affiliate code to map address to
  * @param {string} params.signature Signed message authenticating address ownership. Message to be signed: `I confirm that I am creating the ${code} code on Fuul`
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
@@ -204,6 +206,7 @@ export async function sendConnectWallet(userMetadata: UserMetadata, projectIds?:
  * ```typescript
  * await Fuul.createAffiliateCode({
  *   address: '0x12345',
+ *   blockchain: BlockchainType.Ethereum,
  *   code: 'my-cool-code',
  *   signature: '<signature>'
  * })
@@ -211,13 +214,14 @@ export async function sendConnectWallet(userMetadata: UserMetadata, projectIds?:
  **/
 export async function createAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.create(params.address, params.code, params.signature, params.accountChainId);
+  await _affiliateService.create(params.address, params.blockchain, params.code, params.signature, params.accountChainId);
 }
 
 /**
  * Updates the code registered to an affiliate address
  * @param {object} params Update affiliate code parameters
  * @param {string} params.address Affiliate wallet address
+ * @param {BlockchainType} params.blockchain Blockchain type of the affiliate address
  * @param {string} params.code New affiliate code
  * @param {string} params.signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
@@ -225,6 +229,7 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  * ```typescript
  * await Fuul.updateAffiliateCode({
  *   address: '0x12345',
+ *   blockchain: BlockchainType.Ethereum,
  *   code: 'my-new-cool-code',
  *   signature: '<signature>'
  * })
@@ -232,21 +237,22 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  **/
 export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.update(params.address, params.code, params.signature, params.accountChainId);
+  await _affiliateService.update(params.address, params.blockchain, params.code, params.signature, params.accountChainId);
 }
 
 /**
  * Gets the code registered to an affiliate address
  * @param {string} address Affiliate wallet address
+ * @param {BlockchainType} blockchain Blockchain type of the affiliate address
  * @returns {string} Affiliate code
  * @example
  * ```typescript
  * const code = await Fuul.getAffiliateCode('0x12345');
  * ```
  **/
-export async function getAffiliateCode(address: string): Promise<string | null> {
+export async function getAffiliateCode(address: string, blockchain: BlockchainType): Promise<string | null> {
   assertInitialized();
-  return await _affiliateService.getCode(address);
+  return await _affiliateService.getCode(address, blockchain);
 }
 
 /**
@@ -269,6 +275,7 @@ export async function isAffiliateCodeFree(code: string): Promise<boolean> {
  * Generates a tracking link for an affiliate
  * @param {string} baseUrl Base url of the project
  * @param {string} affiliateAddress Affiliate wallet address
+ * @param {BlockchainType} blockchain Blockchain type of the affiliate address
  * @param {AffiliateLinkParams} params Optional tracking parameters
  * @returns {string} Tracking link
  * @example
@@ -278,9 +285,14 @@ export async function isAffiliateCodeFree(code: string): Promise<boolean> {
  * ```
  * @see https://docs.fuul.xyz/technical-guide-for-projects/creating-partners-tracking-links-using-the-fuul-sdk
  **/
-export async function generateTrackingLink(baseUrl: string, affiliateAddress: string, params?: AffiliateLinkParams): Promise<string> {
+export async function generateTrackingLink(
+  baseUrl: string,
+  affiliateAddress: string,
+  blockchain: BlockchainType,
+  params?: AffiliateLinkParams,
+): Promise<string> {
   assertInitialized();
-  const affiliateCode = await _affiliateService.getCode(affiliateAddress);
+  const affiliateCode = await _affiliateService.getCode(affiliateAddress, blockchain);
   const qp = new URLSearchParams({
     af: affiliateCode ?? affiliateAddress,
   });

@@ -19,6 +19,7 @@ jest.mock('nanoid', () => ({
 import { Fuul } from './index';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
+import { BlockchainType } from './types';
 
 describe('SDK core', () => {
   beforeEach(() => {
@@ -206,7 +207,7 @@ describe('SDK core', () => {
       });
 
       // Act
-      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124');
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum);
 
       // Assert
       expect(generatedLink).toBe('https://www.google.com?af=0x124');
@@ -220,7 +221,7 @@ describe('SDK core', () => {
       });
 
       // Act
-      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', {
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum, {
         title: 'test-title',
         format: 'banner',
         place: 'upper-banner',
@@ -238,7 +239,7 @@ describe('SDK core', () => {
       });
 
       // Act
-      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', {
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum, {
         title: 'test-title',
         format: 'banner',
         place: 'upper-banner',
@@ -418,7 +419,7 @@ describe('SDK core', () => {
   describe('getReferredUsersLeaderboard()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });
-    })
+    });
 
     it('should call getReferredUsersLeaderboard with correct arguments', async () => {
       const getReferredUsersLeaderboardSpy = jest.spyOn(LeaderboardService.prototype, 'getReferredUsersLeaderboard').mockResolvedValueOnce({
@@ -435,7 +436,7 @@ describe('SDK core', () => {
             address: '0x124',
             rank: 2,
             total_referred_users: 9,
-          }
+          },
         ],
       });
 
@@ -463,9 +464,9 @@ describe('SDK core', () => {
             address: '0x124',
             rank: 2,
             total_referred_users: 9,
-          }
+          },
         ],
       });
     });
-  })
+  });
 });
