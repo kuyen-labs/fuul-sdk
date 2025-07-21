@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 
 import { HttpClient } from '../HttpClient';
+import { BlockchainType } from '../types';
 import { Affiliate } from '../types/api';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
@@ -18,12 +19,13 @@ export class AffiliateService {
     this._debug = settings.debug;
   }
 
-  public async create(address: string, code: string, signature: string, accountChainId?: number): Promise<void> {
+  public async create(address: string, blockchain: BlockchainType, code: string, signature: string, accountChainId?: number): Promise<void> {
     try {
       await this.httpClient.post<void>({
         path: `/affiliates`,
         postData: {
           address,
+          blockchain,
           name: code,
           code,
           signature,
@@ -54,13 +56,14 @@ export class AffiliateService {
     }
   }
 
-  public async update(address: string, code: string, signature: string, accountChainId?: number): Promise<void> {
+  public async update(address: string, blockchain: BlockchainType, code: string, signature: string, accountChainId?: number): Promise<void> {
     try {
       await this.httpClient.post<void>({
         path: `/affiliates/${address}`,
         postData: {
           code,
           address,
+          blockchain,
           signature,
           account_chain_id: accountChainId,
         },
@@ -104,9 +107,9 @@ export class AffiliateService {
     }
   }
 
-  public async getCode(address: string): Promise<string | null> {
+  public async getCode(address: string, blockchain: BlockchainType): Promise<string | null> {
     try {
-      const res = await this.httpClient.get<Affiliate>({ path: `/affiliates/${address}` });
+      const res = await this.httpClient.get<Affiliate>({ path: `/affiliates/${address}`, queryParams: { blockchain } });
       return res.data.code;
     } catch (e) {
       if (e instanceof AxiosError) {

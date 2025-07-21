@@ -1,3 +1,5 @@
+import { BlockchainType } from '.';
+
 export type FuulSettings = {
   debug?: boolean;
   apiKey: string;
@@ -24,6 +26,7 @@ export type AffiliateLinkParams = {
 
 export type AffiliateCodeParams = {
   address: string;
+  blockchain: BlockchainType;
   code: string;
   signature: string;
   accountChainId?: number;
