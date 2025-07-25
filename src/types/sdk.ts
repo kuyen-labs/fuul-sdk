@@ -7,8 +7,9 @@ export type FuulSettings = {
   defaultQueryParams?: Record<string, string>;
 };
 
-export type UserMetadata = {
+export type ConnectWalletEventParams = {
   address: string;
+  blockchain: BlockchainType;
   signature?: string;
   message?: string;
   accountChainId?: number;

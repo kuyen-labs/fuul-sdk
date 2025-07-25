@@ -36,7 +36,6 @@ Now you can start sending events.
 
 For Fuul to attribute conversion events you'll need to report the "pageview" and "connect wallet" events.
 
-
 #### Page view event
 
 Projects must send this event every time a user visits a page on their website.
@@ -49,7 +48,7 @@ await Fuul.sendPageview();
 
 #### Connect wallet event
 
-Projects must send this event every time users connect a wallet to their website. 
+Projects must send this event every time users connect a wallet to their website.
 
 NOTE: Make sure to send the event when connecting a wallet for the first time as well as when changing wallets during the session.
 
@@ -57,8 +56,9 @@ NOTE: Make sure to send the event when connecting a wallet for the first time as
 import { Fuul } from ('@fuul/sdk');
 
 await Fuul.sendConnectWallet({
-  address: "0x12345",
-  signature: "0x123485090123",
-  message: "Accept affiliate on 18 Aug 2023"
+  address: "0xe06099DbbF626892397f9A74C7f42F16748292Db",
+  blockchain: BlockchainType.Ethereum,
+  signature: "0xb823038d78e541470946e5125b74878c226a84f891671946f18fbe7e5995171731b92f569c3e83f1c9fb89c5351245494c5d2ce6273f74c853a2cace6073f09c1c",
+  message: "Connect wallet"
 });
 ```

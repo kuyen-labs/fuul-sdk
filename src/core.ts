@@ -31,7 +31,7 @@ import {
   UserPointsMovementsResponse,
   VolumeLeaderboard,
 } from './types/api';
-import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, UserMetadata } from './types/sdk';
+import { AffiliateCodeParams, AffiliateLinkParams, ConnectWalletEventParams, EventArgs, FuulSettings } from './types/sdk';
 import { GetUserAffiliatesParams, UserAffiliate } from './user/types';
 import { UserService } from './user/UserService';
 
@@ -106,7 +106,7 @@ export async function sendEvent(name: string, args?: EventArgs): Promise<void> {
 
 /**
  * @param {string} pageName Optional page name, default is document.location.pathname
- * @see https://docs.fuul.xyz/technical-guide-for-projects/sending-events-through-the-fuul-sdk#pageview-event
+ * @see https://docs.fuul.xyz/for-devs/tracking-referrals-in-your-app#pageview-event
  * @returns {Promise<void>}
  * @example
  * ```typescript
@@ -141,13 +141,14 @@ export async function sendPageview(pageName?: string, projectIds?: string[]): Pr
 }
 
 /**
- * @param {UserMetadata} userMetadata Metadata from the user that connected the wallet
- * @see https://docs.fuul.xyz/technical-guide-for-projects/sending-events-through-the-fuul-sdk#connect-wallet-event
+ * @param {ConnectWalletEventParams} ConnectWalletEventParams Metadata from the user that connected the wallet
+ * @see https://docs.fuul.xyz/for-devs/tracking-referrals-in-your-app#connect-wallet-event
  * @returns {Promise<void>}
  * @example
  * ```typescript
  * sendConnectWallet({
  *   userAddress: '0x12345',
+ *   blockchain: BlockchainType.Ethereum,
  *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
  *   signatureMessage: 'Accept referral from Fuul'
  * })
@@ -156,19 +157,22 @@ export async function sendPageview(pageName?: string, projectIds?: string[]): Pr
  * // You can also send the account chain id if you are using a smart contract account (EIP-1271)
  * sendConnectWallet({
  *  userAddress: '0x12345',
+ *  blockchain: BlockchainType.Ethereum,
  *  signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
  *  signatureMessage: 'Accept referral from Fuul'
  *  accountChainId: 8453,
  * })
  * ```
  */
-export async function sendConnectWallet(userMetadata: UserMetadata, projectIds?: string[]): Promise<void> {
+export async function sendConnectWallet(params: ConnectWalletEventParams, projectIds?: string[]): Promise<void> {
   assertInitialized();
   assertBrowserContext();
   detectAutomation();
 
   const event: FuulEvent = {
     name: 'connect_wallet',
+    user_address: params.address,
+    blockchain: params.blockchain,
     args: {
       page: document.location.pathname,
       locationOrigin: document.location.origin,
@@ -178,17 +182,13 @@ export async function sendConnectWallet(userMetadata: UserMetadata, projectIds?:
     },
   };
 
-  if (userMetadata?.address) {
-    event.user_address = userMetadata.address;
+  if (params?.signature) {
+    event.signature = params?.signature;
+    event.signature_message = params?.message;
   }
 
-  if (userMetadata?.signature) {
-    event.signature = userMetadata?.signature;
-    event.signature_message = userMetadata?.message;
-  }
-
-  if (userMetadata?.accountChainId) {
-    event.account_chain_id = userMetadata.accountChainId;
+  if (params?.accountChainId) {
+    event.account_chain_id = params.accountChainId;
   }
 
   await _eventService.sendEvent(event, projectIds);
@@ -283,7 +283,7 @@ export async function isAffiliateCodeFree(code: string): Promise<boolean> {
  * const trackingLink = Fuul.generateTrackingLink('https://myproject.com', '0x12345')
  * console.log(trackingLink) // https://myproject.com?af=0x12345
  * ```
- * @see https://docs.fuul.xyz/technical-guide-for-projects/creating-partners-tracking-links-using-the-fuul-sdk
+ * @see https://docs.fuul.xyz/for-devs/building-your-incentives-hub-in-your-app-white-label/creating-affiliate-links-or-codes
  **/
 export async function generateTrackingLink(
   baseUrl: string,

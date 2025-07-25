@@ -48,15 +48,12 @@ describe('SDK core', () => {
     });
 
     it('should call sendEvent with correct argument', () => {
-      // Arrange
       jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
-      // Act
       Fuul.sendEvent('sarlanga', { test: 'some-test-arg' });
 
-      // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
       expect(createdEvent.name).toBe('sarlanga');
       expect(createdEvent.args).toStrictEqual({ test: 'some-test-arg' });
@@ -70,7 +67,6 @@ describe('SDK core', () => {
     });
 
     it('with no arguments should call sendEvent with correct arguments', () => {
-      // Arrange
       jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
       jest.spyOn(tracking, 'getAffiliateId').mockReturnValue('some-affiliate-id');
       jest.spyOn(tracking, 'getReferrerUrl').mockReturnValue('some-referrer-url');
@@ -81,10 +77,8 @@ describe('SDK core', () => {
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
-      // Act
       Fuul.sendPageview();
 
-      // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
       expect(createdEvent.name).toBe('pageview');
       expect(createdEvent.args).toStrictEqual({
@@ -104,7 +98,6 @@ describe('SDK core', () => {
     });
 
     it('with page arguments should call sendEvent with correct arguments', () => {
-      // Arrange
       jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
       jest.spyOn(tracking, 'getAffiliateId').mockReturnValue('some-affiliate-id');
       jest.spyOn(tracking, 'getReferrerUrl').mockReturnValue('some-referrer-url');
@@ -115,10 +108,8 @@ describe('SDK core', () => {
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
-      // Act
       Fuul.sendPageview('/custom-page');
 
-      // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
       expect(createdEvent.name).toBe('pageview');
       expect(createdEvent.args).toStrictEqual({
@@ -144,17 +135,15 @@ describe('SDK core', () => {
     });
 
     it('with required arguments should call sendEvent with correct arguments', () => {
-      // Arrange
       jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
-      // Act
       Fuul.sendConnectWallet({
         address: 'some-address',
+        blockchain: BlockchainType.Ethereum,
       });
 
-      // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
       expect(createdEvent.name).toBe('connect_wallet');
       expect(createdEvent.args).toStrictEqual({
@@ -163,26 +152,26 @@ describe('SDK core', () => {
       });
       expect(createdEvent.metadata).toStrictEqual({ tracking_id: 'some-tracking-id' });
       expect(createdEvent.user_address).toBe('some-address');
+      expect(createdEvent.blockchain).toBe(BlockchainType.Ethereum);
       expect(createdEvent.signature).toBeUndefined();
       expect(createdEvent.signature_message).toBeUndefined();
     });
 
     it('with signature arguments should call sendEvent with correct arguments', () => {
-      // Arrange
       jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
 
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
-      // Act
       Fuul.sendConnectWallet({
         address: 'some-address',
+        blockchain: BlockchainType.Ethereum,
         signature: 'some-signature',
         message: 'some-message',
       });
 
-      // Assert
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
       expect(createdEvent.name).toBe('connect_wallet');
+      expect(createdEvent.blockchain).toBe(BlockchainType.Ethereum);
       expect(createdEvent.args).toStrictEqual({
         locationOrigin: 'https://fuul.test.xyz',
         page: '/test-page',
@@ -200,52 +189,43 @@ describe('SDK core', () => {
     });
 
     it('generates basic tracking link', async () => {
-      // Arrange
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
       affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
         return null;
       });
 
-      // Act
       const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum);
 
-      // Assert
       expect(generatedLink).toBe('https://www.google.com?af=0x124');
     });
 
     it('generates link with tracking params', async () => {
-      // Arrange
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
       affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
         return null;
       });
 
-      // Act
       const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum, {
         title: 'test-title',
         format: 'banner',
         place: 'upper-banner',
       });
 
-      // Assert
       expect(generatedLink).toBe('https://www.google.com?af=0x124&af_title=test-title&af_format=banner&af_place=upper-banner');
     });
 
     it('generates link with affiliate code', async () => {
-      // Arrange
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
       affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
         return 'my-affiliate-code';
       });
 
-      // Act
       const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum, {
         title: 'test-title',
         format: 'banner',
         place: 'upper-banner',
       });
 
-      // Assert
       expect(generatedLink).toBe('https://www.google.com?af=my-affiliate-code&af_title=test-title&af_format=banner&af_place=upper-banner');
     });
   });
