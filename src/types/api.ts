@@ -1,3 +1,5 @@
+import { BlockchainType } from '.';
+
 export type FuulEventArgs = {
   [key: string]: unknown;
 };
@@ -17,6 +19,7 @@ export type FuulEventMetadata = {
 export type FuulEvent = {
   name: string;
   user_address?: string;
+  blockchain?: BlockchainType;
   signature?: string;
   signature_message?: string;
   args?: FuulEventArgs;
