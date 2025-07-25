@@ -86,10 +86,20 @@ export class EventService {
 
   private saveSentEvent(event: FuulEvent): void {
     const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${event.name}`;
+    const SENT_EVENT_LIST_KEY = `${SENT_EVENT_KEY}_all`;
 
     const timestamp = this.getCurrentTimestamp();
     const eventParams = { ...event, timestamp };
 
     localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
+
+    const existingList: FuulEvent[] = JSON.parse(localStorage.getItem(SENT_EVENT_LIST_KEY) || '[]');
+    const updatedList = [...existingList, eventParams];
+
+    const MAX_HISTORY = 10;
+    if (updatedList.length > MAX_HISTORY) {
+      updatedList.splice(0, updatedList.length - MAX_HISTORY);
+    }
+    localStorage.setItem(SENT_EVENT_LIST_KEY, JSON.stringify(updatedList));
   }
 }
