@@ -1,4 +1,4 @@
-import { BlockchainType } from '.';
+import { BlockchainType } from '..';
 
 export type FuulEventArgs = {
   [key: string]: unknown;
