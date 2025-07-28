@@ -3,6 +3,8 @@ import { FuulEvent } from './types/api';
 
 export const SENT_EVENT_ID_KEY = 'fuul.sent';
 export const SENT_EVENT_VALIDITY_PERIOD_SECONDS = 60;
+export const SENT_EVENT_CONNECT_WALLET_KEY = 'connect_wallet';
+export const SENT_EVENT_MAX_HISTORY = 10;
 
 export type EventServiceSettings = {
   httpClient: HttpClient;
@@ -93,13 +95,19 @@ export class EventService {
 
     localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
 
-    const existingList: FuulEvent[] = JSON.parse(localStorage.getItem(SENT_EVENT_LIST_KEY) || '[]');
-    const updatedList = [...existingList, eventParams];
-
-    const MAX_HISTORY = 10;
-    if (updatedList.length > MAX_HISTORY) {
-      updatedList.splice(0, updatedList.length - MAX_HISTORY);
+    if (event.name === SENT_EVENT_CONNECT_WALLET_KEY) {
+      const existingList = JSON.parse(localStorage.getItem(SENT_EVENT_LIST_KEY) || '[]');
+      const simplifiedEvent = {
+        name: event.name,
+        user_address: event.user_address,
+        tracking_id: event.metadata?.tracking_id,
+        page: event.args?.page,
+      };
+      const updatedList = [...existingList, simplifiedEvent];
+      if (updatedList.length > SENT_EVENT_MAX_HISTORY) {
+        updatedList.splice(0, updatedList.length - SENT_EVENT_MAX_HISTORY);
+      }
+      localStorage.setItem(SENT_EVENT_LIST_KEY, JSON.stringify(updatedList));
     }
-    localStorage.setItem(SENT_EVENT_LIST_KEY, JSON.stringify(updatedList));
   }
 }
