@@ -16,10 +16,9 @@ jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
-import { Fuul } from './index';
+import { BlockchainType, Fuul } from './index';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
-import { BlockchainType } from './types';
 
 describe('SDK core', () => {
   beforeEach(() => {

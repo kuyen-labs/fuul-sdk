@@ -1,3 +1,4 @@
+import { BlockchainType } from '.';
 import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
@@ -6,7 +7,6 @@ import { HttpClient } from './HttpClient';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
 import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getTrafficSource, getTrafficTag, getTrafficTitle } from './tracking';
-import { BlockchainType } from './types';
 import {
   Conversion,
   FuulEvent,

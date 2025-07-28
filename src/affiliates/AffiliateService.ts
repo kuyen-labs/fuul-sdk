@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 
+import { BlockchainType } from '..';
 import { HttpClient } from '../HttpClient';
-import { BlockchainType } from '../types';
 import { Affiliate } from '../types/api';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
