@@ -103,11 +103,11 @@ export class EventService {
         tracking_id: event.metadata?.tracking_id,
         page: event.args?.page,
       };
-      const updatedList = [...savedEvents, simplifiedEvent];
-      if (updatedList.length > SAVED_EVENTS_MAX_SIZE) {
-        updatedList.splice(0, updatedList.length - SAVED_EVENTS_MAX_SIZE);
+      const savedEventsNew = [...savedEvents, simplifiedEvent];
+      if (savedEventsNew.length > SAVED_EVENTS_MAX_SIZE) {
+        savedEventsNew.splice(0, savedEventsNew.length - SAVED_EVENTS_MAX_SIZE);
       }
-      localStorage.setItem(SENT_EVENT_LIST_KEY, JSON.stringify(updatedList));
+      localStorage.setItem(SENT_EVENT_LIST_KEY, JSON.stringify(savedEventsNew));
     }
   }
 }
