@@ -4,7 +4,7 @@ import { FuulEvent } from './types/api';
 export const SENT_EVENT_ID_KEY = 'fuul.sent';
 export const SENT_EVENT_VALIDITY_PERIOD_SECONDS = 60;
 export const SENT_EVENT_CONNECT_WALLET_KEY = 'connect_wallet';
-export const SENT_EVENT_MAX_HISTORY = 10;
+export const SAVED_EVENTS_MAX_SIZE = 10;
 
 export type EventServiceSettings = {
   httpClient: HttpClient;
@@ -96,7 +96,7 @@ export class EventService {
     localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
 
     if (event.name === SENT_EVENT_CONNECT_WALLET_KEY) {
-      const existingList = JSON.parse(localStorage.getItem(SENT_EVENT_LIST_KEY) || '[]');
+      const savedEvents = JSON.parse(localStorage.getItem(SENT_EVENT_LIST_KEY) || '[]');
       const simplifiedEvent = {
         name: event.name ?? '',
         user_address: event.user_address ?? '',
@@ -105,9 +105,9 @@ export class EventService {
       };
       const allFieldsFilled = Object.values(simplifiedEvent).every((value) => value !== '' && value !== null && value !== undefined);
       if (!allFieldsFilled) return; // Do not save the event if any field is missing
-      const updatedList = [...existingList, simplifiedEvent];
-      if (updatedList.length > SENT_EVENT_MAX_HISTORY) {
-        updatedList.splice(0, updatedList.length - SENT_EVENT_MAX_HISTORY);
+      const updatedList = [...savedEvents, simplifiedEvent];
+      if (updatedList.length > SAVED_EVENTS_MAX_SIZE) {
+        updatedList.splice(0, updatedList.length - SAVED_EVENTS_MAX_SIZE);
       }
       localStorage.setItem(SENT_EVENT_LIST_KEY, JSON.stringify(updatedList));
     }

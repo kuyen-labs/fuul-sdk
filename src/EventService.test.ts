@@ -90,7 +90,7 @@ describe('EventService', () => {
       });
     });
 
-    describe('localStorage', () => {
+    describe('saveSentEvent', () => {
       const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_connect_wallet`;
       const SENT_EVENT_LIST_KEY = `${SENT_EVENT_KEY}_all`;
 
@@ -168,7 +168,6 @@ describe('EventService', () => {
         expect(savedEvent).toBeNull();
       });
       it('should replace last event in localStorage if there are more than 10 events', async () => {
-        // Pre-populate with 10 existing events
         const existingEvents = Array.from({ length: 10 }, (_, i) => ({
           name: 'connect_wallet',
           user_address: `0x${i.toString().padStart(40, '0')}`,
