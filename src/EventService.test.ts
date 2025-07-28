@@ -89,6 +89,108 @@ describe('EventService', () => {
         );
       });
     });
+
+    describe('sendEvent', () => {
+      const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_connect_wallet`;
+      const SENT_EVENT_LIST_KEY = `${SENT_EVENT_KEY}_all`;
+
+      // Arrange
+      const httpClientMock = {
+        post: jest.fn().mockResolvedValue(null),
+      };
+
+      httpClientMock.post = jest.fn();
+      const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
+
+      it('should save the event in the localStorage array if the event is a connect_wallet', async () => {
+        const fuulEvent: FuulEvent = {
+          name: 'connect_wallet',
+          user_address: '0x12345',
+          args: {
+            page: '/home',
+          },
+          metadata: {
+            tracking_id: '123',
+          },
+        };
+
+        // Act
+        await es.sendEvent(fuulEvent);
+
+        // Assert
+        const savedEvent = localStorage.getItem(SENT_EVENT_LIST_KEY);
+        expect(savedEvent).toEqual(
+          JSON.stringify([
+            {
+              name: 'connect_wallet',
+              user_address: '0x12345',
+              tracking_id: '123',
+              page: '/home',
+            },
+          ]),
+        );
+      });
+      it('should not save the event in the localStorage array if the event is not a connect_wallet', async () => {
+        const fuulEvent: FuulEvent = {
+          name: 'some-event',
+          user_address: '0x12345',
+          args: {
+            page: '/home',
+          },
+          metadata: {
+            tracking_id: '123',
+          },
+        };
+
+        // Act
+        await es.sendEvent(fuulEvent);
+
+        // Assert
+        const savedEvent = localStorage.getItem(SENT_EVENT_LIST_KEY);
+        expect(savedEvent).toBeNull();
+      });
+      it('should replace last event in localStorage if there are more than 10 events', async () => {
+        const existingEvents = Array.from({ length: 10 }, (_, i) => ({
+          name: 'connect_wallet',
+          user_address: `0x${i.toString().padStart(40, '0')}`,
+          tracking_id: `tracking-${i}`,
+          page: `/page-${i}`,
+        }));
+        localStorage.setItem(SENT_EVENT_LIST_KEY, JSON.stringify(existingEvents));
+
+        const newEvent: FuulEvent = {
+          name: 'connect_wallet',
+          user_address: '0xNewAddress',
+          args: {
+            page: '/new-page',
+          },
+          metadata: {
+            tracking_id: 'new-tracking-id',
+          },
+        };
+
+        // Act
+        await es.sendEvent(newEvent);
+
+        // Assert
+        const savedEvent = localStorage.getItem(SENT_EVENT_LIST_KEY);
+        const parsedEvents = JSON.parse(savedEvent || '[]');
+
+        expect(parsedEvents).toHaveLength(10);
+        expect(parsedEvents[0]).toEqual({
+          name: 'connect_wallet',
+          user_address: '0x0000000000000000000000000000000000000001',
+          tracking_id: 'tracking-1',
+          page: '/page-1',
+        });
+        expect(parsedEvents[9]).toEqual({
+          name: 'connect_wallet',
+          user_address: '0xNewAddress',
+          tracking_id: 'new-tracking-id',
+          page: '/new-page',
+        });
+      });
+    });
   });
 
   describe('isDuplicate', () => {

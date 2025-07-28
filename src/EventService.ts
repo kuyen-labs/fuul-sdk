@@ -3,6 +3,8 @@ import { FuulEvent } from './types/api';
 
 export const SENT_EVENT_ID_KEY = 'fuul.sent';
 export const SENT_EVENT_VALIDITY_PERIOD_SECONDS = 60;
+export const SENT_EVENT_CONNECT_WALLET_KEY = 'connect_wallet';
+export const SAVED_EVENTS_MAX_SIZE = 10;
 
 export type EventServiceSettings = {
   httpClient: HttpClient;
@@ -86,10 +88,26 @@ export class EventService {
 
   private saveSentEvent(event: FuulEvent): void {
     const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_${event.name}`;
+    const SENT_EVENT_LIST_KEY = `${SENT_EVENT_KEY}_all`;
 
     const timestamp = this.getCurrentTimestamp();
     const eventParams = { ...event, timestamp };
 
     localStorage.setItem(SENT_EVENT_KEY, JSON.stringify(eventParams));
+
+    if (event.name === SENT_EVENT_CONNECT_WALLET_KEY) {
+      const savedEvents = JSON.parse(localStorage.getItem(SENT_EVENT_LIST_KEY) || '[]');
+      const simplifiedEvent = {
+        name: event.name,
+        user_address: event.user_address,
+        tracking_id: event.metadata?.tracking_id,
+        page: event.args?.page,
+      };
+      const savedEventsNew = [...savedEvents, simplifiedEvent];
+      if (savedEventsNew.length > SAVED_EVENTS_MAX_SIZE) {
+        savedEventsNew.splice(0, savedEventsNew.length - SAVED_EVENTS_MAX_SIZE);
+      }
+      localStorage.setItem(SENT_EVENT_LIST_KEY, JSON.stringify(savedEventsNew));
+    }
   }
 }
