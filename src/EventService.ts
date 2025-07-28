@@ -98,13 +98,11 @@ export class EventService {
     if (event.name === SENT_EVENT_CONNECT_WALLET_KEY) {
       const savedEvents = JSON.parse(localStorage.getItem(SENT_EVENT_LIST_KEY) || '[]');
       const simplifiedEvent = {
-        name: event.name ?? '',
-        user_address: event.user_address ?? '',
-        tracking_id: event.metadata?.tracking_id ?? '',
-        page: event.args?.page ?? '',
+        name: event.name,
+        user_address: event.user_address,
+        tracking_id: event.metadata?.tracking_id,
+        page: event.args?.page,
       };
-      const allFieldsFilled = Object.values(simplifiedEvent).every((value) => value !== '' && value !== null && value !== undefined);
-      if (!allFieldsFilled) return; // Do not save the event if any field is missing
       const updatedList = [...savedEvents, simplifiedEvent];
       if (updatedList.length > SAVED_EVENTS_MAX_SIZE) {
         updatedList.splice(0, updatedList.length - SAVED_EVENTS_MAX_SIZE);
