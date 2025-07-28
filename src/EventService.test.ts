@@ -90,7 +90,7 @@ describe('EventService', () => {
       });
     });
 
-    describe('saveSentEvent', () => {
+    describe('sendEvent', () => {
       const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_connect_wallet`;
       const SENT_EVENT_LIST_KEY = `${SENT_EVENT_KEY}_all`;
 
@@ -134,24 +134,6 @@ describe('EventService', () => {
         const fuulEvent: FuulEvent = {
           name: 'some-event',
           user_address: '0x12345',
-          args: {
-            page: '/home',
-          },
-          metadata: {
-            tracking_id: '123',
-          },
-        };
-
-        // Act
-        await es.sendEvent(fuulEvent);
-
-        // Assert
-        const savedEvent = localStorage.getItem(SENT_EVENT_LIST_KEY);
-        expect(savedEvent).toBeNull();
-      });
-      it('should not save the event in the localStorage array if the event is a connect_wallet but some field is missing', async () => {
-        const fuulEvent: FuulEvent = {
-          name: 'connect_wallet',
           args: {
             page: '/home',
           },
