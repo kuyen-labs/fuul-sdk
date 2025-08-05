@@ -16,7 +16,7 @@ jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
-import { BlockchainType, Fuul } from './index';
+import { Fuul, UserIdentifierType } from './index';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
 
@@ -139,8 +139,8 @@ describe('SDK core', () => {
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
       Fuul.sendConnectWallet({
-        address: 'some-address',
-        blockchain: BlockchainType.Ethereum,
+        userIdentifier: '0x123',
+        identifierType: UserIdentifierType.EvmAddress,
       });
 
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
@@ -150,8 +150,8 @@ describe('SDK core', () => {
         page: '/test-page',
       });
       expect(createdEvent.metadata).toStrictEqual({ tracking_id: 'some-tracking-id' });
-      expect(createdEvent.user_address).toBe('some-address');
-      expect(createdEvent.blockchain).toBe(BlockchainType.Ethereum);
+      expect(createdEvent.user?.identifier).toBe('0x123');
+      expect(createdEvent.user?.identifier_type).toBe(UserIdentifierType.EvmAddress);
       expect(createdEvent.signature).toBeUndefined();
       expect(createdEvent.signature_message).toBeUndefined();
     });
@@ -162,21 +162,21 @@ describe('SDK core', () => {
       const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
 
       Fuul.sendConnectWallet({
-        address: 'some-address',
-        blockchain: BlockchainType.Ethereum,
+        userIdentifier: '0x123',
+        identifierType: UserIdentifierType.EvmAddress,
         signature: 'some-signature',
         message: 'some-message',
       });
 
       const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
       expect(createdEvent.name).toBe('connect_wallet');
-      expect(createdEvent.blockchain).toBe(BlockchainType.Ethereum);
+      expect(createdEvent.user?.identifier).toBe('0x123');
+      expect(createdEvent.user?.identifier_type).toBe(UserIdentifierType.EvmAddress);
       expect(createdEvent.args).toStrictEqual({
         locationOrigin: 'https://fuul.test.xyz',
         page: '/test-page',
       });
       expect(createdEvent.metadata).toStrictEqual({ tracking_id: 'some-tracking-id' });
-      expect(createdEvent.user_address).toBe('some-address');
       expect(createdEvent.signature).toBe('some-signature');
       expect(createdEvent.signature_message).toBe('some-message');
     });
@@ -193,7 +193,7 @@ describe('SDK core', () => {
         return null;
       });
 
-      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum);
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', UserIdentifierType.EvmAddress);
 
       expect(generatedLink).toBe('https://www.google.com?af=0x124');
     });
@@ -204,7 +204,7 @@ describe('SDK core', () => {
         return null;
       });
 
-      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum, {
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', UserIdentifierType.EvmAddress, {
         title: 'test-title',
         format: 'banner',
         place: 'upper-banner',
@@ -219,7 +219,7 @@ describe('SDK core', () => {
         return 'my-affiliate-code';
       });
 
-      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', BlockchainType.Ethereum, {
+      const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', UserIdentifierType.EvmAddress, {
         title: 'test-title',
         format: 'banner',
         place: 'upper-banner',
@@ -252,13 +252,15 @@ describe('SDK core', () => {
       });
 
       const payouts = await Fuul.getUserPayoutsByConversion({
-        user_address: '0x123',
+        user_identifier: '0x123',
+        identifier_type: UserIdentifierType.EvmAddress,
         from: new Date('2024-01-01'),
         to: new Date('2024-01-02'),
       });
 
       expect(getUserPayoutsByConversionSpy).toHaveBeenCalledWith({
-        user_address: '0x123',
+        user_identifier: '0x123',
+        identifier_type: UserIdentifierType.EvmAddress,
         from: new Date('2024-01-01'),
         to: new Date('2024-01-02'),
       });
@@ -302,13 +304,15 @@ describe('SDK core', () => {
       });
 
       const payouts = await Fuul.getUserPointsByConversion({
-        user_address: '0x123',
+        user_identifier: '0x123',
+        identifier_type: UserIdentifierType.EvmAddress,
         from: new Date('2024-01-01'),
         to: new Date('2024-01-02'),
       });
 
       expect(getUserPointsByConversionSpy).toHaveBeenCalledWith({
-        user_address: '0x123',
+        user_identifier: '0x123',
+        identifier_type: UserIdentifierType.EvmAddress,
         from: new Date('2024-01-01'),
         to: new Date('2024-01-02'),
       });

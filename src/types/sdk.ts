@@ -1,4 +1,4 @@
-import { BlockchainType } from '..';
+import { UserIdentifierType } from '..';
 
 export type FuulSettings = {
   debug?: boolean;
@@ -8,8 +8,8 @@ export type FuulSettings = {
 };
 
 export type ConnectWalletEventParams = {
-  address: string;
-  blockchain: BlockchainType;
+  userIdentifier: string;
+  identifierType: UserIdentifierType;
   signature?: string;
   message?: string;
   accountChainId?: number;
@@ -26,8 +26,8 @@ export type AffiliateLinkParams = {
 };
 
 export type AffiliateCodeParams = {
-  address: string;
-  blockchain: BlockchainType;
+  userIdentifier: string;
+  identifierType: UserIdentifierType;
   code: string;
   signature: string;
   accountChainId?: number;

@@ -56,8 +56,8 @@ NOTE: Make sure to send the event when connecting a wallet for the first time as
 import { Fuul } from ('@fuul/sdk');
 
 await Fuul.sendConnectWallet({
-  address: "0xe06099DbbF626892397f9A74C7f42F16748292Db",
-  blockchain: BlockchainType.Ethereum,
+  userIdentifier: "0xe06099DbbF626892397f9A74C7f42F16748292Db",
+  identifierType: UserIdentifierType.EvmAddress,
   signature: "0xb823038d78e541470946e5125b74878c226a84f891671946f18fbe7e5995171731b92f569c3e83f1c9fb89c5351245494c5d2ce6273f74c853a2cace6073f09c1c",
   message: "Connect wallet"
 });

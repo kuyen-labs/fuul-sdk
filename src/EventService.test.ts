@@ -1,5 +1,6 @@
 import 'jest-localstorage-mock';
 
+import { UserIdentifierType } from '.';
 import { EventService, SENT_EVENT_ID_KEY, SENT_EVENT_VALIDITY_PERIOD_SECONDS } from './EventService';
 import { HttpClient } from './HttpClient';
 import { FuulEvent } from './types/api';
@@ -15,7 +16,6 @@ afterEach(() => {
 describe('EventService', () => {
   describe('sendEvent', () => {
     it(`posts event`, async () => {
-      // Arrange
       const httpClientMock = {
         post: jest.fn().mockResolvedValue(null),
       };
@@ -32,10 +32,8 @@ describe('EventService', () => {
         },
       };
 
-      // Act
       await es.sendEvent(fuulEvent);
 
-      // Assert
       const postCalls = httpClientMock.post.mock.calls;
       expect(postCalls.length).toEqual(1);
 
@@ -46,7 +44,6 @@ describe('EventService', () => {
 
     describe('multi-project', () => {
       it(`posts one event per project`, async () => {
-        // Arrange
         const httpClientMock = {
           post: jest.fn().mockResolvedValue(null),
         };
@@ -63,10 +60,8 @@ describe('EventService', () => {
           },
         };
 
-        // Act
         await es.sendEvent(fuulEvent, ['projectId1', 'projectId2']);
 
-        // Assert
         const postCalls = httpClientMock.post.mock.calls;
         expect(postCalls.length).toEqual(2);
 
@@ -94,7 +89,6 @@ describe('EventService', () => {
       const SENT_EVENT_KEY = `${SENT_EVENT_ID_KEY}_connect_wallet`;
       const SENT_EVENT_LIST_KEY = `${SENT_EVENT_KEY}_all`;
 
-      // Arrange
       const httpClientMock = {
         post: jest.fn().mockResolvedValue(null),
       };
@@ -105,7 +99,10 @@ describe('EventService', () => {
       it('should save the event in the localStorage array if the event is a connect_wallet', async () => {
         const fuulEvent: FuulEvent = {
           name: 'connect_wallet',
-          user_address: '0x12345',
+          user: {
+            identifier: '0x12345',
+            identifier_type: UserIdentifierType.EvmAddress,
+          },
           args: {
             page: '/home',
           },
@@ -114,16 +111,17 @@ describe('EventService', () => {
           },
         };
 
-        // Act
         await es.sendEvent(fuulEvent);
 
-        // Assert
         const savedEvent = localStorage.getItem(SENT_EVENT_LIST_KEY);
         expect(savedEvent).toEqual(
           JSON.stringify([
             {
               name: 'connect_wallet',
-              user_address: '0x12345',
+              user: {
+                identifier: '0x12345',
+                identifier_type: UserIdentifierType.EvmAddress,
+              },
               tracking_id: '123',
               page: '/home',
             },
@@ -133,7 +131,10 @@ describe('EventService', () => {
       it('should not save the event in the localStorage array if the event is not a connect_wallet', async () => {
         const fuulEvent: FuulEvent = {
           name: 'some-event',
-          user_address: '0x12345',
+          user: {
+            identifier: '0x12345',
+            identifier_type: UserIdentifierType.EvmAddress,
+          },
           args: {
             page: '/home',
           },
@@ -142,10 +143,8 @@ describe('EventService', () => {
           },
         };
 
-        // Act
         await es.sendEvent(fuulEvent);
 
-        // Assert
         const savedEvent = localStorage.getItem(SENT_EVENT_LIST_KEY);
         expect(savedEvent).toBeNull();
       });
@@ -160,7 +159,10 @@ describe('EventService', () => {
 
         const newEvent: FuulEvent = {
           name: 'connect_wallet',
-          user_address: '0xNewAddress',
+          user: {
+            identifier: '0x12345',
+            identifier_type: UserIdentifierType.EvmAddress,
+          },
           args: {
             page: '/new-page',
           },
@@ -169,10 +171,8 @@ describe('EventService', () => {
           },
         };
 
-        // Act
         await es.sendEvent(newEvent);
 
-        // Assert
         const savedEvent = localStorage.getItem(SENT_EVENT_LIST_KEY);
         const parsedEvents = JSON.parse(savedEvent || '[]');
 
@@ -195,7 +195,6 @@ describe('EventService', () => {
 
   describe('isDuplicate', () => {
     it('with no previous event should return false', () => {
-      // Arrange
       const httpClientMock = jest.fn();
       const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
 
@@ -208,15 +207,12 @@ describe('EventService', () => {
         },
       };
 
-      // Act
       const result = es.isDuplicate(fuulEvent);
 
-      // Assert
       expect(result).toBe(false);
     });
 
     it('matching previous non-expired event should return true', () => {
-      // Arrange
       const httpClientMock = jest.fn();
       const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
 
@@ -244,15 +240,12 @@ describe('EventService', () => {
       const eventExtras = { timestamp: Date.now() / 1000 - SENT_EVENT_VALIDITY_PERIOD_SECONDS + 1 };
       localStorage.setItem(SENT_EVENT_KEY, JSON.stringify({ ...prevEvent, ...eventExtras }));
 
-      // Act
       const result = es.isDuplicate(newEvent);
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('matching previous but expired event should return false', () => {
-      // Arrange
       const httpClientMock = jest.fn();
       const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
 
@@ -279,22 +272,22 @@ describe('EventService', () => {
       const eventExtras = { timestamp: Date.now() / 1000 - SENT_EVENT_VALIDITY_PERIOD_SECONDS - 1 };
       localStorage.setItem(SENT_EVENT_KEY, JSON.stringify({ ...prevEvent, ...eventExtras }));
 
-      // Act
       const result = es.isDuplicate(newEvent);
 
-      // Assert
       expect(result).toBe(false);
     });
 
     it('with differing user_address should return false', () => {
-      // Arrange
       const httpClientMock = jest.fn();
       const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
 
       const newEvent: FuulEvent = {
         name: 'some-event',
         args: {},
-        user_address: '0x10',
+        user: {
+          identifier: '0x12345',
+          identifier_type: UserIdentifierType.EvmAddress,
+        },
         metadata: {
           tracking_id: '123',
           project_id: 'test-project-id',
@@ -316,22 +309,22 @@ describe('EventService', () => {
       const eventExtras = { timestamp: Date.now() / 1000 - SENT_EVENT_VALIDITY_PERIOD_SECONDS + 1 };
       localStorage.setItem(SENT_EVENT_KEY, JSON.stringify({ ...prevEvent, ...eventExtras }));
 
-      // Act
       const result = es.isDuplicate(newEvent);
 
-      // Assert
       expect(result).toBe(false);
     });
 
     it('with differing signature should return false', () => {
-      // Arrange
       const httpClientMock = jest.fn();
       const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
 
       const newEvent: FuulEvent = {
         name: '',
         args: {},
-        user_address: '0x10',
+        user: {
+          identifier: '0x10',
+          identifier_type: UserIdentifierType.EvmAddress,
+        },
         signature: 'some-signature',
         metadata: {
           tracking_id: '123',
@@ -344,7 +337,10 @@ describe('EventService', () => {
       const prevEvent: FuulEvent = {
         name: 'some-event',
         args: {},
-        user_address: '0x10',
+        user: {
+          identifier: '0x10',
+          identifier_type: UserIdentifierType.EvmAddress,
+        },
         metadata: {
           tracking_id: '123',
           project_id: 'test-project-id',
@@ -355,15 +351,12 @@ describe('EventService', () => {
       const eventExtras = { timestamp: Date.now() / 1000 - SENT_EVENT_VALIDITY_PERIOD_SECONDS + 1 };
       localStorage.setItem(SENT_EVENT_KEY, JSON.stringify({ ...prevEvent, ...eventExtras }));
 
-      // Act
       const result = es.isDuplicate(newEvent);
 
-      // Assert
       expect(result).toBe(false);
     });
 
     it('with same page should return true', () => {
-      // Arrange
       const httpClientMock = jest.fn();
       const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
 
@@ -391,15 +384,12 @@ describe('EventService', () => {
       const eventExtras = { timestamp: Date.now() / 1000 - SENT_EVENT_VALIDITY_PERIOD_SECONDS + 1 };
       localStorage.setItem(SENT_EVENT_KEY, JSON.stringify({ ...prevEvent, ...eventExtras }));
 
-      // Act
       const result = es.isDuplicate(newEvent);
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('with differing page should return false', () => {
-      // Arrange
       const httpClientMock = jest.fn();
       const es = new EventService({ httpClient: httpClientMock as unknown as HttpClient });
 
@@ -427,10 +417,8 @@ describe('EventService', () => {
       const eventExtras = { timestamp: Date.now() / 1000 - SENT_EVENT_VALIDITY_PERIOD_SECONDS + 1 };
       localStorage.setItem(SENT_EVENT_KEY, JSON.stringify({ ...prevEvent, ...eventExtras }));
 
-      // Act
       const result = es.isDuplicate(newEvent);
 
-      // Assert
       expect(result).toBe(false);
     });
   });

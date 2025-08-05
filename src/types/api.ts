@@ -1,4 +1,4 @@
-import { BlockchainType } from '..';
+import { UserIdentifierType } from '..';
 
 export type FuulEventArgs = {
   [key: string]: unknown;
@@ -18,8 +18,10 @@ export type FuulEventMetadata = {
 
 export type FuulEvent = {
   name: string;
-  user_address?: string;
-  blockchain?: BlockchainType;
+  user?: {
+    identifier: string;
+    identifier_type: UserIdentifierType;
+  };
   signature?: string;
   signature_message?: string;
   args?: FuulEventArgs;
@@ -204,7 +206,7 @@ type LeaderboardUserType = 'affiliate' | 'end_user';
 export interface GetPayoutsLeaderboardParams {
   currency_address?: string;
   project_id?: string;
-  user_address?: string;
+  user_identifier?: string;
   user_type?: LeaderboardUserType;
   page?: number;
   page_size?: number;
@@ -217,7 +219,7 @@ export interface GetPayoutsLeaderboardParams {
 export interface GetPointsLeaderboardParams {
   currency_address?: string;
   project_id?: string;
-  user_address?: string;
+  user_identifier?: string;
   user_type?: LeaderboardUserType;
   page?: number;
   page_size?: number;
@@ -280,7 +282,8 @@ export interface GetReferredUsersLeaderboardParams {
 }
 
 export interface GetUserPayoutsByConversionParams {
-  user_address: string;
+  user_identifier: string;
+  identifier_type: UserIdentifierType;
   project_id?: string;
   group_by?: string;
   page?: number;
@@ -290,7 +293,8 @@ export interface GetUserPayoutsByConversionParams {
 }
 
 export interface GetUserPointsByConversionParams {
-  user_address: string;
+  user_identifier: string;
+  identifier_type: UserIdentifierType;
   project_id?: string;
   group_by?: string;
   page?: number;
@@ -330,7 +334,8 @@ export interface UserConversionPoints {
 }
 
 export interface GetUserPayoutMovementsParams {
-  user_address: string;
+  user_identifier: string;
+  identifier_type: UserIdentifierType;
   project_id?: string;
 }
 
@@ -355,7 +360,8 @@ export interface UserPayoutMovement {
 }
 
 export interface GetUserPointsMovementsParams {
-  user_address: string;
+  user_identifier: string;
+  identifier_type: UserIdentifierType;
   project_id?: string;
 }
 
@@ -378,11 +384,12 @@ export interface UserPointsMovement {
 }
 
 export interface GetConversionsParams {
-  user_address?: string;
+  user_identifier?: string;
 }
 
 export interface GetUserAudiencesParams {
-  user_address: string;
+  user_identifier: string;
+  identifier_type: UserIdentifierType;
 }
 
 export type GetUserAudiencesResponse = {
