@@ -1,7 +1,5 @@
 node_modules/
-dest/
 .DS_Store
 .git
-
 dist/
 coverage/
