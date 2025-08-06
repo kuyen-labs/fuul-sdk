@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 
-import { BlockchainType } from '..';
+import { UserIdentifierType } from '..';
 import { HttpClient } from '../HttpClient';
 import { Affiliate } from '../types/api';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
@@ -19,13 +19,13 @@ export class AffiliateService {
     this._debug = settings.debug;
   }
 
-  public async create(address: string, blockchain: BlockchainType, code: string, signature: string, accountChainId?: number): Promise<void> {
+  public async create(address: string, identifier_type: UserIdentifierType, code: string, signature: string, accountChainId?: number): Promise<void> {
     try {
       await this.httpClient.post<void>({
         path: `/affiliates`,
         postData: {
           address,
-          blockchain,
+          identifier_type,
           name: code,
           code,
           signature,
@@ -56,14 +56,20 @@ export class AffiliateService {
     }
   }
 
-  public async update(address: string, blockchain: BlockchainType, code: string, signature: string, accountChainId?: number): Promise<void> {
+  public async update(
+    user_identifier: string,
+    identifier_type: UserIdentifierType,
+    code: string,
+    signature: string,
+    accountChainId?: number,
+  ): Promise<void> {
     try {
       await this.httpClient.post<void>({
-        path: `/affiliates/${address}`,
+        path: `/affiliates/${user_identifier}`,
         postData: {
           code,
-          address,
-          blockchain,
+          user_identifier,
+          identifier_type,
           signature,
           account_chain_id: accountChainId,
         },
@@ -77,7 +83,7 @@ export class AffiliateService {
           if (message == 'invalid signature') {
             throw new InvalidSignatureError();
           } else if (message == 'address in use') {
-            throw new AddressInUseError(address);
+            throw new AddressInUseError(user_identifier);
           } else if (message == 'code in use') {
             throw new CodeInUseError(code);
           } else {
@@ -107,9 +113,9 @@ export class AffiliateService {
     }
   }
 
-  public async getCode(address: string, blockchain: BlockchainType): Promise<string | null> {
+  public async getCode(address: string, identifier_type: UserIdentifierType): Promise<string | null> {
     try {
-      const res = await this.httpClient.get<Affiliate>({ path: `/affiliates/${address}`, queryParams: { blockchain } });
+      const res = await this.httpClient.get<Affiliate>({ path: `/affiliates/${address}`, queryParams: { identifier_type } });
       return res.data.code;
     } catch (e) {
       if (e instanceof AxiosError) {

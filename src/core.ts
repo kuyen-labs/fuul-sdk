@@ -1,4 +1,4 @@
-import { BlockchainType } from '.';
+import { UserIdentifierType } from '.';
 import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
@@ -31,7 +31,7 @@ import {
   UserPointsMovementsResponse,
   VolumeLeaderboard,
 } from './types/api';
-import { AffiliateCodeParams, AffiliateLinkParams, ConnectWalletEventParams, EventArgs, FuulSettings } from './types/sdk';
+import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
 import { GetUserAffiliatesParams, UserAffiliate } from './user/types';
 import { UserService } from './user/UserService';
 
@@ -141,38 +141,40 @@ export async function sendPageview(pageName?: string, projectIds?: string[]): Pr
 }
 
 /**
- * @param {ConnectWalletEventParams} ConnectWalletEventParams Metadata from the user that connected the wallet
+ * @param {IdentifyUserParams} IdentifyUserParams Identify user params
  * @see https://docs.fuul.xyz/for-devs/tracking-referrals-in-your-app#connect-wallet-event
  * @returns {Promise<void>}
  * @example
  * ```typescript
- * sendConnectWallet({
- *   userAddress: '0x12345',
- *   blockchain: BlockchainType.Ethereum,
+ * identifyUser({
+ *   identifier: '0x12345',
+ *   identifierType: UserIdentifierType.EvmAddress,
  *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
  *   signatureMessage: 'Accept referral from Fuul'
  * })
  *
  *
  * // You can also send the account chain id if you are using a smart contract account (EIP-1271)
- * sendConnectWallet({
- *  userAddress: '0x12345',
- *  blockchain: BlockchainType.Ethereum,
+ * identifyUser({
+ *  identifier: '0x12345',
+ *  identifierType: UserIdentifierType.EvmAddress,
  *  signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
  *  signatureMessage: 'Accept referral from Fuul'
  *  accountChainId: 8453,
  * })
  * ```
  */
-export async function sendConnectWallet(params: ConnectWalletEventParams, projectIds?: string[]): Promise<void> {
+export async function identifyUser(params: IdentifyUserParams, projectIds?: string[]): Promise<void> {
   assertInitialized();
   assertBrowserContext();
   detectAutomation();
 
   const event: FuulEvent = {
     name: 'connect_wallet',
-    user_address: params.address,
-    blockchain: params.blockchain,
+    user: {
+      identifier: params.identifier,
+      identifier_type: params.identifierType,
+    },
     args: {
       page: document.location.pathname,
       locationOrigin: document.location.origin,
@@ -197,16 +199,16 @@ export async function sendConnectWallet(params: ConnectWalletEventParams, projec
 /**
  * Creates a code registered to an affiliate address
  * @param {object} params Create affiliate code parameters
- * @param {string} params.address Affiliate wallet address
- * @param {BlockchainType} params.blockchain Blockchain type of the affiliate address
+ * @param {string} params.userIdentifier The affiliate identifier
+ * @param {UserIdentifierType} params.identifierType The affiliate identifier type
  * @param {string} params.code Affiliate code to map address to
  * @param {string} params.signature Signed message authenticating address ownership. Message to be signed: `I confirm that I am creating the ${code} code on Fuul`
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
  * @example
  * ```typescript
  * await Fuul.createAffiliateCode({
- *   address: '0x12345',
- *   blockchain: BlockchainType.Ethereum,
+ *   userIdentifier: '0x12345',
+ *   identifierType: UserIdentifierType.EvmAddress,
  *   code: 'my-cool-code',
  *   signature: '<signature>'
  * })
@@ -214,22 +216,22 @@ export async function sendConnectWallet(params: ConnectWalletEventParams, projec
  **/
 export async function createAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.create(params.address, params.blockchain, params.code, params.signature, params.accountChainId);
+  await _affiliateService.create(params.userIdentifier, params.identifierType, params.code, params.signature, params.accountChainId);
 }
 
 /**
  * Updates the code registered to an affiliate address
  * @param {object} params Update affiliate code parameters
- * @param {string} params.address Affiliate wallet address
- * @param {BlockchainType} params.blockchain Blockchain type of the affiliate address
+ * @param {string} params.userIdentifier Affiliate identifier
+ * @param {UserIdentifierType} params.identifierType Affiliate identifier type
  * @param {string} params.code New affiliate code
  * @param {string} params.signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
  * @example
  * ```typescript
  * await Fuul.updateAffiliateCode({
- *   address: '0x12345',
- *   blockchain: BlockchainType.Ethereum,
+ *   userIdentifier: '0x12345',
+ *   identifierType: UserIdentifierType.EvmAddress,
  *   code: 'my-new-cool-code',
  *   signature: '<signature>'
  * })
@@ -237,22 +239,22 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  **/
 export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.update(params.address, params.blockchain, params.code, params.signature, params.accountChainId);
+  await _affiliateService.update(params.userIdentifier, params.identifierType, params.code, params.signature, params.accountChainId);
 }
 
 /**
- * Gets the code registered to an affiliate address
- * @param {string} address Affiliate wallet address
- * @param {BlockchainType} blockchain Blockchain type of the affiliate address
+ * Gets the code registered to an affiliate
+ * @param {string} userIdentifier Affiliate identifier
+ * @param {UserIdentifierType} identifierType Affiliate identifier type
  * @returns {string} Affiliate code
  * @example
  * ```typescript
- * const code = await Fuul.getAffiliateCode('0x12345');
+ * const code = await Fuul.getAffiliateCode('0x12345', UserIdentifierType.EvmAddress);
  * ```
  **/
-export async function getAffiliateCode(address: string, blockchain: BlockchainType): Promise<string | null> {
+export async function getAffiliateCode(userIdentifier: string, identifierType: UserIdentifierType): Promise<string | null> {
   assertInitialized();
-  return await _affiliateService.getCode(address, blockchain);
+  return await _affiliateService.getCode(userIdentifier, identifierType);
 }
 
 /**
@@ -274,8 +276,8 @@ export async function isAffiliateCodeFree(code: string): Promise<boolean> {
 /**
  * Generates a tracking link for an affiliate
  * @param {string} baseUrl Base url of the project
- * @param {string} affiliateAddress Affiliate wallet address
- * @param {BlockchainType} blockchain Blockchain type of the affiliate address
+ * @param {string} affiliateAddress Affiliate identifier
+ * @param {UserIdentifierType} identifierType The affiliate identifier type
  * @param {AffiliateLinkParams} params Optional tracking parameters
  * @returns {string} Tracking link
  * @example
@@ -287,14 +289,14 @@ export async function isAffiliateCodeFree(code: string): Promise<boolean> {
  **/
 export async function generateTrackingLink(
   baseUrl: string,
-  affiliateAddress: string,
-  blockchain: BlockchainType,
+  userIdentifier: string,
+  identifierType: UserIdentifierType,
   params?: AffiliateLinkParams,
 ): Promise<string> {
   assertInitialized();
-  const affiliateCode = await _affiliateService.getCode(affiliateAddress, blockchain);
+  const affiliateCode = await _affiliateService.getCode(userIdentifier, identifierType);
   const qp = new URLSearchParams({
-    af: affiliateCode ?? affiliateAddress,
+    af: affiliateCode ?? userIdentifier,
   });
 
   if (params?.title) {
@@ -342,7 +344,7 @@ export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promis
  * @returns {LeaderboardResponse<ReferredUsersLeaderboard>} Referred users leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getReferredUsersLeaderboard({ page: 1, page_size: 10 });;
+ * const results = await Fuul.getReferredUsersLeaderboard({ page: 1, page_size: 10 });
  * ```
  */
 export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardParams): Promise<LeaderboardResponse<ReferredUsersLeaderboard>> {
@@ -355,7 +357,7 @@ export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardP
  * @returns {LeaderboardResponse<VolumeLeaderboard>} Value leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getVolumeLeaderboard({ user_address: '0x12345' }})
+ * const results = await Fuul.getVolumeLeaderboard({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
@@ -368,7 +370,7 @@ export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promis
  * @returns {UserPayoutsByConversionResponse} User payouts by conversion
  * @example
  * ```typescript
- * const results = await Fuul.getUserPayoutsByConversion({ user_address: '0x12345' }});
+ * const results = await Fuul.getUserPayoutsByConversion({ user_identifier: '0x12345',  identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionParams): Promise<UserPayoutsByConversionResponse> {
@@ -381,7 +383,7 @@ export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionPar
  * @returns {UserPointsByConversionResponse} User points by conversion
  * @example
  * ```typescript
- * const results = await Fuul.getUserPointsByConversion({ user_address: '0x12345' }});
+ * const results = await Fuul.getUserPointsByConversion({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export function getUserPointsByConversion(params: GetUserPointsByConversionParams): Promise<UserPointsByConversionResponse> {
@@ -394,7 +396,7 @@ export function getUserPointsByConversion(params: GetUserPointsByConversionParam
  * @returns {UserPayoutMovementsResponse} User payout movements
  * @example
  * ```typescript
- * const results = await Fuul.getUserPayoutMovements({ user_address: '0x12345' }});
+ * const results = await Fuul.getUserPayoutMovements({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export function getUserPayoutMovements(params: GetUserPayoutMovementsParams): Promise<UserPayoutMovementsResponse> {
@@ -407,7 +409,7 @@ export function getUserPayoutMovements(params: GetUserPayoutMovementsParams): Pr
  * @returns {UserPointsMovementsResponse} User payout movements
  * @example
  * ```typescript
- * const results = await Fuul.getUserPointsMovements({ user_address: '0x12345' }});
+ * const results = await Fuul.getUserPointsMovements({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress }};
  * ```
  **/
 export function getUserPointsMovements(params: GetUserPointsMovementsParams): Promise<UserPointsMovementsResponse> {
@@ -420,7 +422,7 @@ export function getUserPointsMovements(params: GetUserPointsMovementsParams): Pr
  * @returns {Conversion[]} List of conversions
  * @example
  * ```typescript
- * const results = await Fuul.getConversions({ user_address: '0x12345' }});
+ * const results = await Fuul.getConversions({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export async function getConversions(params?: GetConversionsParams): Promise<Conversion[]> {
@@ -487,7 +489,7 @@ export default {
   init,
   sendEvent,
   sendPageview,
-  sendConnectWallet,
+  identifyUser,
   generateTrackingLink,
   getConversions,
   createAffiliateCode,
