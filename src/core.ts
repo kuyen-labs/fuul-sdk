@@ -344,7 +344,7 @@ export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promis
  * @returns {LeaderboardResponse<ReferredUsersLeaderboard>} Referred users leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getReferredUsersLeaderboard({ page: 1, page_size: 10 });;
+ * const results = await Fuul.getReferredUsersLeaderboard({ page: 1, page_size: 10 });
  * ```
  */
 export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardParams): Promise<LeaderboardResponse<ReferredUsersLeaderboard>> {
@@ -357,7 +357,7 @@ export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardP
  * @returns {LeaderboardResponse<VolumeLeaderboard>} Value leaderboard response
  * @example
  * ```typescript
- * const results = await Fuul.getVolumeLeaderboard({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });})
+ * const results = await Fuul.getVolumeLeaderboard({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
@@ -370,7 +370,7 @@ export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promis
  * @returns {UserPayoutsByConversionResponse} User payouts by conversion
  * @example
  * ```typescript
- * const results = await Fuul.getUserPayoutsByConversion({ user_identifier: '0x12345',  identifier_type: UserIdentifierType.EvmAddress }});
+ * const results = await Fuul.getUserPayoutsByConversion({ user_identifier: '0x12345',  identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionParams): Promise<UserPayoutsByConversionResponse> {
@@ -383,7 +383,7 @@ export function getUserPayoutsByConversion(params: GetUserPayoutsByConversionPar
  * @returns {UserPointsByConversionResponse} User points by conversion
  * @example
  * ```typescript
- * const results = await Fuul.getUserPointsByConversion({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress }});
+ * const results = await Fuul.getUserPointsByConversion({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export function getUserPointsByConversion(params: GetUserPointsByConversionParams): Promise<UserPointsByConversionResponse> {
@@ -396,7 +396,7 @@ export function getUserPointsByConversion(params: GetUserPointsByConversionParam
  * @returns {UserPayoutMovementsResponse} User payout movements
  * @example
  * ```typescript
- * const results = await Fuul.getUserPayoutMovements({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress }});
+ * const results = await Fuul.getUserPayoutMovements({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export function getUserPayoutMovements(params: GetUserPayoutMovementsParams): Promise<UserPayoutMovementsResponse> {
@@ -409,7 +409,7 @@ export function getUserPayoutMovements(params: GetUserPayoutMovementsParams): Pr
  * @returns {UserPointsMovementsResponse} User payout movements
  * @example
  * ```typescript
- * const results = await Fuul.getUserPointsMovements({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress }});
+ * const results = await Fuul.getUserPointsMovements({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress }};
  * ```
  **/
 export function getUserPointsMovements(params: GetUserPointsMovementsParams): Promise<UserPointsMovementsResponse> {
@@ -422,7 +422,7 @@ export function getUserPointsMovements(params: GetUserPointsMovementsParams): Pr
  * @returns {Conversion[]} List of conversions
  * @example
  * ```typescript
- * const results = await Fuul.getConversions({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });});
+ * const results = await Fuul.getConversions({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
  * ```
  **/
 export async function getConversions(params?: GetConversionsParams): Promise<Conversion[]> {
