@@ -70,6 +70,8 @@ export class EventService {
         savedEvent.metadata.title === thisEvent.metadata.title &&
         savedEvent.metadata.tag === thisEvent.metadata.tag &&
         savedEvent.user_address === thisEvent.user_address &&
+        savedEvent.user?.identifier === thisEvent.user?.identifier &&
+        savedEvent.user?.identifier_type === thisEvent.user?.identifier_type &&
         savedEvent.signature === thisEvent.signature &&
         savedEvent.signature_message === thisEvent.signature_message;
     }
@@ -97,12 +99,28 @@ export class EventService {
 
     if (event.name === SENT_EVENT_CONNECT_WALLET_KEY) {
       const savedEvents = JSON.parse(localStorage.getItem(SENT_EVENT_LIST_KEY) || '[]');
-      const simplifiedEvent = {
+      const simplifiedEvent: {
+        name: string;
+        user: {
+          identifier: string | undefined;
+          identifier_type: string | undefined;
+        };
+        tracking_id: string | undefined;
+        page: unknown;
+        user_address?: string;
+      } = {
         name: event.name,
-        user_address: event.user_address,
+        user: {
+          identifier: event.user?.identifier,
+          identifier_type: event.user?.identifier_type,
+        },
         tracking_id: event.metadata?.tracking_id,
         page: event.args?.page,
       };
+      if ('user_address' in event) {
+        simplifiedEvent.user_address = (event as any).user_address;
+      }
+
       const savedEventsNew = [...savedEvents, simplifiedEvent];
       if (savedEventsNew.length > SAVED_EVENTS_MAX_SIZE) {
         savedEventsNew.splice(0, savedEventsNew.length - SAVED_EVENTS_MAX_SIZE);
