@@ -189,6 +189,10 @@ export async function identifyUser(params: IdentifyUserParams, projectIds?: stri
     event.signature_message = params?.message;
   }
 
+  if (params?.signaturePublicKey) {
+    event.signature_public_key = params.signaturePublicKey;
+  }
+
   if (params?.accountChainId) {
     event.account_chain_id = params.accountChainId;
   }

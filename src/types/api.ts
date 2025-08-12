@@ -25,6 +25,7 @@ export type FuulEvent = {
   };
   signature?: string;
   signature_message?: string;
+  signature_public_key?: string;
   args?: FuulEventArgs;
   metadata: FuulEventMetadata;
   account_chain_id?: number;

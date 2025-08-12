@@ -12,6 +12,7 @@ export type IdentifyUserParams = {
   identifierType: UserIdentifierType;
   signature?: string;
   message?: string;
+  signaturePublicKey?: string;
   accountChainId?: number;
 };
 
