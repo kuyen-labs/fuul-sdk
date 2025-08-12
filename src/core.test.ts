@@ -180,6 +180,33 @@ describe('SDK core', () => {
       expect(createdEvent.signature).toBe('some-signature');
       expect(createdEvent.signature_message).toBe('some-message');
     });
+
+    it('with signature public key should include signature_public_key in event', () => {
+      jest.spyOn(tracking, 'getTrackingId').mockReturnValue('some-tracking-id');
+
+      const eventServiceMock = EventService as jest.MockedClass<typeof EventService>;
+
+      Fuul.identifyUser({
+        identifier: '0x123',
+        identifierType: UserIdentifierType.EvmAddress,
+        signature: 'some-signature',
+        message: 'some-message',
+        signaturePublicKey: 'some-public-key',
+      });
+
+      const createdEvent = eventServiceMock.prototype.sendEvent.mock.calls[0][0];
+      expect(createdEvent.name).toBe('connect_wallet');
+      expect(createdEvent.user?.identifier).toBe('0x123');
+      expect(createdEvent.user?.identifier_type).toBe(UserIdentifierType.EvmAddress);
+      expect(createdEvent.args).toStrictEqual({
+        locationOrigin: 'https://fuul.test.xyz',
+        page: '/test-page',
+      });
+      expect(createdEvent.metadata).toStrictEqual({ tracking_id: 'some-tracking-id' });
+      expect(createdEvent.signature).toBe('some-signature');
+      expect(createdEvent.signature_message).toBe('some-message');
+      expect(createdEvent.signature_public_key).toBe('some-public-key');
+    });
   });
 
   describe('generateTrackingLink()', () => {
