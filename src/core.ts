@@ -150,7 +150,8 @@ export async function sendPageview(pageName?: string, projectIds?: string[]): Pr
  *   identifier: '0x12345',
  *   identifierType: UserIdentifierType.EvmAddress,
  *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
- *   signatureMessage: 'Accept referral from Fuul'
+ *   message: 'Accept referral from Fuul',
+ *   signaturePublicKey: '<public-key>' // optional
  * })
  *
  *
@@ -159,7 +160,8 @@ export async function sendPageview(pageName?: string, projectIds?: string[]): Pr
  *  identifier: '0x12345',
  *  identifierType: UserIdentifierType.EvmAddress,
  *  signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
- *  signatureMessage: 'Accept referral from Fuul'
+ *  message: 'Accept referral from Fuul',
+ *  signaturePublicKey: '<public-key>', // optional
  *  accountChainId: 8453,
  * })
  * ```
@@ -207,6 +209,7 @@ export async function identifyUser(params: IdentifyUserParams, projectIds?: stri
  * @param {UserIdentifierType} params.identifierType The affiliate identifier type
  * @param {string} params.code Affiliate code to map address to
  * @param {string} params.signature Signed message authenticating address ownership. Message to be signed: `I confirm that I am creating the ${code} code on Fuul`
+ * @param {string} [params.signaturePublicKey] Public key used for signature verification
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
  * @example
  * ```typescript
@@ -214,13 +217,14 @@ export async function identifyUser(params: IdentifyUserParams, projectIds?: stri
  *   userIdentifier: '0x12345',
  *   identifierType: UserIdentifierType.EvmAddress,
  *   code: 'my-cool-code',
- *   signature: '<signature>'
+ *   signature: '<signature>',
+ *   signaturePublicKey: '<public-key>' // optional
  * })
  * ```
  **/
 export async function createAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.create(params.userIdentifier, params.identifierType, params.code, params.signature, params.accountChainId);
+  await _affiliateService.create(params.userIdentifier, params.identifierType, params.code, params.signature, params.signaturePublicKey, params.accountChainId);
 }
 
 /**
@@ -230,6 +234,7 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  * @param {UserIdentifierType} params.identifierType Affiliate identifier type
  * @param {string} params.code New affiliate code
  * @param {string} params.signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
+ * @param {string} [params.signaturePublicKey] Public key used for signature verification
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
  * @example
  * ```typescript
@@ -237,13 +242,14 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  *   userIdentifier: '0x12345',
  *   identifierType: UserIdentifierType.EvmAddress,
  *   code: 'my-new-cool-code',
- *   signature: '<signature>'
+ *   signature: '<signature>',
+ *   signaturePublicKey: '<public-key>' // optional
  * })
  * ```
  **/
 export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.update(params.userIdentifier, params.identifierType, params.code, params.signature, params.accountChainId);
+  await _affiliateService.update(params.userIdentifier, params.identifierType, params.code, params.signature, params.signaturePublicKey, params.accountChainId);
 }
 
 /**
