@@ -31,5 +31,6 @@ export type AffiliateCodeParams = {
   identifierType: UserIdentifierType;
   code: string;
   signature: string;
+  signaturePublicKey?: string;
   accountChainId?: number;
 };
