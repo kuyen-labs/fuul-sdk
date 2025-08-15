@@ -476,7 +476,7 @@ function assertBrowserContext(): void {
 
 function detectAutomation(): void {
   if (navigator.webdriver) {
-    throw new Error(`Fuul SDK: You are using a browser automation tool`);
+    throw new Error(`Fuul SDK: Error`);
   }
 }
 
