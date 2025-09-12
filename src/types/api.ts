@@ -272,7 +272,9 @@ export interface PointsLeaderboard {
   rank: number;
   total_attributions: number;
   tiers?: Record<string, string>;
-  referred_volume?: string;
+  referred_volume?: number;
+  enduser_revenue?: number;
+  enduser_volume?: number;
 }
 
 export interface ReferredUsersLeaderboard {
