@@ -210,7 +210,7 @@ export interface GetPayoutsLeaderboardParams {
   currency_address?: string;
   project_id?: string;
   user_identifier?: string;
-  identifier_type?: UserIdentifierType;
+  user_identifier_type?: UserIdentifierType;
   user_type?: LeaderboardUserType;
   page?: number;
   page_size?: number;
@@ -224,7 +224,7 @@ export interface GetPointsLeaderboardParams {
   currency_address?: string;
   project_id?: string;
   user_identifier?: string;
-  identifier_type?: UserIdentifierType;
+  user_identifier_type?: UserIdentifierType;
   user_type?: LeaderboardUserType;
   page?: number;
   page_size?: number;
