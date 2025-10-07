@@ -408,6 +408,11 @@ export type GetUserAudiencesResponse = {
 export interface UserInviteCode {
   code: string;
   status: string;
+  created_at: string;
+  used_by: {
+    identifier: string;
+    identifier_type: string;
+  } | null;
 }
 
 export interface ListUserInviteCodesParams {
