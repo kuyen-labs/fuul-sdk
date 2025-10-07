@@ -404,3 +404,56 @@ export type GetUserAudiencesResponse = {
   id: string;
   name: string;
 }[];
+
+export interface UserInviteCode {
+  code: string;
+  status: string;
+}
+
+export interface ListUserInviteCodesParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  page?: number;
+  page_size?: number;
+}
+
+export interface ListUserInviteCodesResponse {
+  results: UserInviteCode[];
+  total_count: number;
+  next_page: number | null;
+}
+
+export interface GenerateInviteCodesParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+}
+
+export interface GenerateInviteCodesResponse {
+  code: string;
+}
+
+export interface GetInvitationStatusParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+}
+
+export interface GetInvitationStatusResponse {
+  invited: boolean;
+  code?: string;
+}
+
+export interface CheckInviteCodeParams {
+  code: string;
+}
+
+export interface CheckInviteCodeResponse {
+  is_free: boolean;
+}
+
+export interface UseInviteCodeParams {
+  code: string;
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  signature: string;
+  signature_message: string;
+}

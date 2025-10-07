@@ -4,13 +4,20 @@ import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
+import { InviteCodeService } from './invite-codes/InviteCodeService';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
 import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getTrafficSource, getTrafficTag, getTrafficTitle } from './tracking';
 import {
+  CheckInviteCodeParams,
+  CheckInviteCodeResponse,
   Conversion,
   FuulEvent,
+  GenerateInviteCodesParams,
+  GenerateInviteCodesResponse,
   GetConversionsParams,
+  GetInvitationStatusParams,
+  GetInvitationStatusResponse,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
   GetReferredUsersLeaderboardParams,
@@ -22,9 +29,12 @@ import {
   GetUserPointsMovementsParams,
   GetVolumeLeaderboardParams,
   LeaderboardResponse,
+  ListUserInviteCodesParams,
+  ListUserInviteCodesResponse,
   PayoutsLeaderboard,
   PointsLeaderboard,
   ReferredUsersLeaderboard,
+  UseInviteCodeParams,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
@@ -48,6 +58,7 @@ let _eventService: EventService;
 let _payoutService: PayoutService;
 let _audienceService: AudienceService;
 let _leaderboardService: LeaderboardService;
+let _inviteCodeService: InviteCodeService;
 
 export function init(settings: FuulSettings) {
   _debug = !!settings.debug;
@@ -68,6 +79,7 @@ export function init(settings: FuulSettings) {
   _userService = new UserService({ httpClient: _httpClient });
   _audienceService = new AudienceService({ httpClient: _httpClient, debug: _debug });
   _leaderboardService = new LeaderboardService({ httpClient: _httpClient });
+  _inviteCodeService = new InviteCodeService({ httpClient: _httpClient, debug: _debug });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -224,7 +236,14 @@ export async function identifyUser(params: IdentifyUserParams, projectIds?: stri
  **/
 export async function createAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.create(params.userIdentifier, params.identifierType, params.code, params.signature, params.signaturePublicKey, params.accountChainId);
+  await _affiliateService.create(
+    params.userIdentifier,
+    params.identifierType,
+    params.code,
+    params.signature,
+    params.signaturePublicKey,
+    params.accountChainId,
+  );
 }
 
 /**
@@ -249,7 +268,14 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  **/
 export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.update(params.userIdentifier, params.identifierType, params.code, params.signature, params.signaturePublicKey, params.accountChainId);
+  await _affiliateService.update(
+    params.userIdentifier,
+    params.identifierType,
+    params.code,
+    params.signature,
+    params.signaturePublicKey,
+    params.accountChainId,
+  );
 }
 
 /**
@@ -468,6 +494,99 @@ export async function getUserAudiences(params: GetUserAudiencesParams): Promise<
   return _audienceService.getUserAudiences(params);
 }
 
+/**
+ * Lists invite codes for a user
+ * @param {ListUserInviteCodesParams} params List user invite codes parameters
+ * @returns {Promise<ListUserInviteCodesResponse>} List of user invite codes with pagination
+ * @example
+ * ```typescript
+ * const result = await Fuul.listUserInviteCodes({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   page: 1,
+ *   page_size: 25
+ * });
+ * ```
+ */
+export async function listUserInviteCodes(params: ListUserInviteCodesParams): Promise<ListUserInviteCodesResponse> {
+  assertInitialized();
+  return _inviteCodeService.listUserInviteCodes(params);
+}
+
+/**
+ * Generates invite codes for a user
+ * @param {GenerateInviteCodesParams} params Generate invite codes parameters
+ * @returns {Promise<GenerateInviteCodesResponse[]>} Generated invite codes
+ * @example
+ * ```typescript
+ * const codes = await Fuul.generateInviteCodes({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * ```
+ */
+export async function generateInviteCodes(params: GenerateInviteCodesParams): Promise<GenerateInviteCodesResponse[]> {
+  assertInitialized();
+  return _inviteCodeService.generateInviteCodes(params);
+}
+
+/**
+ * Gets the invitation status for a user
+ * @param {GetInvitationStatusParams} params Get invitation status parameters
+ * @returns {Promise<GetInvitationStatusResponse>} Invitation status
+ * @example
+ * ```typescript
+ * const status = await Fuul.getInvitationStatus({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * if (status.invited) {
+ *   console.log('User was invited with code:', status.code);
+ * }
+ * ```
+ */
+export async function getInvitationStatus(params: GetInvitationStatusParams): Promise<GetInvitationStatusResponse> {
+  assertInitialized();
+  return _inviteCodeService.getInvitationStatus(params);
+}
+
+/**
+ * Checks if an invite code is free to use
+ * @param {CheckInviteCodeParams} params Check invite code parameters
+ * @returns {Promise<CheckInviteCodeResponse>} Check result
+ * @example
+ * ```typescript
+ * const result = await Fuul.checkInviteCode({ code: 'WELCOME2024' });
+ * if (result.is_free) {
+ *   console.log('Invite code is available!');
+ * }
+ * ```
+ */
+export async function checkInviteCode(params: CheckInviteCodeParams): Promise<CheckInviteCodeResponse> {
+  assertInitialized();
+  return _inviteCodeService.checkInviteCode(params);
+}
+
+/**
+ * Uses an invite code
+ * @param {UseInviteCodeParams} params Use invite code parameters
+ * @returns {Promise<void>}
+ * @example
+ * ```typescript
+ * await Fuul.useInviteCode({
+ *   code: 'WELCOME2024',
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
+ *   signature_message: 'Accept invitation'
+ * });
+ * ```
+ */
+export async function useInviteCode(params: UseInviteCodeParams): Promise<void> {
+  assertInitialized();
+  return _inviteCodeService.useInviteCode(params);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -516,4 +635,9 @@ export default {
   getUserPayoutMovements,
   getUserAffiliates,
   getVolumeLeaderboard,
+  listUserInviteCodes,
+  generateInviteCodes,
+  getInvitationStatus,
+  checkInviteCode,
+  useInviteCode,
 };

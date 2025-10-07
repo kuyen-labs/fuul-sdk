@@ -66,6 +66,15 @@ export class HttpClient {
     });
   }
 
+  async patch<T>(req: Request): Promise<AxiosResponse<T>> {
+    return this.client.request<T>({
+      url: req.path,
+      params: this.makeQueryParams(req.queryParams),
+      data: req.postData,
+      method: 'PATCH',
+    });
+  }
+
   async delete<T>(req: Request): Promise<AxiosResponse<T>> {
     return this.client.request<T>({
       url: req.path,
