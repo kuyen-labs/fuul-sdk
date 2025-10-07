@@ -456,4 +456,5 @@ export interface UseInviteCodeParams {
   user_identifier_type: UserIdentifierType;
   signature: string;
   signature_message: string;
+  chain_id?: number;
 }

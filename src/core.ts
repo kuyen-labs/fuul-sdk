@@ -556,7 +556,7 @@ export async function getInvitationStatus(params: GetInvitationStatusParams): Pr
  * @returns {Promise<CheckInviteCodeResponse>} Check result
  * @example
  * ```typescript
- * const result = await Fuul.checkInviteCode({ code: 'WELCOME2024' });
+ * const result = await Fuul.checkInviteCode({ code: 'abc1234' });
  * if (result.is_free) {
  *   console.log('Invite code is available!');
  * }
@@ -574,11 +574,11 @@ export async function checkInviteCode(params: CheckInviteCodeParams): Promise<Ch
  * @example
  * ```typescript
  * await Fuul.useInviteCode({
- *   code: 'WELCOME2024',
+ *   code: 'abc1234',
  *   user_identifier: '0x12345',
  *   user_identifier_type: UserIdentifierType.EvmAddress,
  *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
- *   signature_message: 'Accept invitation'
+ *   signature_message: 'I am using invite code abc1234',
  * });
  * ```
  */

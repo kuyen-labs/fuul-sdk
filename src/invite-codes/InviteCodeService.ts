@@ -71,13 +71,14 @@ export class InviteCodeService {
   }
 
   public async useInviteCode(params: UseInviteCodeParams): Promise<void> {
-    const { code, user_identifier, user_identifier_type, signature, signature_message } = params;
+    const { code, user_identifier, user_identifier_type, signature, signature_message, chain_id } = params;
     await this.httpClient.patch<void>({
       path: `/invite_codes/use`,
       queryParams: {
         code,
         user_identifier,
         user_identifier_type,
+        chain_id,
       },
       postData: {
         signature,
