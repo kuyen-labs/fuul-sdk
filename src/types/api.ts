@@ -431,6 +431,7 @@ export interface ListUserInviteCodesResponse {
 export interface GenerateInviteCodesParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
+  quantity?: number;
 }
 
 export interface GenerateInviteCodesResponse {
