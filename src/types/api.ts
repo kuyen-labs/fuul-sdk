@@ -248,12 +248,14 @@ export interface LeaderboardResponse<T> {
 export interface PayoutsLeaderboard {
   address: string;
   affiliate_code?: string;
-  total_amount: string;
-  chain_id: number;
+  user_identifier: string;
+  user_identifier_type: string;
   rank: number;
+  chain_id: number;
+  total_amount: number;
   total_attributions: number;
   tiers?: Record<string, string>;
-  referred_volume?: string;
+  referred_volume?: number;
   referred_users?: number;
 }
 
@@ -268,12 +270,13 @@ export interface VolumeLeaderboard {
 export interface PointsLeaderboard {
   address: string;
   affiliate_code?: string;
-  total_amount: string;
+  total_amount: number;
   rank: number;
   total_attributions: number;
   tiers?: Record<string, string>;
   referred_volume?: number;
   enduser_revenue?: number;
+  referred_users?: number;
   enduser_volume?: number;
 }
 
