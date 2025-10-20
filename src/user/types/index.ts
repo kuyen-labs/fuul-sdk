@@ -1,6 +1,8 @@
+import { UserIdentifierType } from 'src/types/user';
+
 export interface GetUserReferrerParams {
   user_identifier: string;
-  user_identifier_type: string;
+  user_identifier_type: UserIdentifierType;
 }
 
 export interface GetUserReferrerResponse {
