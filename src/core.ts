@@ -42,7 +42,7 @@ import {
   VolumeLeaderboard,
 } from './types/api';
 import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
-import { GetUserAffiliatesParams, UserAffiliate } from './user/types';
+import { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
 import { UserService } from './user/UserService';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
@@ -467,17 +467,21 @@ export async function getConversions(params?: GetConversionsParams): Promise<Con
 }
 
 /**
- *
- * @param {GetUserAffiliatesParams} params The query params
- * @returns {Promise<UserAffiliate[]>} List of user affiliates
+ * Gets the referrer information for a user
+ * @param {GetUserReferrerParams} params The query params
+ * @returns {Promise<GetUserReferrerResponse>} User referrer information
  * @example
  * ```typescript
- * const results = await Fuul.getUserAffiliates({ user_address: '0x12345' });
+ * const result = await Fuul.getUserReferrer({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * // result: { user_identifier: '0x12345', referrer_identifier: '0xabcde' }
  * ```
  */
-export async function getUserAffiliates(params: GetUserAffiliatesParams): Promise<UserAffiliate[]> {
+export async function getUserReferrer(params: GetUserReferrerParams): Promise<GetUserReferrerResponse> {
   assertInitialized();
-  return _userService.getUserAffiliates(params);
+  return _userService.getUserReferrer(params);
 }
 
 /**
@@ -633,7 +637,7 @@ export default {
   getUserPointsByConversion,
   getUserPointsMovements,
   getUserPayoutMovements,
-  getUserAffiliates,
+  getUserReferrer,
   getVolumeLeaderboard,
   listUserInviteCodes,
   generateInviteCodes,
