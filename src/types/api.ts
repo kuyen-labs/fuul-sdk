@@ -410,12 +410,15 @@ export type GetUserAudiencesResponse = {
 
 export interface UserInviteCode {
   code: string;
-  status: string;
   created_at: string;
   used_by: {
     identifier: string;
     identifier_type: string;
-  } | null;
+    used_at: string;
+  }[];
+  max_uses: number | null;
+  uses: number;
+  remaining_uses: number | null;
 }
 
 export interface ListUserInviteCodesParams {
@@ -427,7 +430,7 @@ export interface ListUserInviteCodesParams {
 
 export interface ListUserInviteCodesResponse {
   results: UserInviteCode[];
-  total_count: number;
+  count: number;
   next_page: number | null;
 }
 
@@ -435,6 +438,7 @@ export interface GenerateInviteCodesParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
   quantity?: number;
+  max_uses?: number;
 }
 
 export interface GenerateInviteCodesResponse {
