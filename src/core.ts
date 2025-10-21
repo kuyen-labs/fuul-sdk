@@ -525,7 +525,9 @@ export async function listUserInviteCodes(params: ListUserInviteCodesParams): Pr
  * ```typescript
  * const codes = await Fuul.generateInviteCodes({
  *   user_identifier: '0x12345',
- *   user_identifier_type: UserIdentifierType.EvmAddress
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   quantity: 5,
+ *   max_uses: 10
  * });
  * ```
  */

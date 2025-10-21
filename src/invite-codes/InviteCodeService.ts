@@ -45,6 +45,7 @@ export class InviteCodeService {
         user_identifier: params.user_identifier,
         user_identifier_type: params.user_identifier_type,
         quantity: params.quantity,
+        max_uses: params.max_uses,
       },
     });
     return response.data;
