@@ -34,6 +34,7 @@ import {
   PayoutsLeaderboard,
   PointsLeaderboard,
   ReferredUsersLeaderboard,
+  UpdateInviteCodeParams,
   UseInviteCodeParams,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
@@ -593,6 +594,36 @@ export async function useInviteCode(params: UseInviteCodeParams): Promise<void> 
   return _inviteCodeService.useInviteCode(params);
 }
 
+/**
+ * Updates the properties of an existing invite code
+ * @param {UpdateInviteCodeParams} params Update invite code parameters
+ * @returns {Promise<void>}
+ * @example
+ * ```typescript
+ * // Set maximum uses to 10
+ * await Fuul.updateInviteCode({
+ *   code: 'ABC1234',
+ *   max_uses: 10
+ * });
+ *
+ * // Set unlimited uses
+ * await Fuul.updateInviteCode({
+ *   code: 'ABC1234',
+ *   max_uses: null
+ * });
+ *
+ * // Disable code (set to 0 uses)
+ * await Fuul.updateInviteCode({
+ *   code: 'ABC1234',
+ *   max_uses: 0
+ * });
+ * ```
+ */
+export async function updateInviteCode(params: UpdateInviteCodeParams): Promise<void> {
+  assertInitialized();
+  return _inviteCodeService.updateInviteCode(params);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -646,4 +677,5 @@ export default {
   getInvitationStatus,
   checkInviteCode,
   useInviteCode,
+  updateInviteCode,
 };

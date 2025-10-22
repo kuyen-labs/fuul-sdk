@@ -473,3 +473,8 @@ export interface UseInviteCodeParams {
   signature_message: string;
   chain_id?: number;
 }
+
+export interface UpdateInviteCodeParams {
+  code: string;
+  max_uses: number | null;
+}

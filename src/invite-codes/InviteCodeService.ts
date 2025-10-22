@@ -8,6 +8,7 @@ import {
   GetInvitationStatusResponse,
   ListUserInviteCodesParams,
   ListUserInviteCodesResponse,
+  UpdateInviteCodeParams,
   UseInviteCodeParams,
 } from '../types/api';
 
@@ -85,6 +86,18 @@ export class InviteCodeService {
       postData: {
         signature,
         signature_message,
+      },
+    });
+  }
+
+  public async updateInviteCode(params: UpdateInviteCodeParams): Promise<void> {
+    await this.httpClient.patch<void>({
+      path: `/invite_codes`,
+      queryParams: {
+        code: params.code,
+      },
+      postData: {
+        max_uses: params.max_uses,
       },
     });
   }

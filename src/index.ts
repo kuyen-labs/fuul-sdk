@@ -11,6 +11,7 @@ export type {
   GetInvitationStatusResponse,
   ListUserInviteCodesParams,
   ListUserInviteCodesResponse,
+  UpdateInviteCodeParams,
   UseInviteCodeParams,
   UserInviteCode,
 } from './types/api';
