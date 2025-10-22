@@ -453,6 +453,8 @@ export interface GetInvitationStatusParams {
 export interface GetInvitationStatusResponse {
   invited: boolean;
   code?: string;
+  referrer_identifier: string;
+  referrer_identifier_type: UserIdentifierType;
 }
 
 export interface CheckInviteCodeParams {
