@@ -408,7 +408,7 @@ export type GetUserAudiencesResponse = {
   name: string;
 }[];
 
-export interface UserInviteCode {
+export interface UserReferralCode {
   code: string;
   created_at: string;
   used_by: {
@@ -421,51 +421,51 @@ export interface UserInviteCode {
   remaining_uses: number | null;
 }
 
-export interface ListUserInviteCodesParams {
+export interface ListUserReferralCodesParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
   page?: number;
   page_size?: number;
 }
 
-export interface ListUserInviteCodesResponse {
-  results: UserInviteCode[];
+export interface ListUserReferralCodesResponse {
+  results: UserReferralCode[];
   count: number;
   next_page: number | null;
 }
 
-export interface GenerateInviteCodesParams {
+export interface GenerateReferralCodesParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
   quantity?: number;
   max_uses?: number;
 }
 
-export interface GenerateInviteCodesResponse {
+export interface GenerateReferralCodesResponse {
   code: string;
 }
 
-export interface GetInvitationStatusParams {
+export interface GetReferralStatusParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
 }
 
-export interface GetInvitationStatusResponse {
-  invited: boolean;
+export interface GetReferralStatusResponse {
+  referred: boolean;
   code?: string;
-  referrer_identifier: string;
-  referrer_identifier_type: UserIdentifierType;
+  referrer_identifier?: string;
+  referrer_identifier_type?: UserIdentifierType;
 }
 
-export interface CheckInviteCodeParams {
+export interface GetReferralCodeParams {
   code: string;
 }
 
-export interface CheckInviteCodeResponse {
-  is_free: boolean;
+export interface GetReferralCodeResponse {
+  available: boolean;
 }
 
-export interface UseInviteCodeParams {
+export interface UseReferralCodeParams {
   code: string;
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
@@ -474,7 +474,7 @@ export interface UseInviteCodeParams {
   chain_id?: number;
 }
 
-export interface UpdateInviteCodeParams {
+export interface UpdateReferralCodeParams {
   code: string;
   max_uses: number | null;
 }

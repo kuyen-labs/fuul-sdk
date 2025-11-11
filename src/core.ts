@@ -4,22 +4,22 @@ import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
-import { InviteCodeService } from './invite-codes/InviteCodeService';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
+import { ReferralCodeService } from './referral-codes/ReferralCodeService';
 import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getTrafficSource, getTrafficTag, getTrafficTitle } from './tracking';
 import {
-  CheckInviteCodeParams,
-  CheckInviteCodeResponse,
   Conversion,
   FuulEvent,
-  GenerateInviteCodesParams,
-  GenerateInviteCodesResponse,
+  GenerateReferralCodesParams,
+  GenerateReferralCodesResponse,
   GetConversionsParams,
-  GetInvitationStatusParams,
-  GetInvitationStatusResponse,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
+  GetReferralCodeParams,
+  GetReferralCodeResponse,
+  GetReferralStatusParams,
+  GetReferralStatusResponse,
   GetReferredUsersLeaderboardParams,
   GetUserAudiencesParams,
   GetUserAudiencesResponse,
@@ -29,13 +29,13 @@ import {
   GetUserPointsMovementsParams,
   GetVolumeLeaderboardParams,
   LeaderboardResponse,
-  ListUserInviteCodesParams,
-  ListUserInviteCodesResponse,
+  ListUserReferralCodesParams,
+  ListUserReferralCodesResponse,
   PayoutsLeaderboard,
   PointsLeaderboard,
   ReferredUsersLeaderboard,
-  UpdateInviteCodeParams,
-  UseInviteCodeParams,
+  UpdateReferralCodeParams,
+  UseReferralCodeParams,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
@@ -59,7 +59,7 @@ let _eventService: EventService;
 let _payoutService: PayoutService;
 let _audienceService: AudienceService;
 let _leaderboardService: LeaderboardService;
-let _inviteCodeService: InviteCodeService;
+let _referralCodeService: ReferralCodeService;
 
 export function init(settings: FuulSettings) {
   _debug = !!settings.debug;
@@ -80,7 +80,7 @@ export function init(settings: FuulSettings) {
   _userService = new UserService({ httpClient: _httpClient });
   _audienceService = new AudienceService({ httpClient: _httpClient, debug: _debug });
   _leaderboardService = new LeaderboardService({ httpClient: _httpClient });
-  _inviteCodeService = new InviteCodeService({ httpClient: _httpClient, debug: _debug });
+  _referralCodeService = new ReferralCodeService({ httpClient: _httpClient, debug: _debug });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -500,12 +500,12 @@ export async function getUserAudiences(params: GetUserAudiencesParams): Promise<
 }
 
 /**
- * Lists invite codes for a user
- * @param {ListUserInviteCodesParams} params List user invite codes parameters
- * @returns {Promise<ListUserInviteCodesResponse>} List of user invite codes with pagination
+ * Lists referral codes for a user
+ * @param {ListUserReferralCodesParams} params List user referral codes parameters
+ * @returns {Promise<ListUserReferralCodesResponse>} List of user referral codes with pagination
  * @example
  * ```typescript
- * const result = await Fuul.listUserInviteCodes({
+ * const result = await Fuul.listUserReferralCodes({
  *   user_identifier: '0x12345',
  *   user_identifier_type: UserIdentifierType.EvmAddress,
  *   page: 1,
@@ -513,18 +513,18 @@ export async function getUserAudiences(params: GetUserAudiencesParams): Promise<
  * });
  * ```
  */
-export async function listUserInviteCodes(params: ListUserInviteCodesParams): Promise<ListUserInviteCodesResponse> {
+export async function listUserReferralCodes(params: ListUserReferralCodesParams): Promise<ListUserReferralCodesResponse> {
   assertInitialized();
-  return _inviteCodeService.listUserInviteCodes(params);
+  return _referralCodeService.listUserReferralCodes(params);
 }
 
 /**
- * Generates invite codes for a user
- * @param {GenerateInviteCodesParams} params Generate invite codes parameters
- * @returns {Promise<GenerateInviteCodesResponse[]>} Generated invite codes
+ * Generates referral codes for a user
+ * @param {GenerateReferralCodesParams} params Generate referral codes parameters
+ * @returns {Promise<GenerateReferralCodesResponse[]>} Generated referral codes
  * @example
  * ```typescript
- * const codes = await Fuul.generateInviteCodes({
+ * const codes = await Fuul.generateReferralCodes({
  *   user_identifier: '0x12345',
  *   user_identifier_type: UserIdentifierType.EvmAddress,
  *   quantity: 5,
@@ -532,96 +532,96 @@ export async function listUserInviteCodes(params: ListUserInviteCodesParams): Pr
  * });
  * ```
  */
-export async function generateInviteCodes(params: GenerateInviteCodesParams): Promise<GenerateInviteCodesResponse[]> {
+export async function generateReferralCodes(params: GenerateReferralCodesParams): Promise<GenerateReferralCodesResponse[]> {
   assertInitialized();
-  return _inviteCodeService.generateInviteCodes(params);
+  return _referralCodeService.generateReferralCodes(params);
 }
 
 /**
- * Gets the invitation status for a user
- * @param {GetInvitationStatusParams} params Get invitation status parameters
- * @returns {Promise<GetInvitationStatusResponse>} Invitation status
+ * Gets the referral status for a user
+ * @param {GetReferralStatusParams} params Get referral status parameters
+ * @returns {Promise<GetReferralStatusResponse>} referral status
  * @example
  * ```typescript
- * const status = await Fuul.getInvitationStatus({
+ * const status = await Fuul.getReferralStatus({
  *   user_identifier: '0x12345',
  *   user_identifier_type: UserIdentifierType.EvmAddress
  * });
- * if (status.invited) {
- *   console.log('User was invited with code:', status.code);
+ * if (status.referred) {
+ *   console.log('User was referred with code:', status.code);
  * }
  * ```
  */
-export async function getInvitationStatus(params: GetInvitationStatusParams): Promise<GetInvitationStatusResponse> {
+export async function getReferralStatus(params: GetReferralStatusParams): Promise<GetReferralStatusResponse> {
   assertInitialized();
-  return _inviteCodeService.getInvitationStatus(params);
+  return _referralCodeService.getReferralStatus(params);
 }
 
 /**
- * Checks if an invite code is free to use
- * @param {CheckInviteCodeParams} params Check invite code parameters
- * @returns {Promise<CheckInviteCodeResponse>} Check result
+ * Checks if an referral code is free to use
+ * @param {GetReferralCodeParams} params Check referral code parameters
+ * @returns {Promise<GetReferralCodeResponse>} Check result
  * @example
  * ```typescript
- * const result = await Fuul.checkInviteCode({ code: 'abc1234' });
- * if (result.is_free) {
- *   console.log('Invite code is available!');
+ * const result = await Fuul.getReferralCode({ code: 'abc1234' });
+ * if (result.available) {
+ *   console.log('Referral code is available!');
  * }
  * ```
  */
-export async function checkInviteCode(params: CheckInviteCodeParams): Promise<CheckInviteCodeResponse> {
+export async function getReferralCode(params: GetReferralCodeParams): Promise<GetReferralCodeResponse> {
   assertInitialized();
-  return _inviteCodeService.checkInviteCode(params);
+  return _referralCodeService.getReferralCode(params);
 }
 
 /**
- * Uses an invite code
- * @param {UseInviteCodeParams} params Use invite code parameters
+ * Uses an referral code
+ * @param {UseReferralCodeParams} params Use referral code parameters
  * @returns {Promise<void>}
  * @example
  * ```typescript
- * await Fuul.useInviteCode({
+ * await Fuul.useReferralCode({
  *   code: 'abc1234',
  *   user_identifier: '0x12345',
  *   user_identifier_type: UserIdentifierType.EvmAddress,
  *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
- *   signature_message: 'I am using invite code abc1234',
+ *   signature_message: 'I am using referral code abc1234',
  * });
  * ```
  */
-export async function useInviteCode(params: UseInviteCodeParams): Promise<void> {
+export async function useReferralCode(params: UseReferralCodeParams): Promise<void> {
   assertInitialized();
-  return _inviteCodeService.useInviteCode(params);
+  return _referralCodeService.useReferralCode(params);
 }
 
 /**
- * Updates the properties of an existing invite code
- * @param {UpdateInviteCodeParams} params Update invite code parameters
+ * Updates the properties of an existing referral code
+ * @param {UpdateReferralCodeParams} params Update referral code parameters
  * @returns {Promise<void>}
  * @example
  * ```typescript
  * // Set maximum uses to 10
- * await Fuul.updateInviteCode({
+ * await Fuul.updateReferralCode({
  *   code: 'ABC1234',
  *   max_uses: 10
  * });
  *
  * // Set unlimited uses
- * await Fuul.updateInviteCode({
+ * await Fuul.updateReferralCode({
  *   code: 'ABC1234',
  *   max_uses: null
  * });
  *
  * // Disable code (set to 0 uses)
- * await Fuul.updateInviteCode({
+ * await Fuul.updateReferralCode({
  *   code: 'ABC1234',
  *   max_uses: 0
  * });
  * ```
  */
-export async function updateInviteCode(params: UpdateInviteCodeParams): Promise<void> {
+export async function updateReferralCode(params: UpdateReferralCodeParams): Promise<void> {
   assertInitialized();
-  return _inviteCodeService.updateInviteCode(params);
+  return _referralCodeService.updateReferralCode(params);
 }
 
 function assertBrowserContext(): void {
@@ -672,10 +672,10 @@ export default {
   getUserPayoutMovements,
   getUserReferrer,
   getVolumeLeaderboard,
-  listUserInviteCodes,
-  generateInviteCodes,
-  getInvitationStatus,
-  checkInviteCode,
-  useInviteCode,
-  updateInviteCode,
+  listUserReferralCodes,
+  generateReferralCodes,
+  getReferralStatus,
+  getReferralCode,
+  useReferralCode,
+  updateReferralCode,
 };
