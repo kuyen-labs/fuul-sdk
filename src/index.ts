@@ -2,18 +2,18 @@ import Fuul from './core';
 
 export * from './affiliates/errors';
 export type {
-  CheckInviteCodeParams,
-  CheckInviteCodeResponse,
+  GetReferralCodeParams,
+  GetReferralCodeResponse,
   Conversion,
-  GenerateInviteCodesParams,
-  GenerateInviteCodesResponse,
-  GetInvitationStatusParams,
-  GetInvitationStatusResponse,
-  ListUserInviteCodesParams,
-  ListUserInviteCodesResponse,
-  UpdateInviteCodeParams,
-  UseInviteCodeParams,
-  UserInviteCode,
+  GenerateReferralCodesParams,
+  GenerateReferralCodesResponse,
+  GetReferralStatusParams,
+  GetReferralStatusResponse,
+  ListUserReferralCodesParams,
+  ListUserReferralCodesResponse,
+  UpdateReferralCodeParams,
+  UseReferralCodeParams,
+  UserReferralCode,
 } from './types/api';
 export type { EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
 export { UserIdentifierType } from './types/user';
