@@ -459,6 +459,7 @@ export interface GetReferralStatusResponse {
   code?: string;
   referrer_identifier?: string;
   referrer_identifier_type?: UserIdentifierType;
+  referred_at?: string;
 }
 
 export interface GetReferralCodeParams {
