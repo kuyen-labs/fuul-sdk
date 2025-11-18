@@ -92,10 +92,7 @@ export class ReferralCodeService {
 
   public async updateReferralCode(params: UpdateReferralCodeParams): Promise<void> {
     await this.httpClient.patch<void>({
-      path: `/referral_codes`,
-      queryParams: {
-        code: params.code,
-      },
+      path: `/referral_codes/${params.code}`,
       postData: {
         max_uses: params.max_uses,
       },

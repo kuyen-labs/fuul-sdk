@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 
 import { UserIdentifierType } from '..';
 import { HttpClient } from '../HttpClient';
-import { Affiliate } from '../types/api';
+import { Affiliate, CheckAffiliateCodeAvailabilityResponse } from '../types/api';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
 export type AffiliateServiceSettings = {
@@ -103,14 +103,9 @@ export class AffiliateService {
 
   public async isCodeFree(code: string): Promise<boolean> {
     try {
-      await this.httpClient.get<Affiliate>({ path: `/affiliates/codes/${code}` });
-      return false;
+      const res = await this.httpClient.get<CheckAffiliateCodeAvailabilityResponse>({ path: `/affiliates/codes/${code}` });
+      return res.data.available;
     } catch (e) {
-      if (e instanceof AxiosError) {
-        if (e.response?.status === 404) {
-          return true;
-        }
-      }
       console.error(`Fuul SDK: Could not check affiliate code`, e);
       throw e;
     }

@@ -91,6 +91,10 @@ export type Affiliate = {
   code: string;
 };
 
+export type CheckAffiliateCodeAvailabilityResponse = {
+  available: boolean;
+};
+
 export type Project = {
   category: string;
   conversions: Conversion[] | [];
