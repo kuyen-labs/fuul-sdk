@@ -14,6 +14,7 @@ import {
   GenerateReferralCodesParams,
   GenerateReferralCodesResponse,
   GetConversionsParams,
+  GetPayoutsByReferrerParams,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
   GetReferralCodeParams,
@@ -31,6 +32,7 @@ import {
   LeaderboardResponse,
   ListUserReferralCodesParams,
   ListUserReferralCodesResponse,
+  PayoutsByReferrerResponse,
   PayoutsLeaderboard,
   PointsLeaderboard,
   ReferredUsersLeaderboard,
@@ -454,6 +456,20 @@ export function getUserPointsMovements(params: GetUserPointsMovementsParams): Pr
 }
 
 /**
+ * Gets payouts and volumes by referrer
+ * @param {GetPayoutsByReferrerParams} params The search params
+ * @returns {PayoutsByReferrerResponse} Object where each key is a referrer address with volume and earnings
+ * @example
+ * ```typescript
+ * const results = await Fuul.getPayoutsByReferrer({ user_identifier: '0x12345', user_identifier_type: UserIdentifierType.EvmAddress });
+ * ```
+ **/
+export function getPayoutsByReferrer(params: GetPayoutsByReferrerParams): Promise<PayoutsByReferrerResponse> {
+  assertInitialized();
+  return _payoutService.getPayoutsByReferrer(params);
+}
+
+/**
  * Gets user point movements
  * @param {GetConversionsParams} params The search params
  * @returns {Conversion[]} List of conversions
@@ -670,6 +686,7 @@ export default {
   getUserPointsByConversion,
   getUserPointsMovements,
   getUserPayoutMovements,
+  getPayoutsByReferrer,
   getUserReferrer,
   getVolumeLeaderboard,
   listUserReferralCodes,
