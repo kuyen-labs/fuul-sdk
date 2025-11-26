@@ -407,10 +407,15 @@ export interface GetUserAudiencesParams {
   identifier_type: UserIdentifierType;
 }
 
-export type GetUserAudiencesResponse = {
-  id: string;
-  name: string;
-}[];
+export interface GetUserAudiencesResponse {
+  results: {
+    id: string;
+    name: string;
+    badge_name: string | null;
+    badge_description: string | null;
+    badge_image: string | null;
+  }[];
+}
 
 export interface UserReferralCode {
   code: string;
@@ -495,6 +500,8 @@ export interface EarningItem {
 export interface ReferrerPayoutData {
   volume: number;
   earnings: EarningItem[];
+  date_joined: string;
+  event_referrer_identifier: string;
 }
 
 export type PayoutsByReferrerResponse = Array<Record<string, ReferrerPayoutData>>;
