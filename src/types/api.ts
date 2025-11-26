@@ -407,10 +407,15 @@ export interface GetUserAudiencesParams {
   identifier_type: UserIdentifierType;
 }
 
-export type GetUserAudiencesResponse = {
-  id: string;
-  name: string;
-}[];
+export interface GetUserAudiencesResponse {
+  results: {
+    id: string;
+    name: string;
+    badge_name: string | null;
+    badge_description: string | null;
+    badge_image: string | null;
+  }[];
+}
 
 export interface UserReferralCode {
   code: string;

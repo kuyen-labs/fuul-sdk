@@ -19,7 +19,7 @@ export class AudienceService {
 
   public async getUserAudiences(params: GetUserAudiencesParams): Promise<GetUserAudiencesResponse> {
     const results = await this.httpClient.get<GetUserAudiencesResponse>({
-      path: `${basePath}/user`,
+      path: `${basePath}/audience-segments/user`,
       queryParams: { ...params },
     });
     return results.data;
