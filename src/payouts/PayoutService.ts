@@ -1,11 +1,13 @@
 import { HttpClient } from '../HttpClient';
 import {
+  GetPayoutsByReferrerParams,
   GetUserPayoutMovementsParams,
   GetUserPayoutsByConversionParams,
   GetUserPointsByConversionParams,
   GetUserPointsMovementsParams,
   GetVolumeLeaderboardParams,
   LeaderboardResponse,
+  PayoutsByReferrerResponse,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
@@ -65,6 +67,17 @@ export class PayoutService {
     const results = await this.httpClient.get<LeaderboardResponse<VolumeLeaderboard>>({
       path: `${basePath}/leaderboard/volume`,
       queryParams: { ...params },
+    });
+    return results.data;
+  }
+
+  public async getPayoutsByReferrer(params: GetPayoutsByReferrerParams): Promise<PayoutsByReferrerResponse> {
+    const results = await this.httpClient.get<PayoutsByReferrerResponse>({
+      path: `${basePath}/by-referrer`,
+      queryParams: {
+        user_identifier: params.user_identifier,
+        user_identifier_type: params.user_identifier_type,
+      },
     });
     return results.data;
   }

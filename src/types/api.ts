@@ -483,3 +483,23 @@ export interface UpdateReferralCodeParams {
   code: string;
   max_uses: number | null;
 }
+
+export interface EarningItem {
+  currency: {
+    address: string | null;
+    chainId: string | null;
+  };
+  amount: number;
+}
+
+export interface ReferrerPayoutData {
+  volume: number;
+  earnings: EarningItem[];
+}
+
+export type PayoutsByReferrerResponse = Array<Record<string, ReferrerPayoutData>>;
+
+export interface GetPayoutsByReferrerParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+}

@@ -2,15 +2,19 @@ import Fuul from './core';
 
 export * from './affiliates/errors';
 export type {
-  GetReferralCodeParams,
-  GetReferralCodeResponse,
   Conversion,
+  EarningItem,
   GenerateReferralCodesParams,
   GenerateReferralCodesResponse,
+  GetPayoutsByReferrerParams,
+  GetReferralCodeParams,
+  GetReferralCodeResponse,
   GetReferralStatusParams,
   GetReferralStatusResponse,
   ListUserReferralCodesParams,
   ListUserReferralCodesResponse,
+  PayoutsByReferrerResponse,
+  ReferrerPayoutData,
   UpdateReferralCodeParams,
   UseReferralCodeParams,
   UserReferralCode,
