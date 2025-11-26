@@ -495,6 +495,8 @@ export interface EarningItem {
 export interface ReferrerPayoutData {
   volume: number;
   earnings: EarningItem[];
+  date_joined: string;
+  event_referrer_identifier: string;
 }
 
 export type PayoutsByReferrerResponse = Array<Record<string, ReferrerPayoutData>>;
