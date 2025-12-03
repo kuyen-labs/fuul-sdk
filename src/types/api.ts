@@ -404,7 +404,7 @@ export interface GetConversionsParams {
 
 export interface GetUserAudiencesParams {
   user_identifier: string;
-  identifier_type: UserIdentifierType;
+  user_identifier_type: UserIdentifierType;
 }
 
 export interface GetUserAudiencesResponse {
@@ -414,6 +414,7 @@ export interface GetUserAudiencesResponse {
     badge_name: string | null;
     badge_description: string | null;
     badge_image: string | null;
+    active: boolean;
   }[];
 }
 

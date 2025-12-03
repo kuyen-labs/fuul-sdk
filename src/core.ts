@@ -505,8 +505,9 @@ export async function getUserReferrer(params: GetUserReferrerParams): Promise<Ge
  *
  * @param {GetUserAudiencesParams} params The query params
  * @returns {Promise<GetUserAudiencesResponse>} List of user audiences
+ * @example
  * ```typescript
- * const results = await Fuul.getUserAudiences({ user_address: '0x12345' });
+ * const results = await Fuul.getUserAudiences({ user_identifier: '0x12345', user_identifier_type: 'evm_address' });
  * ```
  *
  */
