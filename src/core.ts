@@ -1,5 +1,6 @@
 import { UserIdentifierType } from '.';
 import { AffiliateService } from './affiliates/AffiliateService';
+import { AffiliatePortalService } from './affiliate-portal/AffiliatePortalService';
 import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
@@ -47,6 +48,7 @@ import {
 import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
 import { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
 import { UserService } from './user/UserService';
+import { GetAffiliateStatsParams, GetAffiliateStatsResponse } from './affiliate-portal/types';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
 
@@ -57,6 +59,7 @@ let _httpClient: HttpClient;
 let _conversionService: ConversionService;
 let _userService: UserService;
 let _affiliateService: AffiliateService;
+let _affiliatePortalService: AffiliatePortalService;
 let _eventService: EventService;
 let _payoutService: PayoutService;
 let _audienceService: AudienceService;
@@ -78,6 +81,7 @@ export function init(settings: FuulSettings) {
   _conversionService = new ConversionService({ httpClient: _httpClient, debug: _debug });
   _eventService = new EventService({ httpClient: _httpClient, debug: _debug });
   _affiliateService = new AffiliateService({ httpClient: _httpClient, debug: _debug });
+  _affiliatePortalService = new AffiliatePortalService({ httpClient: _httpClient });
   _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug });
   _userService = new UserService({ httpClient: _httpClient });
   _audienceService = new AudienceService({ httpClient: _httpClient, debug: _debug });
@@ -641,6 +645,23 @@ export async function updateReferralCode(params: UpdateReferralCodeParams): Prom
   return _referralCodeService.updateReferralCode(params);
 }
 
+/**
+ * Gets affiliate statistics including earnings, volume, revenue and referred users
+ * @param {GetAffiliateStatsParams} params Get affiliate stats parameters
+ * @returns {Promise<GetAffiliateStatsResponse>} Affiliate statistics
+ * @example
+ * ```typescript
+ * const stats = await Fuul.getAffiliateStats({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * ```
+ */
+export async function getAffiliateStats(params: GetAffiliateStatsParams): Promise<GetAffiliateStatsResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getAffiliateStats(params);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -696,4 +717,5 @@ export default {
   getReferralCode,
   useReferralCode,
   updateReferralCode,
+  getAffiliateStats,
 };

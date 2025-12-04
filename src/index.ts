@@ -22,5 +22,6 @@ export type {
 export type { EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
 export { UserIdentifierType } from './types/user';
 export type { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
+export type { AffiliateEarning, GetAffiliateStatsParams, GetAffiliateStatsResponse } from './affiliate-portal/types';
 
 export { Fuul };
