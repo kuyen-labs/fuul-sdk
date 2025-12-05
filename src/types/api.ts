@@ -429,6 +429,9 @@ export interface UserReferralCode {
   max_uses: number | null;
   uses: number;
   remaining_uses: number | null;
+  clicks: number;
+  total_users: number;
+  total_earnings: number;
 }
 
 export interface ListUserReferralCodesParams {
