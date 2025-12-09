@@ -250,6 +250,7 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
     params.signature,
     params.signaturePublicKey,
     params.accountChainId,
+    params.userSplitPercentage,
   );
 }
 

@@ -33,4 +33,5 @@ export type AffiliateCodeParams = {
   signature: string;
   signaturePublicKey?: string;
   accountChainId?: number;
+  userSplitPercentage?: number;
 };

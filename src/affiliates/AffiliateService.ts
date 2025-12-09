@@ -19,7 +19,15 @@ export class AffiliateService {
     this._debug = settings.debug;
   }
 
-  public async create(address: string, identifier_type: UserIdentifierType, code: string, signature: string, signaturePublicKey?: string, accountChainId?: number): Promise<void> {
+  public async create(
+    address: string,
+    identifier_type: UserIdentifierType,
+    code: string,
+    signature: string,
+    signaturePublicKey?: string,
+    accountChainId?: number,
+    userSplitPercentage?: number,
+  ): Promise<void> {
     try {
       await this.httpClient.post<void>({
         path: `/affiliates`,
@@ -31,6 +39,7 @@ export class AffiliateService {
           signature,
           signature_public_key: signaturePublicKey,
           account_chain_id: accountChainId,
+          user_split_percentage: userSplitPercentage,
         },
       });
     } catch (e: unknown) {
