@@ -29,3 +29,17 @@ export interface NewTraderResponse {
   referrer_identifier: string;
   total_new_traders: string;
 }
+
+export interface GetAffiliateCodeStatsParams {
+  user_identifier: string;
+}
+
+export interface GetAffiliateCodeStatsResponse {
+  code: string;
+  created_at: string;
+  uses: number;
+  clicks: number;
+  total_users: number;
+  total_earnings: number;
+  user_split_percentage: number | null;
+}

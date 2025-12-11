@@ -48,7 +48,14 @@ import {
 import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
 import { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
 import { UserService } from './user/UserService';
-import { GetAffiliateStatsParams, GetAffiliateStatsResponse, GetNewTradersParams, NewTraderResponse } from './affiliate-portal/types';
+import {
+  GetAffiliateCodeStatsParams,
+  GetAffiliateCodeStatsResponse,
+  GetAffiliateStatsParams,
+  GetAffiliateStatsResponse,
+  GetNewTradersParams,
+  NewTraderResponse,
+} from './affiliate-portal/types';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
 
@@ -681,6 +688,22 @@ export async function getAffiliateNewTraders(params: GetNewTradersParams): Promi
   return _affiliatePortalService.getAffiliateNewTraders(params);
 }
 
+/**
+ * Gets the referral code stats for an affiliate
+ * @param {GetAffiliateCodeStatsParams} params Get affiliate code stats parameters
+ * @returns {Promise<GetAffiliateCodeStatsResponse>} Affiliate code stats
+ * @example
+ * ```typescript
+ * const codeStats = await Fuul.getAffiliateCodeStats({
+ *   user_identifier: '0x12345'
+ * });
+ * ```
+ */
+export async function getAffiliateCodeStats(params: GetAffiliateCodeStatsParams): Promise<GetAffiliateCodeStatsResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getAffiliateCodeStats(params);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -738,4 +761,5 @@ export default {
   updateReferralCode,
   getAffiliateStats,
   getAffiliateNewTraders,
+  getAffiliateCodeStats,
 };

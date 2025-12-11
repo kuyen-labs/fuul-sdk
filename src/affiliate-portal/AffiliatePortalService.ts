@@ -1,5 +1,12 @@
 import { HttpClient } from '../HttpClient';
-import { GetAffiliateStatsParams, GetAffiliateStatsResponse, GetNewTradersParams, NewTraderResponse } from './types';
+import {
+  GetAffiliateCodeStatsParams,
+  GetAffiliateCodeStatsResponse,
+  GetAffiliateStatsParams,
+  GetAffiliateStatsResponse,
+  GetNewTradersParams,
+  NewTraderResponse,
+} from './types';
 
 export type AffiliatePortalServiceSettings = {
   httpClient: HttpClient;
@@ -31,6 +38,16 @@ export class AffiliatePortalService {
         user_identifier: params.user_identifier,
         from: params.from,
         to: params.to,
+      },
+    });
+    return result.data;
+  }
+
+  public async getAffiliateCodeStats(params: GetAffiliateCodeStatsParams): Promise<GetAffiliateCodeStatsResponse> {
+    const result = await this.httpClient.get<GetAffiliateCodeStatsResponse>({
+      path: `${basePath}/referral-code`,
+      queryParams: {
+        user_identifier: params.user_identifier,
       },
     });
     return result.data;

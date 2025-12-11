@@ -24,6 +24,8 @@ export { UserIdentifierType } from './types/user';
 export type { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
 export type {
   AffiliateEarning,
+  GetAffiliateCodeStatsParams,
+  GetAffiliateCodeStatsResponse,
   GetAffiliateStatsParams,
   GetAffiliateStatsResponse,
   GetNewTradersParams,
