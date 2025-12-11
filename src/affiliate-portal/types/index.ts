@@ -18,3 +18,14 @@ export interface GetAffiliateStatsResponse {
   referred_revenue: number;
   referred_users: number;
 }
+
+export interface GetNewTradersParams {
+  user_identifier: string;
+  from?: string;
+  to?: string;
+}
+
+export interface NewTraderResponse {
+  referrer_identifier: string;
+  total_new_traders: string;
+}

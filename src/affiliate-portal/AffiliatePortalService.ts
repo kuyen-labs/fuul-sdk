@@ -1,5 +1,5 @@
 import { HttpClient } from '../HttpClient';
-import { GetAffiliateStatsParams, GetAffiliateStatsResponse } from './types';
+import { GetAffiliateStatsParams, GetAffiliateStatsResponse, GetNewTradersParams, NewTraderResponse } from './types';
 
 export type AffiliatePortalServiceSettings = {
   httpClient: HttpClient;
@@ -19,6 +19,18 @@ export class AffiliatePortalService {
       path: `${basePath}/stats`,
       queryParams: {
         user_identifier: params.user_identifier,
+      },
+    });
+    return result.data;
+  }
+
+  public async getAffiliateNewTraders(params: GetNewTradersParams): Promise<NewTraderResponse[]> {
+    const result = await this.httpClient.get<NewTraderResponse[]>({
+      path: `${basePath}/new-traders`,
+      queryParams: {
+        user_identifier: params.user_identifier,
+        from: params.from,
+        to: params.to,
       },
     });
     return result.data;
