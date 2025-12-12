@@ -1,7 +1,15 @@
 import Fuul from './core';
 
+export type {
+  AffiliateEarning,
+  GetAffiliateStatsParams,
+  GetAffiliateStatsResponse,
+  GetNewTradersParams,
+  NewTraderResponse,
+} from './affiliate-portal/types';
 export * from './affiliates/errors';
 export type {
+  Affiliate,
   Conversion,
   EarningItem,
   GenerateReferralCodesParams,
@@ -22,12 +30,5 @@ export type {
 export type { EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
 export { UserIdentifierType } from './types/user';
 export type { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
-export type {
-  AffiliateEarning,
-  GetAffiliateStatsParams,
-  GetAffiliateStatsResponse,
-  GetNewTradersParams,
-  NewTraderResponse,
-} from './affiliate-portal/types';
 
 export { Fuul };

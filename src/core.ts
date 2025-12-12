@@ -1,6 +1,7 @@
 import { UserIdentifierType } from '.';
-import { AffiliateService } from './affiliates/AffiliateService';
 import { AffiliatePortalService } from './affiliate-portal/AffiliatePortalService';
+import { GetAffiliateStatsParams, GetAffiliateStatsResponse, GetNewTradersParams, NewTraderResponse } from './affiliate-portal/types';
+import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
@@ -10,6 +11,7 @@ import { PayoutService } from './payouts/PayoutService';
 import { ReferralCodeService } from './referral-codes/ReferralCodeService';
 import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getTrafficSource, getTrafficTag, getTrafficTitle } from './tracking';
 import {
+  Affiliate,
   Conversion,
   FuulEvent,
   GenerateReferralCodesParams,
@@ -48,7 +50,6 @@ import {
 import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
 import { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
 import { UserService } from './user/UserService';
-import { GetAffiliateStatsParams, GetAffiliateStatsResponse, GetNewTradersParams, NewTraderResponse } from './affiliate-portal/types';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
 
@@ -287,16 +288,16 @@ export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<
 }
 
 /**
- * Gets the code registered to an affiliate
+ * Gets the affiliate code for a given identifier
  * @param {string} userIdentifier Affiliate identifier
  * @param {UserIdentifierType} identifierType Affiliate identifier type
- * @returns {string} Affiliate code
+ * @returns {Affiliate | null} Affiliate code data
  * @example
  * ```typescript
- * const code = await Fuul.getAffiliateCode('0x12345', UserIdentifierType.EvmAddress);
+ * const affiliateCode = await Fuul.getAffiliateCode('0x12345', UserIdentifierType.EvmAddress);
  * ```
  **/
-export async function getAffiliateCode(userIdentifier: string, identifierType: UserIdentifierType): Promise<string | null> {
+export async function getAffiliateCode(userIdentifier: string, identifierType: UserIdentifierType): Promise<Affiliate | null> {
   assertInitialized();
   return await _affiliateService.getCode(userIdentifier, identifierType);
 }
@@ -338,9 +339,9 @@ export async function generateTrackingLink(
   params?: AffiliateLinkParams,
 ): Promise<string> {
   assertInitialized();
-  const affiliateCode = await _affiliateService.getCode(userIdentifier, identifierType);
+  const affiliate = await _affiliateService.getCode(userIdentifier, identifierType);
   const qp = new URLSearchParams({
-    af: affiliateCode ?? userIdentifier,
+    af: affiliate?.code ?? userIdentifier,
   });
 
   if (params?.title) {

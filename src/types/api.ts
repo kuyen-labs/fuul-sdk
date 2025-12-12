@@ -88,7 +88,18 @@ type ProjectTeamMember = {
 };
 
 export type Affiliate = {
+  id: string;
+  name: string;
   code: string;
+  user_identifier: string;
+  user_identifier_type: string;
+  updated_at: string;
+  created_at: string;
+  uses: number;
+  clicks: number;
+  total_users: number;
+  total_earnings: number;
+  user_split_percentage: number | null;
 };
 
 export type CheckAffiliateCodeAvailabilityResponse = {
