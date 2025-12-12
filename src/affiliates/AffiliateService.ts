@@ -73,6 +73,7 @@ export class AffiliateService {
     signature: string,
     signaturePublicKey?: string,
     accountChainId?: number,
+    userSplitPercentage?: number,
   ): Promise<void> {
     try {
       await this.httpClient.post<void>({
@@ -84,6 +85,7 @@ export class AffiliateService {
           signature,
           signature_public_key: signaturePublicKey,
           account_chain_id: accountChainId,
+          user_split_percentage: userSplitPercentage,
         },
       });
     } catch (e: unknown) {
