@@ -120,10 +120,10 @@ export class AffiliateService {
     }
   }
 
-  public async getCode(address: string, identifier_type: UserIdentifierType): Promise<string | null> {
+  public async getCode(address: string, identifier_type: UserIdentifierType): Promise<Affiliate | null> {
     try {
       const res = await this.httpClient.get<Affiliate>({ path: `/affiliates/${address}`, queryParams: { identifier_type } });
-      return res.data.code;
+      return res.data;
     } catch (e) {
       if (e instanceof AxiosError) {
         if (e.response?.status === 404) {

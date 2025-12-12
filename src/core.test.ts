@@ -243,7 +243,20 @@ describe('SDK core', () => {
     it('generates link with affiliate code', async () => {
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
       affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
-        return 'my-affiliate-code';
+        return {
+          id: '123',
+          name: 'test',
+          code: 'my-affiliate-code',
+          user_identifier: '0x124',
+          user_identifier_type: 'evm_address',
+          updated_at: '2024-01-01',
+          created_at: '2024-01-01',
+          uses: 0,
+          clicks: 0,
+          total_users: 0,
+          total_earnings: 0,
+          user_split_percentage: null,
+        };
       });
 
       const generatedLink = await Fuul.generateTrackingLink('https://www.google.com', '0x124', UserIdentifierType.EvmAddress, {
