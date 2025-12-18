@@ -517,6 +517,7 @@ export interface ReferrerPayoutData {
   earnings: EarningItem[];
   date_joined: string;
   event_referrer_identifier: string;
+  user_rebate_rate?: number | null;
 }
 
 export type PayoutsByReferrerResponse = Array<Record<string, ReferrerPayoutData>>;
