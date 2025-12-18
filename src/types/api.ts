@@ -99,7 +99,7 @@ export type Affiliate = {
   clicks: number;
   total_users: number;
   total_earnings: number;
-  user_split_percentage: number | null;
+  user_rebate_rate: number | null;
 };
 
 export type CheckAffiliateCodeAvailabilityResponse = {
@@ -517,6 +517,7 @@ export interface ReferrerPayoutData {
   earnings: EarningItem[];
   date_joined: string;
   event_referrer_identifier: string;
+  user_rebate_rate?: number | null;
 }
 
 export type PayoutsByReferrerResponse = Array<Record<string, ReferrerPayoutData>>;
