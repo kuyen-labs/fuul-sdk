@@ -99,7 +99,7 @@ export type Affiliate = {
   clicks: number;
   total_users: number;
   total_earnings: number;
-  user_split_percentage: number | null;
+  user_rebate_rate: number | null;
 };
 
 export type CheckAffiliateCodeAvailabilityResponse = {

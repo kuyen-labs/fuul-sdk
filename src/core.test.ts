@@ -255,7 +255,7 @@ describe('SDK core', () => {
           clicks: 0,
           total_users: 0,
           total_earnings: 0,
-          user_split_percentage: null,
+          user_rebate_rate: null,
         };
       });
 
