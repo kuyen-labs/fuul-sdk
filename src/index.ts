@@ -9,6 +9,15 @@ export type {
 } from './affiliate-portal/types';
 export * from './affiliates/errors';
 export type {
+  ClaimCheckReason,
+  ClaimCheckTotalItem,
+  ClaimResponse,
+  GetClaimableChecksParams,
+  GetClaimableChecksResponse,
+  GetClaimCheckTotalsParams,
+  GetClaimCheckTotalsResponse,
+} from './claim-checks/types';
+export type {
   Affiliate,
   Conversion,
   EarningItem,
