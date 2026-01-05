@@ -3,6 +3,8 @@ import { AffiliatePortalService } from './affiliate-portal/AffiliatePortalServic
 import { GetAffiliateStatsParams, GetAffiliateStatsResponse, GetNewTradersParams, NewTraderResponse } from './affiliate-portal/types';
 import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
+import { ClaimCheckService } from './claim-checks/ClaimCheckService';
+import { GetClaimableChecksParams, GetClaimableChecksResponse, GetClaimCheckTotalsParams, GetClaimCheckTotalsResponse } from './claim-checks/types';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
@@ -66,6 +68,7 @@ let _payoutService: PayoutService;
 let _audienceService: AudienceService;
 let _leaderboardService: LeaderboardService;
 let _referralCodeService: ReferralCodeService;
+let _claimCheckService: ClaimCheckService;
 
 export function init(settings: FuulSettings) {
   _debug = !!settings.debug;
@@ -88,6 +91,7 @@ export function init(settings: FuulSettings) {
   _audienceService = new AudienceService({ httpClient: _httpClient, debug: _debug });
   _leaderboardService = new LeaderboardService({ httpClient: _httpClient });
   _referralCodeService = new ReferralCodeService({ httpClient: _httpClient, debug: _debug });
+  _claimCheckService = new ClaimCheckService({ httpClient: _httpClient, debug: _debug });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -685,6 +689,51 @@ export async function getAffiliateNewTraders(params: GetNewTradersParams): Promi
   return _affiliatePortalService.getAffiliateNewTraders(params);
 }
 
+/**
+ * Gets all claimable claim checks for a user within a project
+ * Returns only unclaimed checks with valid (non-expired) deadlines
+ * @param {GetClaimableChecksParams} params Get claimable checks parameters
+ * @returns {Promise<GetClaimableChecksResponse>} Array of claimable claim checks
+ * @example
+ * ```typescript
+ * const claimableChecks = await Fuul.getClaimableChecks({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * console.log('Claimable checks:', claimableChecks.length);
+ * claimableChecks.forEach(check => {
+ *   console.log(`Amount: ${check.amount}, Currency: ${check.currency}, Deadline: ${check.deadline}`);
+ * });
+ * ```
+ */
+export async function getClaimableChecks(params: GetClaimableChecksParams): Promise<GetClaimableChecksResponse> {
+  assertInitialized();
+  return _claimCheckService.getClaimableChecks(params);
+}
+
+/**
+ * Gets totals of claimed and unclaimed claim checks for a user
+ * Includes both expired and non-expired claims, aggregated by currency
+ * @param {GetClaimCheckTotalsParams} params Get claim check totals parameters
+ * @returns {Promise<GetClaimCheckTotalsResponse>} Claim check totals grouped by status and currency
+ * @example
+ * ```typescript
+ * const totals = await Fuul.getClaimCheckTotals({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * console.log('Claimed totals:', totals.claimed);
+ * console.log('Unclaimed totals:', totals.unclaimed);
+ * totals.unclaimed.forEach(item => {
+ *   console.log(`${item.currency_name}: ${item.amount} (${item.currency_address})`);
+ * });
+ * ```
+ */
+export async function getClaimCheckTotals(params: GetClaimCheckTotalsParams): Promise<GetClaimCheckTotalsResponse> {
+  assertInitialized();
+  return _claimCheckService.getClaimCheckTotals(params);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -742,4 +791,6 @@ export default {
   updateReferralCode,
   getAffiliateStats,
   getAffiliateNewTraders,
+  getClaimableChecks,
+  getClaimCheckTotals,
 };

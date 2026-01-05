@@ -6,6 +6,7 @@
 import 'jest-localstorage-mock';
 
 import { AffiliateService } from './affiliates/AffiliateService';
+import { ClaimCheckService } from './claim-checks/ClaimCheckService';
 import { EventService } from './EventService';
 import * as tracking from './tracking';
 
@@ -487,6 +488,114 @@ describe('SDK core', () => {
             address: '0x124',
             rank: 2,
             total_referred_users: 9,
+          },
+        ],
+      });
+    });
+  });
+
+  describe('getClaimableChecks()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-api-key' });
+    });
+
+    it('should return claimable checks', async () => {
+      const getClaimableChecksSpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimableChecks').mockResolvedValue([
+        {
+          project_address: '0xproject',
+          to: '0x123',
+          currency: '0xtoken',
+          currency_type: 1,
+          amount: '1000000000000000000',
+          reason: 0,
+          token_id: '0',
+          deadline: 1704067200,
+          proof: '0xproof',
+          signatures: ['0xsig1'],
+        },
+      ]);
+
+      const checks = await Fuul.getClaimableChecks({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(getClaimableChecksSpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(checks).toEqual([
+        {
+          project_address: '0xproject',
+          to: '0x123',
+          currency: '0xtoken',
+          currency_type: 1,
+          amount: '1000000000000000000',
+          reason: 0,
+          token_id: '0',
+          deadline: 1704067200,
+          proof: '0xproof',
+          signatures: ['0xsig1'],
+        },
+      ]);
+    });
+  });
+
+  describe('getClaimCheckTotals()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-api-key' });
+    });
+
+    it('should return claim check totals', async () => {
+      const getClaimCheckTotalsSpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimCheckTotals').mockResolvedValue({
+        claimed: [
+          {
+            currency_address: '0xtoken1',
+            currency_chain_id: '1',
+            currency_name: 'USDC',
+            currency_decimals: 6,
+            amount: '1000000',
+          },
+        ],
+        unclaimed: [
+          {
+            currency_address: '0xtoken2',
+            currency_chain_id: '1',
+            currency_name: 'USDT',
+            currency_decimals: 6,
+            amount: '2000000',
+          },
+        ],
+      });
+
+      const totals = await Fuul.getClaimCheckTotals({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(getClaimCheckTotalsSpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(totals).toEqual({
+        claimed: [
+          {
+            currency_address: '0xtoken1',
+            currency_chain_id: '1',
+            currency_name: 'USDC',
+            currency_decimals: 6,
+            amount: '1000000',
+          },
+        ],
+        unclaimed: [
+          {
+            currency_address: '0xtoken2',
+            currency_chain_id: '1',
+            currency_name: 'USDT',
+            currency_decimals: 6,
+            amount: '2000000',
           },
         ],
       });
