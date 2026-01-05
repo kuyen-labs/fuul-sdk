@@ -540,6 +540,42 @@ describe('SDK core', () => {
         },
       ]);
     });
+
+    it('should handle empty results', async () => {
+      jest.spyOn(ClaimCheckService.prototype, 'getClaimableChecks').mockResolvedValue([]);
+
+      const checks = await Fuul.getClaimableChecks({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(checks).toEqual([]);
+    });
+
+    it('should work with email identifier', async () => {
+      jest.spyOn(ClaimCheckService.prototype, 'getClaimableChecks').mockResolvedValue([
+        {
+          project_address: '0xproject',
+          to: 'user@example.com',
+          currency: '0xtoken',
+          currency_type: 1,
+          amount: '500000000000000000',
+          reason: 1,
+          token_id: '0',
+          deadline: 1704067200,
+          proof: '0xproof2',
+          signatures: ['0xsig2'],
+        },
+      ]);
+
+      const checks = await Fuul.getClaimableChecks({
+        user_identifier: 'user@example.com',
+        user_identifier_type: UserIdentifierType.Email,
+      });
+
+      expect(checks).toHaveLength(1);
+      expect(checks[0].to).toBe('user@example.com');
+    });
   });
 
   describe('getClaimCheckTotals()', () => {
@@ -599,6 +635,21 @@ describe('SDK core', () => {
           },
         ],
       });
+    });
+
+    it('should handle empty totals', async () => {
+      jest.spyOn(ClaimCheckService.prototype, 'getClaimCheckTotals').mockResolvedValue({
+        claimed: [],
+        unclaimed: [],
+      });
+
+      const totals = await Fuul.getClaimCheckTotals({
+        user_identifier: '0x456',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(totals.claimed).toEqual([]);
+      expect(totals.unclaimed).toEqual([]);
     });
   });
 });
