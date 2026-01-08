@@ -1,5 +1,6 @@
 import { HttpClient } from '../HttpClient';
 import {
+  DeleteReferralParams,
   GenerateReferralCodesParams,
   GenerateReferralCodesResponse,
   GetReferralCodeParams,
@@ -95,6 +96,34 @@ export class ReferralCodeService {
       path: `/referral_codes/${params.code}`,
       postData: {
         max_uses: params.max_uses,
+      },
+    });
+  }
+
+  public async deleteReferral(params: DeleteReferralParams): Promise<void> {
+    const {
+      code,
+      user_identifier,
+      user_identifier_type,
+      referrer_identifier,
+      referrer_identifier_type,
+      signature,
+      signature_message,
+      chain_id,
+    } = params;
+
+    await this.httpClient.delete<void>({
+      path: `/referral_codes/${code}/referrals`,
+      queryParams: {
+        user_identifier,
+        user_identifier_type,
+        referrer_identifier,
+        referrer_identifier_type,
+      },
+      postData: {
+        signature,
+        signature_message,
+        chain_id,
       },
     });
   }

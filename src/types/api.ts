@@ -504,6 +504,17 @@ export interface UpdateReferralCodeParams {
   max_uses: number | null;
 }
 
+export interface DeleteReferralParams {
+  code: string;
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  referrer_identifier: string;
+  referrer_identifier_type: UserIdentifierType;
+  signature?: string;
+  signature_message?: string;
+  chain_id?: number;
+}
+
 export interface EarningItem {
   currency: {
     address: string | null;
