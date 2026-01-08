@@ -79,6 +79,7 @@ export class HttpClient {
     return this.client.request<T>({
       url: req.path,
       params: this.makeQueryParams(req.queryParams),
+      data: req.postData,
       method: 'DELETE',
     });
   }

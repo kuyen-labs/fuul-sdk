@@ -15,6 +15,7 @@ import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getT
 import {
   Affiliate,
   Conversion,
+  DeleteReferralParams,
   FuulEvent,
   GenerateReferralCodesParams,
   GenerateReferralCodesResponse,
@@ -655,6 +656,28 @@ export async function updateReferralCode(params: UpdateReferralCodeParams): Prom
 }
 
 /**
+ * Deletes a referral relationship between a user and a referrer
+ * @param {DeleteReferralParams} params Delete referral parameters
+ * @returns {Promise<void>}
+ * @example
+ * ```typescript
+ * await Fuul.deleteReferral({
+ *   code: 'abc1234',
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   referrer_identifier: '0xabcde',
+ *   referrer_identifier_type: UserIdentifierType.EvmAddress,
+ *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
+ *   signature_message: 'I am deleting referral for user 0x12345 from code abc1234',
+ * });
+ * ```
+ */
+export async function deleteReferral(params: DeleteReferralParams): Promise<void> {
+  assertInitialized();
+  return _referralCodeService.deleteReferral(params);
+}
+
+/**
  * Gets affiliate statistics including earnings, volume, revenue and referred users
  * @param {GetAffiliateStatsParams} params Get affiliate stats parameters
  * @returns {Promise<GetAffiliateStatsResponse>} Affiliate statistics
@@ -789,6 +812,7 @@ export default {
   getReferralCode,
   useReferralCode,
   updateReferralCode,
+  deleteReferral,
   getAffiliateStats,
   getAffiliateNewTraders,
   getClaimableChecks,
