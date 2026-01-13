@@ -497,6 +497,7 @@ export interface UseReferralCodeParams {
   signature: string;
   signature_message: string;
   chain_id?: number;
+  account_chain_id?: number;
 }
 
 export interface UpdateReferralCodeParams {
