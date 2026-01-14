@@ -47,9 +47,13 @@ export class LeaderboardService {
   }
 
   public async getReferredVolume(params: GetReferredVolumeParams): Promise<ReferredVolumeResponse> {
+    const { addresses, ...restParams } = params;
     const results = await this.httpClient.get<ReferredVolumeResponse>({
       path: `/payouts/leaderboard/referred-volume`,
-      queryParams: { ...params },
+      queryParams: {
+        ...restParams,
+        addresses: addresses.join(','),
+      },
     });
     return results.data;
   }
