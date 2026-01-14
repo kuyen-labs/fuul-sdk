@@ -541,13 +541,13 @@ export interface GetPayoutsByReferrerParams {
 
 // Referred Volume types
 export interface GetReferredVolumeParams {
-  addresses: string[];
+  user_identifiers: string[];
   identifier_type?: UserIdentifierType;
   no_cache?: boolean;
 }
 
 export interface ReferredVolumeItem {
-  address: string;
+  user_identifier: string;
   referred_volume: number;
 }
 
