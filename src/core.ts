@@ -28,6 +28,7 @@ import {
   GetReferralStatusParams,
   GetReferralStatusResponse,
   GetReferredUsersLeaderboardParams,
+  GetReferredVolumeParams,
   GetUserAudiencesParams,
   GetUserAudiencesResponse,
   GetUserPayoutMovementsParams,
@@ -42,6 +43,7 @@ import {
   PayoutsLeaderboard,
   PointsLeaderboard,
   ReferredUsersLeaderboard,
+  ReferredVolumeResponse,
   UpdateReferralCodeParams,
   UseReferralCodeParams,
   UserPayoutMovementsResponse,
@@ -402,6 +404,30 @@ export function getPointsLeaderboard(params: GetPointsLeaderboardParams): Promis
  */
 export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardParams): Promise<LeaderboardResponse<ReferredUsersLeaderboard>> {
   return _leaderboardService.getReferredUsersLeaderboard(params);
+}
+
+/**
+ * Gets the referred volume for a list of addresses
+ * @param {GetReferredVolumeParams} params The search params
+ * @param {string[]} params.addresses Array of addresses to query (min 1, max 100)
+ * @param {UserIdentifierType} [params.identifier_type] The identifier type, defaults to 'evm_address'
+ * @param {boolean} [params.no_cache] Whether to bypass cache, defaults to false
+ * @returns {Promise<ReferredVolumeResponse>} Referred volume response with project_id, referred_volumes array, and total_count
+ * @example
+ * ```typescript
+ * const result = await Fuul.getReferredVolume({
+ *   addresses: ['0x1234...', '0x5678...'],
+ *   identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * console.log('Total count:', result.total_count);
+ * result.referred_volumes.forEach(item => {
+ *   console.log(`${item.address}: ${item.referred_volume}`);
+ * });
+ * ```
+ */
+export function getReferredVolume(params: GetReferredVolumeParams): Promise<ReferredVolumeResponse> {
+  assertInitialized();
+  return _leaderboardService.getReferredVolume(params);
 }
 
 /**
@@ -798,6 +824,7 @@ export default {
   getPayoutsLeaderboard,
   getPointsLeaderboard,
   getReferredUsersLeaderboard,
+  getReferredVolume,
   getUserAudiences,
   getUserPayoutsByConversion,
   getUserPointsByConversion,
