@@ -3,10 +3,12 @@ import {
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
   GetReferredUsersLeaderboardParams,
+  GetReferredVolumeParams,
   LeaderboardResponse,
   PayoutsLeaderboard,
   PointsLeaderboard,
   ReferredUsersLeaderboard,
+  ReferredVolumeResponse,
 } from '../types/api';
 
 export type LeaderboardServiceSettings = {
@@ -40,6 +42,18 @@ export class LeaderboardService {
     const results = await this.httpClient.get<LeaderboardResponse<ReferredUsersLeaderboard>>({
       path: `/leaderboard/referred`,
       queryParams: { ...params },
+    });
+    return results.data;
+  }
+
+  public async getReferredVolume(params: GetReferredVolumeParams): Promise<ReferredVolumeResponse> {
+    const { addresses, ...restParams } = params;
+    const results = await this.httpClient.get<ReferredVolumeResponse>({
+      path: `/payouts/leaderboard/referred-volume`,
+      queryParams: {
+        ...restParams,
+        addresses: addresses.join(','),
+      },
     });
     return results.data;
   }
