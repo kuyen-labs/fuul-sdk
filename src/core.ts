@@ -407,21 +407,17 @@ export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardP
 }
 
 /**
- * Gets the referred volume for a list of addresses
+ * Gets the referred volume for a list of user identifiers
  * @param {GetReferredVolumeParams} params The search params
- * @param {string[]} params.addresses Array of addresses to query (min 1, max 100)
+ * @param {string[]} params.user_identifiers Array of user identifiers to query (min 1, max 100)
  * @param {UserIdentifierType} [params.identifier_type] The identifier type, defaults to 'evm_address'
  * @param {boolean} [params.no_cache] Whether to bypass cache, defaults to false
  * @returns {Promise<ReferredVolumeResponse>} Referred volume response with project_id, referred_volumes array, and total_count
  * @example
  * ```typescript
  * const result = await Fuul.getReferredVolume({
- *   addresses: ['0x1234...', '0x5678...'],
+ *   user_identifiers: ['0x1234...', '0x5678...'],
  *   identifier_type: UserIdentifierType.EvmAddress
- * });
- * console.log('Total count:', result.total_count);
- * result.referred_volumes.forEach(item => {
- *   console.log(`${item.address}: ${item.referred_volume}`);
  * });
  * ```
  */
