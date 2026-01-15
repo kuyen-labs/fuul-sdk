@@ -436,7 +436,8 @@ export function getReferredVolume(params: GetReferredVolumeParams): Promise<Refe
  * ```
  **/
 export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
-  return _payoutService.getVolumeLeaderboard(params);
+  assertInitialized();
+  return _leaderboardService.getVolumeLeaderboard(params);
 }
 
 /**

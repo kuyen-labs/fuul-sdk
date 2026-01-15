@@ -276,9 +276,11 @@ export interface PayoutsLeaderboard {
 
 export interface VolumeLeaderboard {
   address: string;
+  user_identifier: string;
+  user_identifier_type: string;
   affiliate_code?: string;
-  total_amount: number;
-  chain_id: number;
+  total_amount: string;
+  chain_id: number | null;
   rank: number;
 }
 
