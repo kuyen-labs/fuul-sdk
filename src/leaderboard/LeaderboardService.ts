@@ -40,6 +40,14 @@ export class LeaderboardService {
     return results.data;
   }
 
+  public async getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
+    const results = await this.httpClient.get<LeaderboardResponse<VolumeLeaderboard>>({
+      path: `/payouts/leaderboard/volume`,
+      queryParams: { ...params },
+    });
+    return results.data;
+  }
+
   public async getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardParams): Promise<LeaderboardResponse<ReferredUsersLeaderboard>> {
     const results = await this.httpClient.get<LeaderboardResponse<ReferredUsersLeaderboard>>({
       path: `/leaderboard/referred`,
@@ -56,14 +64,6 @@ export class LeaderboardService {
         ...restParams,
         user_identifiers: user_identifiers.join(','),
       },
-    });
-    return results.data;
-  }
-
-  public async getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
-    const results = await this.httpClient.get<LeaderboardResponse<VolumeLeaderboard>>({
-      path: `/payouts/leaderboard/volume`,
-      queryParams: { ...params },
     });
     return results.data;
   }

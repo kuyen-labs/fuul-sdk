@@ -249,8 +249,27 @@ export interface GetPointsLeaderboardParams {
   conversions?: string;
 }
 
-export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
-  conversion_external_ids?: number[];
+/**
+ * Parameters for getVolumeLeaderboard endpoint
+ *
+ * Note: The following fields were removed and are no longer supported:
+ * - `from` - Date filtering is not available
+ * - `to` - Date filtering is not available
+ * - `fields` - Field selection is not available
+ * - `conversions` - Use project_id instead
+ * - `conversion_external_ids` - No longer supported
+ * - `user_identifier_type` - Renamed to `identifier_type`
+ */
+export interface GetVolumeLeaderboardParams {
+  page?: number;
+  page_size?: number;
+  currency_address?: string;
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
+  user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  project_id?: string;
+  user_type?: LeaderboardUserType;
 }
 
 export interface LeaderboardResponse<T> {
