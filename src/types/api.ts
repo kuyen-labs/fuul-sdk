@@ -234,6 +234,8 @@ export interface GetPayoutsLeaderboardParams {
   /** @deprecated Use user_identifier instead */
   user_address?: string;
   user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
   user_identifier_type?: UserIdentifierType;
   from?: string;
   to?: string;
@@ -258,6 +260,8 @@ export interface GetPointsLeaderboardParams {
   /** @deprecated Use user_identifier instead */
   user_address?: string;
   user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
   user_identifier_type?: UserIdentifierType;
   fields?: string;
 }
@@ -271,7 +275,6 @@ export interface GetPointsLeaderboardParams {
  * - `fields` - Field selection is not available
  * - `conversions` - No longer available
  * - `conversion_external_ids` - No longer supported
- * - `user_identifier_type` - Renamed to `identifier_type`
  */
 export interface GetVolumeLeaderboardParams {
   page?: number;
@@ -281,6 +284,8 @@ export interface GetVolumeLeaderboardParams {
   user_address?: string;
   user_identifier?: string;
   identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
   user_type?: LeaderboardUserType;
 }
 
@@ -295,6 +300,8 @@ export interface GetRevenueLeaderboardParams {
   user_address?: string;
   user_identifier?: string;
   identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
   fields?: string;
   user_type?: LeaderboardUserType;
 }
