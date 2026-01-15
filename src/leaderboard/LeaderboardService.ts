@@ -4,12 +4,14 @@ import {
   GetPointsLeaderboardParams,
   GetReferredUsersLeaderboardParams,
   GetReferredVolumeParams,
+  GetRevenueLeaderboardParams,
   GetVolumeLeaderboardParams,
   LeaderboardResponse,
   PayoutsLeaderboard,
   PointsLeaderboard,
   ReferredUsersLeaderboard,
   ReferredVolumeResponse,
+  RevenueLeaderboard,
   VolumeLeaderboard,
 } from '../types/api';
 
@@ -64,6 +66,14 @@ export class LeaderboardService {
         ...restParams,
         user_identifiers: user_identifiers.join(','),
       },
+    });
+    return results.data;
+  }
+
+  public async getRevenueLeaderboard(params: GetRevenueLeaderboardParams): Promise<LeaderboardResponse<RevenueLeaderboard>> {
+    const results = await this.httpClient.get<LeaderboardResponse<RevenueLeaderboard>>({
+      path: `/payouts/leaderboard/revenue`,
+      queryParams: { ...params },
     });
     return results.data;
   }

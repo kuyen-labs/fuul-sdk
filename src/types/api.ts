@@ -284,6 +284,21 @@ export interface GetVolumeLeaderboardParams {
   user_type?: LeaderboardUserType;
 }
 
+/**
+ * Parameters for getRevenueLeaderboard endpoint
+ */
+export interface GetRevenueLeaderboardParams {
+  page?: number;
+  page_size?: number;
+  currency_address?: string;
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
+  user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  fields?: string;
+  user_type?: LeaderboardUserType;
+}
+
 export interface LeaderboardResponse<T> {
   total_results: number;
   page: number;
@@ -313,6 +328,16 @@ export interface VolumeLeaderboard {
   total_amount: string;
   chain_id: number | null;
   rank: number;
+}
+
+export interface RevenueLeaderboard {
+  address: string;
+  total_amount: string;
+  rank: number;
+  affiliate_code: string | null;
+  attributions?: number;
+  volume_usd?: number;
+  points?: number;
 }
 
 export interface PointsLeaderboard {
