@@ -5,14 +5,11 @@ import {
   GetUserPayoutsByConversionParams,
   GetUserPointsByConversionParams,
   GetUserPointsMovementsParams,
-  GetVolumeLeaderboardParams,
-  LeaderboardResponse,
   PayoutsByReferrerResponse,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
   UserPointsMovementsResponse,
-  VolumeLeaderboard,
 } from '../types/api';
 
 export type PayoutServiceSettings = {
@@ -59,14 +56,6 @@ export class PayoutService {
     const results = await this.httpClient.get<UserPointsMovementsResponse>({
       path: `${basePath}/movements`,
       queryParams: { ...params, type: 'point' },
-    });
-    return results.data;
-  }
-
-  public async getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
-    const results = await this.httpClient.get<LeaderboardResponse<VolumeLeaderboard>>({
-      path: `${basePath}/leaderboard/volume`,
-      queryParams: { ...params },
     });
     return results.data;
   }

@@ -420,15 +420,11 @@ describe('SDK core', () => {
       });
 
       const payouts = await Fuul.getPointsLeaderboard({
-        page: 1,
-        page_size: 10,
-        user_type: 'affiliate',
+        fields: 'rank',
       });
 
       expect(getPointsLeaderboardSpy).toHaveBeenCalledWith({
-        page: 1,
-        page_size: 10,
-        user_type: 'affiliate',
+        fields: 'rank',
       });
 
       expect(payouts).toEqual({

@@ -29,6 +29,7 @@ import {
   GetReferralStatusResponse,
   GetReferredUsersLeaderboardParams,
   GetReferredVolumeParams,
+  GetRevenueLeaderboardParams,
   GetUserAudiencesParams,
   GetUserAudiencesResponse,
   GetUserPayoutMovementsParams,
@@ -44,6 +45,7 @@ import {
   PointsLeaderboard,
   ReferredUsersLeaderboard,
   ReferredVolumeResponse,
+  RevenueLeaderboard,
   UpdateReferralCodeParams,
   UseReferralCodeParams,
   UserPayoutMovementsResponse,
@@ -436,7 +438,22 @@ export function getReferredVolume(params: GetReferredVolumeParams): Promise<Refe
  * ```
  **/
 export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
-  return _payoutService.getVolumeLeaderboard(params);
+  assertInitialized();
+  return _leaderboardService.getVolumeLeaderboard(params);
+}
+
+/**
+ * Gets the project revenue leaderboard
+ * @param {GetRevenueLeaderboardParams} params The search params
+ * @returns {LeaderboardResponse<RevenueLeaderboard>} Revenue leaderboard response
+ * @example
+ * ```typescript
+ * const results = await Fuul.getRevenueLeaderboard({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress, user_type: 'end_user' });
+ * ```
+ **/
+export function getRevenueLeaderboard(params: GetRevenueLeaderboardParams): Promise<LeaderboardResponse<RevenueLeaderboard>> {
+  assertInitialized();
+  return _leaderboardService.getRevenueLeaderboard(params);
 }
 
 /**
@@ -829,6 +846,7 @@ export default {
   getPayoutsByReferrer,
   getUserReferrer,
   getVolumeLeaderboard,
+  getRevenueLeaderboard,
   listUserReferralCodes,
   generateReferralCodes,
   getReferralStatus,

@@ -221,36 +221,89 @@ export interface Conversion {
 
 type LeaderboardUserType = 'affiliate' | 'end_user';
 
+/**
+ * Parameters for getPayoutsLeaderboard endpoint
+ *
+ * Note: The following field was removed and is no longer supported:
+ * - `conversions` - No longer available
+ */
 export interface GetPayoutsLeaderboardParams {
-  currency_address?: string;
-  project_id?: string;
-  user_identifier?: string;
-  user_identifier_type?: UserIdentifierType;
-  user_type?: LeaderboardUserType;
   page?: number;
   page_size?: number;
-  from?: Date;
-  to?: Date;
-  fields?: string;
-  conversions?: string;
-}
-
-export interface GetPointsLeaderboardParams {
   currency_address?: string;
-  project_id?: string;
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
   user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
   user_identifier_type?: UserIdentifierType;
+  from?: string;
+  to?: string;
   user_type?: LeaderboardUserType;
-  page?: number;
-  page_size?: number;
-  from?: Date;
-  to?: Date;
   fields?: string;
-  conversions?: string;
-}
-
-export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
   conversion_external_ids?: number[];
+}
+
+/**
+ * Parameters for getPointsLeaderboard endpoint
+ *
+ * Note: The following fields were removed and are no longer supported:
+ * - `page` - Pagination is not available
+ * - `page_size` - Pagination is not available
+ * - `currency_address` - Currency filtering is not available
+ * - `from` - Date filtering is not available
+ * - `to` - Date filtering is not available
+ * - `user_type` - User type filtering is not available
+ * - `conversions` - No longer available
+ */
+export interface GetPointsLeaderboardParams {
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
+  user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
+  fields?: string;
+}
+
+/**
+ * Parameters for getVolumeLeaderboard endpoint
+ *
+ * Note: The following fields were removed and are no longer supported:
+ * - `from` - Date filtering is not available
+ * - `to` - Date filtering is not available
+ * - `fields` - Field selection is not available
+ * - `conversions` - No longer available
+ * - `conversion_external_ids` - No longer supported
+ */
+export interface GetVolumeLeaderboardParams {
+  page?: number;
+  page_size?: number;
+  currency_address?: string;
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
+  user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
+  user_type?: LeaderboardUserType;
+}
+
+/**
+ * Parameters for getRevenueLeaderboard endpoint
+ */
+export interface GetRevenueLeaderboardParams {
+  page?: number;
+  page_size?: number;
+  currency_address?: string;
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
+  user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
+  fields?: string;
+  user_type?: LeaderboardUserType;
 }
 
 export interface LeaderboardResponse<T> {
@@ -276,10 +329,22 @@ export interface PayoutsLeaderboard {
 
 export interface VolumeLeaderboard {
   address: string;
+  user_identifier: string;
+  user_identifier_type: string;
   affiliate_code?: string;
-  total_amount: number;
-  chain_id: number;
+  total_amount: string;
+  chain_id: number | null;
   rank: number;
+}
+
+export interface RevenueLeaderboard {
+  address: string;
+  total_amount: string;
+  rank: number;
+  affiliate_code: string | null;
+  attributions?: number;
+  volume_usd?: number;
+  points?: number;
 }
 
 export interface PointsLeaderboard {
