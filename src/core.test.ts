@@ -287,7 +287,7 @@ describe('SDK core', () => {
             conversion_id: 'conversion-1',
             conversion_name: 'buy',
             currency_address: '0x1',
-            chain_id: 1,
+            chain_id: '1',
           },
         ],
       });
@@ -317,7 +317,7 @@ describe('SDK core', () => {
             conversion_id: 'conversion-1',
             conversion_name: 'buy',
             currency_address: '0x1',
-            chain_id: 1,
+            chain_id: '1',
           },
         ],
       });
