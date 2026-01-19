@@ -198,7 +198,7 @@ export interface Conversion {
     user_landing_page_url?: string;
     partner_landing_page_url?: string;
     user_onboarding_page_url?: string;
-    contract_chain_id: number | null;
+    contract_chain_id: string | null;
     github_account?: string;
     whitepaper_url?: string;
     investors?: ProjectInvestor[];
@@ -319,7 +319,7 @@ export interface PayoutsLeaderboard {
   user_identifier: string;
   user_identifier_type: string;
   rank: number;
-  chain_id: number;
+  chain_id: string;
   total_amount: number;
   total_attributions: number;
   tiers?: Record<string, string>;
@@ -333,7 +333,7 @@ export interface VolumeLeaderboard {
   user_identifier_type: string;
   affiliate_code?: string;
   total_amount: string;
-  chain_id: number | null;
+  chain_id: string | null;
   rank: number;
 }
 
@@ -406,7 +406,7 @@ export interface UserConversionPayout {
   conversion_id: string;
   conversion_name: string;
   currency_address: string;
-  chain_id: number;
+  chain_id: string;
 }
 
 export interface UserPointsByConversionResponse {
@@ -439,7 +439,7 @@ export interface UserPayoutMovementsResponse {
 export interface UserPayoutMovement {
   date: string;
   currency_address: string;
-  chain_id: number;
+  chain_id: string;
   is_referrer: boolean;
   conversion_id: string;
   conversion_name: string;
