@@ -331,6 +331,22 @@ export async function isAffiliateCodeFree(code: string): Promise<boolean> {
 }
 
 /**
+ * Checks if an affiliate code is available for use
+ * @param {string} code Affiliate code to check
+ * @returns {boolean} True if code exists and has remaining uses
+ * @example
+ * ```typescript
+ * if (await Fuul.isAffiliateCodeAvailable('my-cool-code')) {
+ *   // Code is available for use
+ * }
+ * ```
+ **/
+export async function isAffiliateCodeAvailable(code: string): Promise<boolean> {
+  assertInitialized();
+  return await _affiliateService.isCodeAvailable(code);
+}
+
+/**
  * Generates a tracking link for an affiliate
  * @param {string} baseUrl Base url of the project
  * @param {string} affiliateAddress Affiliate identifier
@@ -834,6 +850,7 @@ export default {
   updateAffiliateCode,
   getAffiliateCode,
   isAffiliateCodeFree,
+  isAffiliateCodeAvailable,
   getPayoutsLeaderboard,
   getPointsLeaderboard,
   getReferredUsersLeaderboard,

@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 
 import { UserIdentifierType } from '..';
 import { HttpClient } from '../HttpClient';
-import { Affiliate, CheckAffiliateCodeAvailabilityResponse } from '../types/api';
+import { Affiliate, CheckAffiliateCodeAvailabilityResponse, CheckAffiliateCodeAvailableResponse } from '../types/api';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
 export type AffiliateServiceSettings = {
@@ -118,6 +118,16 @@ export class AffiliateService {
       return res.data.exists;
     } catch (e) {
       console.error(`Fuul SDK: Could not check affiliate code`, e);
+      throw e;
+    }
+  }
+
+  public async isCodeAvailable(code: string): Promise<boolean> {
+    try {
+      const res = await this.httpClient.get<CheckAffiliateCodeAvailableResponse>({ path: `/affiliates/codes/${code}/availability` });
+      return res.data.available;
+    } catch (e) {
+      console.error(`Fuul SDK: Could not check affiliate code availability`, e);
       throw e;
     }
   }

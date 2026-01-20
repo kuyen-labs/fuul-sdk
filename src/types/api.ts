@@ -106,6 +106,10 @@ export type CheckAffiliateCodeAvailabilityResponse = {
   exists: boolean;
 };
 
+export type CheckAffiliateCodeAvailableResponse = {
+  available: boolean;
+};
+
 export type Project = {
   category: string;
   conversions: Conversion[] | [];
