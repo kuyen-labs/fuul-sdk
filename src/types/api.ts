@@ -103,7 +103,7 @@ export type Affiliate = {
 };
 
 export type CheckAffiliateCodeAvailabilityResponse = {
-  available: boolean;
+  exists: boolean;
 };
 
 export type Project = {

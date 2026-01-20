@@ -115,7 +115,7 @@ export class AffiliateService {
   public async isCodeFree(code: string): Promise<boolean> {
     try {
       const res = await this.httpClient.get<CheckAffiliateCodeAvailabilityResponse>({ path: `/affiliates/codes/${code}` });
-      return res.data.available;
+      return res.data.exists;
     } catch (e) {
       console.error(`Fuul SDK: Could not check affiliate code`, e);
       throw e;
