@@ -19,6 +19,9 @@ export class AffiliatePortalService {
       path: `${basePath}/stats`,
       queryParams: {
         user_identifier: params.user_identifier,
+        from: params.from,
+        to: params.to,
+        this_month: params.this_month,
       },
     });
     return result.data;
@@ -31,6 +34,7 @@ export class AffiliatePortalService {
         user_identifier: params.user_identifier,
         from: params.from,
         to: params.to,
+        this_month: params.this_month,
       },
     });
     return result.data;
