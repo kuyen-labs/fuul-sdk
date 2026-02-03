@@ -23,6 +23,7 @@ export interface GetNewTradersParams {
   user_identifier: string;
   from?: string;
   to?: string;
+  this_month?: boolean;
 }
 
 export interface NewTraderResponse {
