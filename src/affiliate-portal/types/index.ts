@@ -6,6 +6,8 @@ export interface GetAffiliateStatsParams {
   from?: string;
   to?: string;
   this_month?: boolean;
+  conversion_id?: string;
+  conversion_name?: string;
 }
 
 export interface AffiliateEarning {

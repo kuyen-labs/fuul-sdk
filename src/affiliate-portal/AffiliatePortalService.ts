@@ -22,6 +22,8 @@ export class AffiliatePortalService {
         from: params.from,
         to: params.to,
         this_month: params.this_month,
+        conversion_id: params.conversion_id,
+        conversion_name: params.conversion_name,
       },
     });
     return result.data;
