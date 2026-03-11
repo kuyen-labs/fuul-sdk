@@ -102,16 +102,8 @@ export class ReferralCodeService {
   }
 
   public async deleteReferral(params: DeleteReferralParams): Promise<void> {
-    const {
-      code,
-      user_identifier,
-      user_identifier_type,
-      referrer_identifier,
-      referrer_identifier_type,
-      signature,
-      signature_message,
-      chain_id,
-    } = params;
+    const { code, user_identifier, user_identifier_type, referrer_identifier, referrer_identifier_type, signature, signature_message, chain_id } =
+      params;
 
     await this.httpClient.delete<void>({
       path: `/referral_codes/${code}/referrals`,
