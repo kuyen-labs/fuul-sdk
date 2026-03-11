@@ -257,6 +257,7 @@ describe('SDK core', () => {
           total_users: 0,
           total_earnings: 0,
           user_rebate_rate: null,
+          region: 'Other',
         };
       });
 
