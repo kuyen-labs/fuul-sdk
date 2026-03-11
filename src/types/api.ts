@@ -100,10 +100,11 @@ export type Affiliate = {
   total_users: number;
   total_earnings: number;
   user_rebate_rate: number | null;
+  region: string;
 };
 
 export type CheckAffiliateCodeAvailabilityResponse = {
-  exists: boolean;
+  free: boolean;
 };
 
 export type CheckAffiliateCodeAvailableResponse = {
