@@ -185,14 +185,18 @@ interface PayoutTermResponse {
 
 export interface Conversion {
   id: string;
+  external_id: number;
   name: string;
   slug: string;
-  conversion_window: number;
-  attribution_type: string;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
+  conversion_window?: number;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
+  attribution_type?: string;
   triggers: Trigger[];
   created_at: Date;
   updated_at: Date;
-  rule: Rule;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
+  rule?: Rule;
   project?: {
     name: string;
     slug: string;
@@ -211,8 +215,11 @@ export interface Conversion {
     documentation_url?: string;
     other_links?: ProjectOtherLink[];
   };
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   action_id?: string;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   action_type?: string;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   action_args?: PayoutTermResponse;
   conversion_rate?: number;
   total_converted?: number;
@@ -220,6 +227,7 @@ export interface Conversion {
     amount: number;
     currency: string;
   };
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   converted?: boolean;
 }
 
