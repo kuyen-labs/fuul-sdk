@@ -54,6 +54,7 @@ export type GetClaimableChecksResponse = ClaimResponse[];
 export interface GetClaimCheckTotalsParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
+  status?: 'claimed' | 'unclaimed';
 }
 
 export interface ClaimCheckTotalItem {

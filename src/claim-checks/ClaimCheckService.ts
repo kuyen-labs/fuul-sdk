@@ -51,6 +51,7 @@ export class ClaimCheckService {
       queryParams: {
         user_identifier: params.user_identifier,
         user_identifier_type: params.user_identifier_type,
+        ...(params.status && { status: params.status }),
       },
     });
     return response.data;
