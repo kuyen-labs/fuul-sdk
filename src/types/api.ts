@@ -103,6 +103,16 @@ export type Affiliate = {
   region: string;
 };
 
+export type CreateAffiliateResponse = {
+  id: string;
+  name: string;
+  code: string;
+  user_identifier: string;
+  user_identifier_type: string;
+  region: string;
+  updated_at: string;
+};
+
 export type CheckAffiliateCodeAvailabilityResponse = {
   free: boolean;
 };
@@ -324,6 +334,7 @@ export interface LeaderboardResponse<T> {
   page: number;
   page_size: number;
   results: T[];
+  calculated_at: string;
 }
 
 export interface PayoutsLeaderboard {
@@ -344,7 +355,7 @@ export interface VolumeLeaderboard {
   address: string;
   user_identifier: string;
   user_identifier_type: string;
-  affiliate_code?: string;
+  affiliate_code: string | null;
   total_amount: string;
   chain_id: string | null;
   rank: number;
@@ -391,8 +402,8 @@ export interface GetUserPayoutsByConversionParams {
   group_by?: string;
   page?: number;
   page_size?: number;
-  from: Date;
-  to: Date;
+  from: string;
+  to: string;
 }
 
 export interface GetUserPointsByConversionParams {
@@ -402,8 +413,8 @@ export interface GetUserPointsByConversionParams {
   group_by?: string;
   page?: number;
   page_size?: number;
-  from: Date;
-  to: Date;
+  from: string;
+  to: string;
 }
 
 export interface UserPayoutsByConversionResponse {
@@ -440,6 +451,10 @@ export interface GetUserPayoutMovementsParams {
   user_identifier: string;
   identifier_type: UserIdentifierType;
   project_id?: string;
+  page?: number;
+  page_size?: number;
+  from_date?: string;
+  to_date?: string;
 }
 
 export interface UserPayoutMovementsResponse {
@@ -452,7 +467,7 @@ export interface UserPayoutMovementsResponse {
 export interface UserPayoutMovement {
   date: string;
   currency_address: string;
-  chain_id: string;
+  chain_id: number;
   is_referrer: boolean;
   conversion_id: string;
   conversion_name: string;
@@ -466,6 +481,10 @@ export interface GetUserPointsMovementsParams {
   user_identifier: string;
   identifier_type: UserIdentifierType;
   project_id?: string;
+  page?: number;
+  page_size?: number;
+  from_date?: string;
+  to_date?: string;
 }
 
 export interface UserPointsMovementsResponse {
@@ -503,7 +522,8 @@ export interface GetUserAudiencesResponse {
     badge_name: string | null;
     badge_description: string | null;
     badge_image: string | null;
-    active: boolean;
+    /** @deprecated Not returned by the server. Will be removed in the next major version. */
+    active?: boolean;
   }[];
 }
 
@@ -518,6 +538,7 @@ export interface UserReferralCode {
   max_uses: number | null;
   uses: number;
   remaining_uses: number | null;
+  rebate_rate: number | null;
   clicks: number;
   total_users: number;
   total_earnings: number;
@@ -575,6 +596,7 @@ export interface UseReferralCodeParams {
   signature: string;
   signature_message: string;
   chain_id?: number;
+  /** @deprecated Not supported by the server. Will be removed in the next major version. */
   account_chain_id?: number;
 }
 

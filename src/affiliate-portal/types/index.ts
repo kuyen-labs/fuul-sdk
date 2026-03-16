@@ -2,7 +2,8 @@ import { UserIdentifierType } from '../../types/user';
 
 export interface GetAffiliateStatsParams {
   user_identifier: string;
-  user_identifier_type: UserIdentifierType;
+  /** @deprecated Not supported by the server. Will be removed in the next major version. */
+  user_identifier_type?: UserIdentifierType;
   from?: string;
   to?: string;
   this_month?: boolean;

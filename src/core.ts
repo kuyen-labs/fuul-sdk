@@ -15,6 +15,7 @@ import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getT
 import {
   Affiliate,
   Conversion,
+  CreateAffiliateResponse,
   DeleteReferralParams,
   FuulEvent,
   GenerateReferralCodesParams,
@@ -252,9 +253,9 @@ export async function identifyUser(params: IdentifyUserParams, projectIds?: stri
  * })
  * ```
  **/
-export async function createAffiliateCode(params: AffiliateCodeParams): Promise<void> {
+export async function createAffiliateCode(params: AffiliateCodeParams): Promise<CreateAffiliateResponse> {
   assertInitialized();
-  await _affiliateService.create(
+  return _affiliateService.create(
     params.userIdentifier,
     params.identifierType,
     params.code,

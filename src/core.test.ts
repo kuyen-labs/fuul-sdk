@@ -296,15 +296,15 @@ describe('SDK core', () => {
       const payouts = await Fuul.getUserPayoutsByConversion({
         user_identifier: '0x123',
         identifier_type: UserIdentifierType.EvmAddress,
-        from: new Date('2024-01-01'),
-        to: new Date('2024-01-02'),
+        from: '2024-01-01',
+        to: '2024-01-02',
       });
 
       expect(getUserPayoutsByConversionSpy).toHaveBeenCalledWith({
         user_identifier: '0x123',
         identifier_type: UserIdentifierType.EvmAddress,
-        from: new Date('2024-01-01'),
-        to: new Date('2024-01-02'),
+        from: '2024-01-01',
+        to: '2024-01-02',
       });
 
       expect(payouts).toEqual({
@@ -348,15 +348,15 @@ describe('SDK core', () => {
       const payouts = await Fuul.getUserPointsByConversion({
         user_identifier: '0x123',
         identifier_type: UserIdentifierType.EvmAddress,
-        from: new Date('2024-01-01'),
-        to: new Date('2024-01-02'),
+        from: '2024-01-01',
+        to: '2024-01-02',
       });
 
       expect(getUserPointsByConversionSpy).toHaveBeenCalledWith({
         user_identifier: '0x123',
         identifier_type: UserIdentifierType.EvmAddress,
-        from: new Date('2024-01-01'),
-        to: new Date('2024-01-02'),
+        from: '2024-01-01',
+        to: '2024-01-02',
       });
 
       expect(payouts).toEqual({
@@ -386,6 +386,7 @@ describe('SDK core', () => {
         page_size: 10,
         total_results: 100,
         results: [],
+        calculated_at: '2024-01-01T00:00:00Z',
       });
 
       const payouts = await Fuul.getPayoutsLeaderboard({
@@ -403,6 +404,7 @@ describe('SDK core', () => {
         page_size: 10,
         total_results: 100,
         results: [],
+        calculated_at: '2024-01-01T00:00:00Z',
       });
     });
   });
@@ -418,6 +420,7 @@ describe('SDK core', () => {
         page_size: 10,
         total_results: 100,
         results: [],
+        calculated_at: '2024-01-01T00:00:00Z',
       });
 
       const payouts = await Fuul.getPointsLeaderboard({
@@ -433,6 +436,7 @@ describe('SDK core', () => {
         page_size: 10,
         total_results: 100,
         results: [],
+        calculated_at: '2024-01-01T00:00:00Z',
       });
     });
   });
@@ -447,6 +451,7 @@ describe('SDK core', () => {
         page: 1,
         page_size: 10,
         total_results: 100,
+        calculated_at: '2024-01-01T00:00:00Z',
         results: [
           {
             address: '0x123',
@@ -475,6 +480,7 @@ describe('SDK core', () => {
         page: 1,
         page_size: 10,
         total_results: 100,
+        calculated_at: '2024-01-01T00:00:00Z',
         results: [
           {
             address: '0x123',
