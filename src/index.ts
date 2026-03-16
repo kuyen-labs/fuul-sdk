@@ -20,6 +20,7 @@ export type {
 export type {
   Affiliate,
   Conversion,
+  CreateAffiliateResponse,
   DeleteReferralParams,
   EarningItem,
   GenerateReferralCodesParams,

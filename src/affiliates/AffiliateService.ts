@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 
 import { UserIdentifierType } from '..';
 import { HttpClient } from '../HttpClient';
-import { Affiliate, CheckAffiliateCodeAvailabilityResponse, CheckAffiliateCodeAvailableResponse } from '../types/api';
+import { Affiliate, CheckAffiliateCodeAvailabilityResponse, CheckAffiliateCodeAvailableResponse, CreateAffiliateResponse } from '../types/api';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
 export type AffiliateServiceSettings = {
@@ -27,9 +27,9 @@ export class AffiliateService {
     signaturePublicKey?: string,
     accountChainId?: number,
     userRebateRate?: number,
-  ): Promise<void> {
+  ): Promise<CreateAffiliateResponse> {
     try {
-      await this.httpClient.post<void>({
+      const response = await this.httpClient.post<CreateAffiliateResponse>({
         path: `/affiliates`,
         postData: {
           address,
@@ -42,6 +42,7 @@ export class AffiliateService {
           user_rebate_rate: userRebateRate,
         },
       });
+      return response.data;
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
         const data = e.response?.data;

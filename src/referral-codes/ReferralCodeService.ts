@@ -75,19 +75,18 @@ export class ReferralCodeService {
   }
 
   public async useReferralCode(params: UseReferralCodeParams): Promise<void> {
-    const { code, user_identifier, user_identifier_type, signature, signature_message, chain_id, account_chain_id } = params;
+    const { code, user_identifier, user_identifier_type, signature, signature_message, chain_id } = params;
 
     await this.httpClient.patch<void>({
       path: `/referral_codes/${code}/use`,
       queryParams: {
         user_identifier,
         user_identifier_type,
-        chain_id,
-        account_chain_id,
       },
       postData: {
         signature,
         signature_message,
+        chain_id,
       },
     });
   }
