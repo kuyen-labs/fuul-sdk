@@ -271,8 +271,6 @@ export interface GetPayoutsLeaderboardParams {
  * Parameters for getPointsLeaderboard endpoint
  *
  * Note: The following fields were removed and are no longer supported:
- * - `page` - Pagination is not available
- * - `page_size` - Pagination is not available
  * - `currency_address` - Currency filtering is not available
  * - `from` - Date filtering is not available
  * - `to` - Date filtering is not available
@@ -287,6 +285,8 @@ export interface GetPointsLeaderboardParams {
   /** @deprecated Use identifier_type instead */
   user_identifier_type?: UserIdentifierType;
   fields?: string;
+  page?: number;
+  page_size?: number;
 }
 
 /**
