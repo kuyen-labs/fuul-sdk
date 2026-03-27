@@ -99,7 +99,9 @@ export type Affiliate = {
   clicks: number;
   total_users: number;
   total_earnings: number;
+  /** @deprecated Use rebate_rates instead. Kept for backward compatibility. */
   user_rebate_rate: number | null;
+  rebate_rates: { project_id: string; rebate_rate: number | null }[];
   region: string;
 };
 
