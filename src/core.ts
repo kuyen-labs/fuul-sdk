@@ -275,7 +275,6 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  * @param {string} params.signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
  * @param {string} [params.signaturePublicKey] Public key used for signature verification
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
- * @param {number} [params.userRebateRate] Percentage of rewards split to the user
  * @example
  * ```typescript
  * await Fuul.updateAffiliateCode({
@@ -296,7 +295,6 @@ export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<
     params.signature,
     params.signaturePublicKey,
     params.accountChainId,
-    params.userRebateRate,
   );
 }
 
