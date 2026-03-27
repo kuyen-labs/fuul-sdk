@@ -656,4 +656,89 @@ describe('SDK core', () => {
       expect(totals.unclaimed).toEqual([]);
     });
   });
+
+  describe('updateAffiliateCode()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+
+    it('should not pass userRebateRate to affiliate service', async () => {
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.update.mockResolvedValueOnce();
+
+      await Fuul.updateAffiliateCode({
+        userIdentifier: '0x123',
+        identifierType: UserIdentifierType.EvmAddress,
+        code: 'my-code',
+        signature: 'sig',
+        userRebateRate: 0.1,
+      });
+
+      expect(affiliateServiceMock.prototype.update).toHaveBeenCalledWith(
+        '0x123',
+        UserIdentifierType.EvmAddress,
+        'my-code',
+        'sig',
+        undefined,
+        undefined,
+      );
+    });
+  });
+
+  describe('updateRebateRate()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+
+    it('should call updateRebateRate with correct arguments', async () => {
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.updateRebateRate.mockResolvedValueOnce();
+
+      await Fuul.updateRebateRate({
+        userIdentifier: '0x123',
+        identifierType: UserIdentifierType.EvmAddress,
+        code: 'my-code',
+        signature: 'sig',
+        rebateRate: 0.1,
+      });
+
+      expect(affiliateServiceMock.prototype.updateRebateRate).toHaveBeenCalledWith(
+        '0x123',
+        UserIdentifierType.EvmAddress,
+        'my-code',
+        'sig',
+        0.1,
+        undefined,
+        undefined,
+        undefined,
+      );
+    });
+
+    it('should pass optional parameters', async () => {
+      const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
+      affiliateServiceMock.prototype.updateRebateRate.mockResolvedValueOnce();
+
+      await Fuul.updateRebateRate({
+        userIdentifier: '0x123',
+        identifierType: UserIdentifierType.EvmAddress,
+        code: 'my-code',
+        signature: 'sig',
+        rebateRate: 0.15,
+        signaturePublicKey: 'pub-key',
+        accountChainId: 8453,
+        sourceProjectId: 'project-uuid',
+      });
+
+      expect(affiliateServiceMock.prototype.updateRebateRate).toHaveBeenCalledWith(
+        '0x123',
+        UserIdentifierType.EvmAddress,
+        'my-code',
+        'sig',
+        0.15,
+        'pub-key',
+        8453,
+        'project-uuid',
+      );
+    });
+  });
 });
