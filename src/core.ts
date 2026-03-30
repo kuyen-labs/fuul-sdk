@@ -1,6 +1,13 @@
 import { UserIdentifierType } from '.';
 import { AffiliatePortalService } from './affiliate-portal/AffiliatePortalService';
-import { GetAffiliateStatsParams, GetAffiliateStatsResponse, GetNewTradersParams, NewTraderResponse } from './affiliate-portal/types';
+import {
+  GetAffiliateStatsParams,
+  GetAffiliateStatsResponse,
+  GetAffiliateTotalStatsParams,
+  GetAffiliateTotalStatsResponse,
+  GetNewTradersParams,
+  NewTraderResponse,
+} from './affiliate-portal/types';
 import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
 import { ClaimCheckService } from './claim-checks/ClaimCheckService';
@@ -803,6 +810,20 @@ export async function getAffiliateNewTraders(params: GetNewTradersParams): Promi
 }
 
 /**
+ * Gets total stats for the project's affiliate portal
+ * @param {GetAffiliateTotalStatsParams} params Optional filters (statuses, regions, audiences)
+ * @returns {Promise<GetAffiliateTotalStatsResponse>} Project total stats
+ * @example
+ * ```typescript
+ * const totalStats = await Fuul.getAffiliateTotalStats({});
+ * ```
+ */
+export async function getAffiliateTotalStats(params: GetAffiliateTotalStatsParams): Promise<GetAffiliateTotalStatsResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getAffiliateTotalStats(params);
+}
+
+/**
  * Gets all claimable claim checks for a user within a project
  * Returns only unclaimed checks with valid (non-expired) deadlines
  * @param {GetClaimableChecksParams} params Get claimable checks parameters
@@ -909,6 +930,7 @@ export default {
   deleteReferral,
   getAffiliateStats,
   getAffiliateNewTraders,
+  getAffiliateTotalStats,
   getClaimableChecks,
   getClaimCheckTotals,
 };
