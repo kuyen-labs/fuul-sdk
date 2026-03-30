@@ -11,14 +11,20 @@ export type {
 } from './affiliate-portal/types';
 export * from './affiliates/errors';
 export type {
+  ClaimCheckItem,
   ClaimCheckReason,
   ClaimCheckTotalItem,
   ClaimResponse,
+  CloseClaimChecksParams,
+  CloseClaimChecksResponse,
   GetClaimableChecksParams,
   GetClaimableChecksResponse,
+  GetClaimChecksParams,
+  GetClaimChecksResponse,
   GetClaimCheckTotalsParams,
   GetClaimCheckTotalsResponse,
 } from './claim-checks/types';
+export { ClaimCheckStatus } from './claim-checks/types';
 export type {
   Affiliate,
   Conversion,

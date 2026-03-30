@@ -657,6 +657,127 @@ describe('SDK core', () => {
     });
   });
 
+  describe('getClaimChecks()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-api-key' });
+    });
+
+    it('should return claim checks', async () => {
+      const getClaimChecksSpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimChecks').mockResolvedValue({
+        claim_checks: [
+          {
+            id: 'uuid-1',
+            currency_address: '0xtoken',
+            currency_chain_id: '1',
+            currency_name: 'USDC',
+            currency_decimals: 6,
+            reason: 'affiliate_payout',
+            amount: '1000000',
+            status: 'open',
+            deadline_seconds: 1704067200,
+            created_at: '2024-01-01T00:00:00Z',
+          },
+        ],
+      });
+
+      const result = await Fuul.getClaimChecks({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(getClaimChecksSpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(result.claim_checks).toHaveLength(1);
+      expect(result.claim_checks[0].id).toBe('uuid-1');
+      expect(result.claim_checks[0].status).toBe('open');
+    });
+
+    it('should handle empty results', async () => {
+      jest.spyOn(ClaimCheckService.prototype, 'getClaimChecks').mockResolvedValue({
+        claim_checks: [],
+      });
+
+      const result = await Fuul.getClaimChecks({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(result.claim_checks).toEqual([]);
+    });
+
+    it('should pass status filter', async () => {
+      const getClaimChecksSpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimChecks').mockResolvedValue({
+        claim_checks: [],
+      });
+
+      await Fuul.getClaimChecks({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        status: 'open' as any,
+      });
+
+      expect(getClaimChecksSpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        status: 'open',
+      });
+    });
+  });
+
+  describe('closeClaimChecks()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-api-key' });
+    });
+
+    it('should close claim checks and return signed responses', async () => {
+      const closeClaimChecksSpy = jest.spyOn(ClaimCheckService.prototype, 'closeClaimChecks').mockResolvedValue([
+        {
+          project_address: '0xproject',
+          to: '0x123',
+          currency: '0xtoken',
+          currency_type: 1,
+          amount: '1000000000000000000',
+          reason: 0,
+          token_id: '0',
+          deadline: 1704067200,
+          proof: '0xproof',
+          signatures: ['0xsig1'],
+        },
+      ]);
+
+      const result = await Fuul.closeClaimChecks({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        claim_check_ids: ['uuid-1', 'uuid-2'],
+      });
+
+      expect(closeClaimChecksSpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        claim_check_ids: ['uuid-1', 'uuid-2'],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].project_address).toBe('0xproject');
+      expect(result[0].signatures).toEqual(['0xsig1']);
+    });
+
+    it('should handle empty results', async () => {
+      jest.spyOn(ClaimCheckService.prototype, 'closeClaimChecks').mockResolvedValue([]);
+
+      const result = await Fuul.closeClaimChecks({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        claim_check_ids: ['uuid-1'],
+      });
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('updateAffiliateCode()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });
