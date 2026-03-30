@@ -4,6 +4,8 @@ export type {
   AffiliateEarning,
   GetAffiliateStatsParams,
   GetAffiliateStatsResponse,
+  GetAffiliateTotalStatsParams,
+  GetAffiliateTotalStatsResponse,
   GetNewTradersParams,
   NewTraderResponse,
 } from './affiliate-portal/types';

@@ -36,3 +36,21 @@ export interface NewTraderResponse {
   referrer_identifier: string;
   total_new_traders: string;
 }
+
+export interface GetAffiliateTotalStatsParams {
+  statuses?: string[];
+  regions?: string[];
+  audiences?: string[];
+}
+
+export interface GetAffiliateTotalStatsResponse {
+  total_affiliates: number;
+  active_affiliates: number;
+  suspended_affiliates: number;
+  total_regions: number;
+  total_volume: number;
+  total_revenue: number;
+  total_attributions: number;
+  total_referred_users: number;
+  total_earnings: AffiliateEarning[];
+}
