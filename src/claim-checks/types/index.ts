@@ -5,6 +5,43 @@ export interface GetClaimableChecksParams {
   user_identifier_type: UserIdentifierType;
 }
 
+export enum ClaimCheckStatus {
+  Open = 'open',
+  Unclaimed = 'unclaimed',
+  Claimed = 'claimed',
+}
+
+export interface ClaimCheckItem {
+  id: string;
+  currency_address: string;
+  currency_chain_id: string;
+  currency_name: string;
+  currency_decimals: number;
+  reason: string;
+  amount: string;
+  status: string;
+  deadline_seconds: number;
+  created_at: string;
+}
+
+export interface GetClaimChecksParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  status?: ClaimCheckStatus;
+}
+
+export interface GetClaimChecksResponse {
+  claim_checks: ClaimCheckItem[];
+}
+
+export interface CloseClaimChecksParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  claim_check_ids: string[];
+}
+
+export type CloseClaimChecksResponse = ClaimResponse[];
+
 export enum ClaimCheckReason {
   AffiliatePayout = 0,
   EndUserPayout = 1,

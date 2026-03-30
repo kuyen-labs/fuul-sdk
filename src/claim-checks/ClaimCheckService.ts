@@ -1,5 +1,14 @@
 import { HttpClient } from '../HttpClient';
-import { GetClaimableChecksParams, GetClaimableChecksResponse, GetClaimCheckTotalsParams, GetClaimCheckTotalsResponse } from './types';
+import {
+  CloseClaimChecksParams,
+  CloseClaimChecksResponse,
+  GetClaimableChecksParams,
+  GetClaimableChecksResponse,
+  GetClaimChecksParams,
+  GetClaimChecksResponse,
+  GetClaimCheckTotalsParams,
+  GetClaimCheckTotalsResponse,
+} from './types';
 
 export type ClaimCheckServiceSettings = {
   httpClient: HttpClient;
@@ -18,6 +27,47 @@ export class ClaimCheckService {
   constructor(settings: ClaimCheckServiceSettings) {
     this.httpClient = settings.httpClient;
     this._debug = settings.debug;
+  }
+
+  /**
+   * Retrieves claim checks for a user with optional status filtering
+   *
+   * @param {GetClaimChecksParams} params - User identifier and optional status filter
+   * @returns {Promise<GetClaimChecksResponse>} List of claim checks
+   */
+  public async getClaimChecks(params: GetClaimChecksParams): Promise<GetClaimChecksResponse> {
+    const queryParams: Record<string, string> = {
+      user_identifier: params.user_identifier,
+      user_identifier_type: params.user_identifier_type,
+    };
+
+    if (params.status) {
+      queryParams.status = params.status;
+    }
+
+    const response = await this.httpClient.get<GetClaimChecksResponse>({
+      path: basePath,
+      queryParams,
+    });
+    return response.data;
+  }
+
+  /**
+   * Closes open claim checks, aggregating and signing them for on-chain claiming
+   *
+   * @param {CloseClaimChecksParams} params - User identifier and claim check IDs to close
+   * @returns {Promise<CloseClaimChecksResponse>} Array of signed claim responses ready for on-chain execution
+   */
+  public async closeClaimChecks(params: CloseClaimChecksParams): Promise<CloseClaimChecksResponse> {
+    const response = await this.httpClient.post<CloseClaimChecksResponse>({
+      path: `${basePath}/close`,
+      postData: {
+        userIdentifier: params.user_identifier,
+        userIdentifierType: params.user_identifier_type,
+        claim_check_ids: params.claim_check_ids,
+      },
+    });
+    return response.data;
   }
 
   /**

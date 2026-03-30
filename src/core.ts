@@ -11,7 +11,16 @@ import {
 import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
 import { ClaimCheckService } from './claim-checks/ClaimCheckService';
-import { GetClaimableChecksParams, GetClaimableChecksResponse, GetClaimCheckTotalsParams, GetClaimCheckTotalsResponse } from './claim-checks/types';
+import {
+  CloseClaimChecksParams,
+  CloseClaimChecksResponse,
+  GetClaimableChecksParams,
+  GetClaimableChecksResponse,
+  GetClaimChecksParams,
+  GetClaimChecksResponse,
+  GetClaimCheckTotalsParams,
+  GetClaimCheckTotalsResponse,
+} from './claim-checks/types';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
@@ -824,6 +833,48 @@ export async function getAffiliateTotalStats(params: GetAffiliateTotalStatsParam
 }
 
 /**
+ * Retrieves claim checks for a user with optional status filtering
+ * @param {GetClaimChecksParams} params Get claim checks parameters
+ * @returns {Promise<GetClaimChecksResponse>} List of claim checks
+ * @example
+ * ```typescript
+ * const result = await Fuul.getClaimChecks({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   status: ClaimCheckStatus.Open,
+ * });
+ * result.claim_checks.forEach(check => {
+ *   console.log(`${check.id}: ${check.amount} (${check.status})`);
+ * });
+ * ```
+ */
+export async function getClaimChecks(params: GetClaimChecksParams): Promise<GetClaimChecksResponse> {
+  assertInitialized();
+  return _claimCheckService.getClaimChecks(params);
+}
+
+/**
+ * Closes open claim checks, aggregating and signing them for on-chain claiming
+ * @param {CloseClaimChecksParams} params User identifier and claim check IDs to close
+ * @returns {Promise<CloseClaimChecksResponse>} Array of signed claim responses
+ * @example
+ * ```typescript
+ * const claims = await Fuul.closeClaimChecks({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   claim_check_ids: ['uuid-1', 'uuid-2'],
+ * });
+ * claims.forEach(claim => {
+ *   console.log(`Amount: ${claim.amount}, Proof: ${claim.proof}`);
+ * });
+ * ```
+ */
+export async function closeClaimChecks(params: CloseClaimChecksParams): Promise<CloseClaimChecksResponse> {
+  assertInitialized();
+  return _claimCheckService.closeClaimChecks(params);
+}
+
+/**
  * Gets all claimable claim checks for a user within a project
  * Returns only unclaimed checks with valid (non-expired) deadlines
  * @param {GetClaimableChecksParams} params Get claimable checks parameters
@@ -931,6 +982,8 @@ export default {
   getAffiliateStats,
   getAffiliateNewTraders,
   getAffiliateTotalStats,
+  getClaimChecks,
+  closeClaimChecks,
   getClaimableChecks,
   getClaimCheckTotals,
 };
