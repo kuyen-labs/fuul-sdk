@@ -35,3 +35,14 @@ export type AffiliateCodeParams = {
   accountChainId?: number;
   userRebateRate?: number;
 };
+
+export type UpdateRebateRateParams = {
+  userIdentifier: string;
+  identifierType: UserIdentifierType;
+  code: string;
+  signature: string;
+  signaturePublicKey?: string;
+  accountChainId?: number;
+  sourceProjectId?: string;
+  rebateRate: number;
+};

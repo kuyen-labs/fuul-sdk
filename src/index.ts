@@ -44,7 +44,7 @@ export type {
   UseReferralCodeParams,
   UserReferralCode,
 } from './types/api';
-export type { EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
+export type { EventArgs, FuulSettings, IdentifyUserParams, UpdateRebateRateParams } from './types/sdk';
 export { UserIdentifierType } from './types/user';
 export type { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
 

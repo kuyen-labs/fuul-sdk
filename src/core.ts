@@ -55,7 +55,7 @@ import {
   UserPointsMovementsResponse,
   VolumeLeaderboard,
 } from './types/api';
-import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
+import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams, UpdateRebateRateParams } from './types/sdk';
 import { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
 import { UserService } from './user/UserService';
 
@@ -275,7 +275,6 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  * @param {string} params.signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
  * @param {string} [params.signaturePublicKey] Public key used for signature verification
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
- * @param {number} [params.userRebateRate] Percentage of rewards split to the user
  * @example
  * ```typescript
  * await Fuul.updateAffiliateCode({
@@ -296,7 +295,42 @@ export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<
     params.signature,
     params.signaturePublicKey,
     params.accountChainId,
-    params.userRebateRate,
+  );
+}
+
+/**
+ * Updates the rebate rate for an affiliate code on a specific project
+ * @param {object} params Update rebate rate parameters
+ * @param {string} params.userIdentifier Affiliate identifier
+ * @param {UserIdentifierType} params.identifierType Affiliate identifier type
+ * @param {string} params.code Affiliate code
+ * @param {string} params.signature Signed message authenticating the update
+ * @param {number} params.rebateRate New rebate rate (0 to 0.2, max 2 decimal places)
+ * @param {string} [params.signaturePublicKey] Public key used for signature verification
+ * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
+ * @param {string} [params.sourceProjectId] Project ID (used if no Bearer token is present)
+ * @example
+ * ```typescript
+ * await Fuul.updateRebateRate({
+ *   userIdentifier: '0x12345',
+ *   identifierType: UserIdentifierType.EvmAddress,
+ *   code: 'my-cool-code',
+ *   signature: '<signature>',
+ *   rebateRate: 0.1,
+ * })
+ * ```
+ **/
+export async function updateRebateRate(params: UpdateRebateRateParams): Promise<void> {
+  assertInitialized();
+  await _affiliateService.updateRebateRate(
+    params.userIdentifier,
+    params.identifierType,
+    params.code,
+    params.signature,
+    params.rebateRate,
+    params.signaturePublicKey,
+    params.accountChainId,
+    params.sourceProjectId,
   );
 }
 
@@ -849,6 +883,7 @@ export default {
   getConversions,
   createAffiliateCode,
   updateAffiliateCode,
+  updateRebateRate,
   getAffiliateCode,
   isAffiliateCodeFree,
   isAffiliateCodeAvailable,

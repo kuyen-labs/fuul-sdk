@@ -74,7 +74,6 @@ export class AffiliateService {
     signature: string,
     signaturePublicKey?: string,
     accountChainId?: number,
-    userRebateRate?: number,
   ): Promise<void> {
     try {
       await this.httpClient.post<void>({
@@ -86,7 +85,6 @@ export class AffiliateService {
           signature,
           signature_public_key: signaturePublicKey,
           account_chain_id: accountChainId,
-          user_rebate_rate: userRebateRate,
         },
       });
     } catch (e: unknown) {
@@ -101,6 +99,49 @@ export class AffiliateService {
             throw new AddressInUseError(user_identifier);
           } else if (message == 'code in use') {
             throw new CodeInUseError(code);
+          } else {
+            throw new Error(message);
+          }
+        } else if (data?.message instanceof Array) {
+          throw new ValidationError(data.message);
+        }
+      }
+
+      throw e;
+    }
+  }
+
+  public async updateRebateRate(
+    user_identifier: string,
+    identifier_type: UserIdentifierType,
+    code: string,
+    signature: string,
+    rebateRate: number,
+    signaturePublicKey?: string,
+    accountChainId?: number,
+    sourceProjectId?: string,
+  ): Promise<void> {
+    try {
+      await this.httpClient.post<void>({
+        path: `/affiliates/${user_identifier}/rebate-rate`,
+        postData: {
+          identifier_type,
+          code,
+          signature,
+          signature_public_key: signaturePublicKey,
+          account_chain_id: accountChainId,
+          source_project_id: sourceProjectId,
+          rebate_rate: rebateRate,
+        },
+      });
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        const data = e.response?.data;
+        if (typeof data?.message === 'string') {
+          const message = data.message.toLowerCase();
+
+          if (message == 'invalid signature') {
+            throw new InvalidSignatureError();
           } else {
             throw new Error(message);
           }
