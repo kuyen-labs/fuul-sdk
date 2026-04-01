@@ -1,5 +1,5 @@
-import { AffiliatePortalService } from './AffiliatePortalService';
 import { HttpClient } from '../HttpClient';
+import { AffiliatePortalService } from './AffiliatePortalService';
 
 describe('AffiliatePortalService', () => {
   const createService = () => {
