@@ -25,6 +25,7 @@ export type FuulEvent = {
   };
   signature?: string;
   signature_message?: string;
+  signature_public_key?: string;
   args?: FuulEventArgs;
   metadata: FuulEventMetadata;
   account_chain_id?: number;
@@ -87,7 +88,39 @@ type ProjectTeamMember = {
 };
 
 export type Affiliate = {
+  id: string;
+  name: string;
   code: string;
+  user_identifier: string;
+  user_identifier_type: string;
+  updated_at: string;
+  created_at: string;
+  uses: number;
+  clicks: number;
+  total_users: number;
+  total_earnings: number;
+  /** @deprecated Use rebate_rates instead. Kept for backward compatibility. */
+  user_rebate_rate: number | null;
+  rebate_rates: { project_id: string; rebate_rate: number | null }[];
+  region: string;
+};
+
+export type CreateAffiliateResponse = {
+  id: string;
+  name: string;
+  code: string;
+  user_identifier: string;
+  user_identifier_type: string;
+  region: string;
+  updated_at: string;
+};
+
+export type CheckAffiliateCodeAvailabilityResponse = {
+  free: boolean;
+};
+
+export type CheckAffiliateCodeAvailableResponse = {
+  available: boolean;
 };
 
 export type Project = {
@@ -165,14 +198,18 @@ interface PayoutTermResponse {
 
 export interface Conversion {
   id: string;
+  external_id: number;
   name: string;
   slug: string;
-  conversion_window: number;
-  attribution_type: string;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
+  conversion_window?: number;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
+  attribution_type?: string;
   triggers: Trigger[];
   created_at: Date;
   updated_at: Date;
-  rule: Rule;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
+  rule?: Rule;
   project?: {
     name: string;
     slug: string;
@@ -182,7 +219,7 @@ export interface Conversion {
     user_landing_page_url?: string;
     partner_landing_page_url?: string;
     user_onboarding_page_url?: string;
-    contract_chain_id: number | null;
+    contract_chain_id: string | null;
     github_account?: string;
     whitepaper_url?: string;
     investors?: ProjectInvestor[];
@@ -191,8 +228,11 @@ export interface Conversion {
     documentation_url?: string;
     other_links?: ProjectOtherLink[];
   };
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   action_id?: string;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   action_type?: string;
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   action_args?: PayoutTermResponse;
   conversion_rate?: number;
   total_converted?: number;
@@ -200,41 +240,95 @@ export interface Conversion {
     amount: number;
     currency: string;
   };
+  /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   converted?: boolean;
 }
 
 type LeaderboardUserType = 'affiliate' | 'end_user';
 
+/**
+ * Parameters for getPayoutsLeaderboard endpoint
+ *
+ * Note: The following field was removed and is no longer supported:
+ * - `conversions` - No longer available
+ */
 export interface GetPayoutsLeaderboardParams {
-  currency_address?: string;
-  project_id?: string;
-  user_identifier?: string;
-  identifier_type?: UserIdentifierType;
-  user_type?: LeaderboardUserType;
   page?: number;
   page_size?: number;
-  from?: Date;
-  to?: Date;
-  fields?: string;
-  conversions?: string;
-}
-
-export interface GetPointsLeaderboardParams {
   currency_address?: string;
-  project_id?: string;
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
   user_identifier?: string;
   identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
+  from?: string;
+  to?: string;
   user_type?: LeaderboardUserType;
-  page?: number;
-  page_size?: number;
-  from?: Date;
-  to?: Date;
   fields?: string;
-  conversions?: string;
-}
-
-export interface GetVolumeLeaderboardParams extends GetPayoutsLeaderboardParams {
   conversion_external_ids?: number[];
+}
+
+/**
+ * Parameters for getPointsLeaderboard endpoint
+ *
+ * Note: The following fields were removed and are no longer supported:
+ * - `currency_address` - Currency filtering is not available
+ * - `from` - Date filtering is not available
+ * - `to` - Date filtering is not available
+ * - `user_type` - User type filtering is not available
+ * - `conversions` - No longer available
+ */
+export interface GetPointsLeaderboardParams {
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
+  user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
+  fields?: string;
+  page?: number;
+  page_size?: number;
+}
+
+/**
+ * Parameters for getVolumeLeaderboard endpoint
+ *
+ * Note: The following fields were removed and are no longer supported:
+ * - `from` - Date filtering is not available
+ * - `to` - Date filtering is not available
+ * - `fields` - Field selection is not available
+ * - `conversions` - No longer available
+ * - `conversion_external_ids` - No longer supported
+ */
+export interface GetVolumeLeaderboardParams {
+  page?: number;
+  page_size?: number;
+  currency_address?: string;
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
+  user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
+  user_type?: LeaderboardUserType;
+}
+
+/**
+ * Parameters for getRevenueLeaderboard endpoint
+ */
+export interface GetRevenueLeaderboardParams {
+  page?: number;
+  page_size?: number;
+  currency_address?: string;
+  /** @deprecated Use user_identifier instead */
+  user_address?: string;
+  user_identifier?: string;
+  identifier_type?: UserIdentifierType;
+  /** @deprecated Use identifier_type instead */
+  user_identifier_type?: UserIdentifierType;
+  fields?: string;
+  user_type?: LeaderboardUserType;
 }
 
 export interface LeaderboardResponse<T> {
@@ -242,36 +336,54 @@ export interface LeaderboardResponse<T> {
   page: number;
   page_size: number;
   results: T[];
+  calculated_at: string;
 }
 
 export interface PayoutsLeaderboard {
   address: string;
   affiliate_code?: string;
-  total_amount: string;
-  chain_id: number;
+  user_identifier: string;
+  user_identifier_type: string;
   rank: number;
+  chain_id: string;
+  total_amount: number;
   total_attributions: number;
   tiers?: Record<string, string>;
-  referred_volume?: string;
+  referred_volume?: number;
   referred_users?: number;
 }
 
 export interface VolumeLeaderboard {
   address: string;
-  affiliate_code?: string;
-  total_amount: number;
-  chain_id: number;
+  user_identifier: string;
+  user_identifier_type: string;
+  affiliate_code: string | null;
+  total_amount: string;
+  chain_id: string | null;
   rank: number;
+}
+
+export interface RevenueLeaderboard {
+  address: string;
+  total_amount: string;
+  rank: number;
+  affiliate_code: string | null;
+  attributions?: number;
+  volume_usd?: number;
+  points?: number;
 }
 
 export interface PointsLeaderboard {
   address: string;
   affiliate_code?: string;
-  total_amount: string;
+  total_amount: number;
   rank: number;
   total_attributions: number;
   tiers?: Record<string, string>;
-  referred_volume?: string;
+  referred_volume?: number;
+  enduser_revenue?: number;
+  referred_users?: number;
+  enduser_volume?: number;
 }
 
 export interface ReferredUsersLeaderboard {
@@ -292,8 +404,8 @@ export interface GetUserPayoutsByConversionParams {
   group_by?: string;
   page?: number;
   page_size?: number;
-  from: Date;
-  to: Date;
+  from: string;
+  to: string;
 }
 
 export interface GetUserPointsByConversionParams {
@@ -303,8 +415,8 @@ export interface GetUserPointsByConversionParams {
   group_by?: string;
   page?: number;
   page_size?: number;
-  from: Date;
-  to: Date;
+  from: string;
+  to: string;
 }
 
 export interface UserPayoutsByConversionResponse {
@@ -320,7 +432,7 @@ export interface UserConversionPayout {
   conversion_id: string;
   conversion_name: string;
   currency_address: string;
-  chain_id: number;
+  chain_id: string;
 }
 
 export interface UserPointsByConversionResponse {
@@ -341,6 +453,10 @@ export interface GetUserPayoutMovementsParams {
   user_identifier: string;
   identifier_type: UserIdentifierType;
   project_id?: string;
+  page?: number;
+  page_size?: number;
+  from_date?: string;
+  to_date?: string;
 }
 
 export interface UserPayoutMovementsResponse {
@@ -367,6 +483,10 @@ export interface GetUserPointsMovementsParams {
   user_identifier: string;
   identifier_type: UserIdentifierType;
   project_id?: string;
+  page?: number;
+  page_size?: number;
+  from_date?: string;
+  to_date?: string;
 }
 
 export interface UserPointsMovementsResponse {
@@ -394,10 +514,147 @@ export interface GetConversionsParams {
 
 export interface GetUserAudiencesParams {
   user_identifier: string;
-  identifier_type: UserIdentifierType;
+  user_identifier_type: UserIdentifierType;
 }
 
-export type GetUserAudiencesResponse = {
-  id: string;
-  name: string;
-}[];
+export interface GetUserAudiencesResponse {
+  results: {
+    id: string;
+    name: string;
+    badge_name: string | null;
+    badge_description: string | null;
+    badge_image: string | null;
+    /** @deprecated Not returned by the server. Will be removed in the next major version. */
+    active?: boolean;
+  }[];
+}
+
+export interface UserReferralCode {
+  code: string;
+  created_at: string;
+  used_by: {
+    identifier: string;
+    identifier_type: string;
+    used_at: string;
+  }[];
+  max_uses: number | null;
+  uses: number;
+  remaining_uses: number | null;
+  rebate_rate: number | null;
+  clicks: number;
+  total_users: number;
+  total_earnings: number;
+}
+
+export interface ListUserReferralCodesParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  page?: number;
+  page_size?: number;
+}
+
+export interface ListUserReferralCodesResponse {
+  results: UserReferralCode[];
+  count: number;
+  next_page: number | null;
+}
+
+export interface GenerateReferralCodesParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  quantity?: number;
+  max_uses?: number;
+}
+
+export interface GenerateReferralCodesResponse {
+  code: string;
+}
+
+export interface GetReferralStatusParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+}
+
+export interface GetReferralStatusResponse {
+  referred: boolean;
+  code?: string;
+  referrer_identifier?: string;
+  referrer_identifier_type?: UserIdentifierType;
+  referred_at?: string;
+}
+
+export interface GetReferralCodeParams {
+  code: string;
+}
+
+export interface GetReferralCodeResponse {
+  available: boolean;
+}
+
+export interface UseReferralCodeParams {
+  code: string;
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  signature: string;
+  signature_message: string;
+  chain_id?: number;
+  /** @deprecated Not supported by the server. Will be removed in the next major version. */
+  account_chain_id?: number;
+}
+
+export interface UpdateReferralCodeParams {
+  code: string;
+  max_uses: number | null;
+}
+
+export interface DeleteReferralParams {
+  code: string;
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  referrer_identifier: string;
+  referrer_identifier_type: UserIdentifierType;
+  signature?: string;
+  signature_message?: string;
+  chain_id?: number;
+}
+
+export interface EarningItem {
+  currency: {
+    address: string | null;
+    chainId: string | null;
+  };
+  amount: number;
+}
+
+export interface ReferrerPayoutData {
+  volume: number;
+  earnings: EarningItem[];
+  date_joined: string;
+  event_referrer_identifier: string;
+  user_rebate_rate?: number | null;
+}
+
+export type PayoutsByReferrerResponse = Array<Record<string, ReferrerPayoutData>>;
+
+export interface GetPayoutsByReferrerParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+}
+
+// Referred Volume types
+export interface GetReferredVolumeParams {
+  user_identifiers: string[];
+  identifier_type?: UserIdentifierType;
+  no_cache?: boolean;
+}
+
+export interface ReferredVolumeItem {
+  user_identifier: string;
+  referred_volume: number;
+}
+
+export interface ReferredVolumeResponse {
+  project_id: string;
+  referred_volumes: ReferredVolumeItem[];
+  total_count: number;
+}

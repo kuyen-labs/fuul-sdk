@@ -62,3 +62,58 @@ await Fuul.identifyUser({
 ```
 
 NOTE: Make sure to send the event when connecting a wallet for the first time as well as when changing wallets during the session.
+
+## Claim Checks
+
+The SDK provides methods to retrieve claim checks for users - these are claimable rewards that users can redeem on-chain.
+
+### Get Claimable Checks
+
+Retrieve all claimable claim checks for a user. This returns only unclaimed checks with valid (non-expired) deadlines.
+
+```tsx
+import { Fuul, UserIdentifierType } from '@fuul/sdk';
+
+const claimableChecks = await Fuul.getClaimableChecks({
+  user_identifier: '0xe06099DbbF626892397f9A74C7f42F16748292Db',
+  user_identifier_type: UserIdentifierType.EvmAddress
+});
+
+// Process each claimable check
+claimableChecks.forEach(check => {
+  console.log(`Amount: ${check.amount}`);
+  console.log(`Currency: ${check.currency}`);
+  console.log(`Deadline: ${new Date(check.deadline * 1000).toISOString()}`);
+  console.log(`Proof: ${check.proof}`);
+  console.log(`Signatures:`, check.signatures);
+});
+```
+
+The response includes all the data needed for on-chain claim verification including cryptographic proofs and signatures.
+
+### Get Claim Check Totals
+
+Get aggregated totals of claimed and unclaimed claim checks for a user, grouped by currency.
+
+```tsx
+import { Fuul, UserIdentifierType } from '@fuul/sdk';
+
+const totals = await Fuul.getClaimCheckTotals({
+  user_identifier: '0xe06099DbbF626892397f9A74C7f42F16748292Db',
+  user_identifier_type: UserIdentifierType.EvmAddress
+});
+
+// Display claimed totals
+console.log('Claimed:');
+totals.claimed.forEach(item => {
+  console.log(`  ${item.currency_name}: ${item.amount} (${item.currency_address})`);
+});
+
+// Display unclaimed totals
+console.log('Unclaimed:');
+totals.unclaimed.forEach(item => {
+  console.log(`  ${item.currency_name}: ${item.amount} (${item.currency_address})`);
+});
+```
+
+This endpoint includes both expired and non-expired claims, providing a complete view of all historical and current claim checks.

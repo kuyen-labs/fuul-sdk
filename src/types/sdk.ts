@@ -12,6 +12,7 @@ export type IdentifyUserParams = {
   identifierType: UserIdentifierType;
   signature?: string;
   message?: string;
+  signaturePublicKey?: string;
   accountChainId?: number;
 };
 
@@ -30,5 +31,18 @@ export type AffiliateCodeParams = {
   identifierType: UserIdentifierType;
   code: string;
   signature: string;
+  signaturePublicKey?: string;
   accountChainId?: number;
+  userRebateRate?: number;
+};
+
+export type UpdateRebateRateParams = {
+  userIdentifier: string;
+  identifierType: UserIdentifierType;
+  code: string;
+  signature: string;
+  signaturePublicKey?: string;
+  accountChainId?: number;
+  sourceProjectId?: string;
+  rebateRate: number;
 };

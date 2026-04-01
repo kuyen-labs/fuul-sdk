@@ -1,19 +1,52 @@
 import { UserIdentifierType } from '.';
+import { AffiliatePortalService } from './affiliate-portal/AffiliatePortalService';
+import {
+  GetAffiliateStatsParams,
+  GetAffiliateStatsResponse,
+  GetAffiliateTotalStatsParams,
+  GetAffiliateTotalStatsResponse,
+  GetNewTradersParams,
+  NewTraderResponse,
+} from './affiliate-portal/types';
 import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
+import { ClaimCheckService } from './claim-checks/ClaimCheckService';
+import {
+  CloseClaimChecksParams,
+  CloseClaimChecksResponse,
+  GetClaimableChecksParams,
+  GetClaimableChecksResponse,
+  GetClaimChecksParams,
+  GetClaimChecksResponse,
+  GetClaimCheckTotalsParams,
+  GetClaimCheckTotalsResponse,
+} from './claim-checks/types';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
 import { HttpClient } from './HttpClient';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
+import { ReferralCodeService } from './referral-codes/ReferralCodeService';
 import { getAffiliateId, getReferrerUrl, getTrackingId, getTrafficCategory, getTrafficSource, getTrafficTag, getTrafficTitle } from './tracking';
 import {
+  Affiliate,
   Conversion,
+  CreateAffiliateResponse,
+  DeleteReferralParams,
   FuulEvent,
+  GenerateReferralCodesParams,
+  GenerateReferralCodesResponse,
   GetConversionsParams,
+  GetPayoutsByReferrerParams,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
+  GetReferralCodeParams,
+  GetReferralCodeResponse,
+  GetReferralStatusParams,
+  GetReferralStatusResponse,
   GetReferredUsersLeaderboardParams,
+  GetReferredVolumeParams,
+  GetRevenueLeaderboardParams,
   GetUserAudiencesParams,
   GetUserAudiencesResponse,
   GetUserPayoutMovementsParams,
@@ -22,17 +55,24 @@ import {
   GetUserPointsMovementsParams,
   GetVolumeLeaderboardParams,
   LeaderboardResponse,
+  ListUserReferralCodesParams,
+  ListUserReferralCodesResponse,
+  PayoutsByReferrerResponse,
   PayoutsLeaderboard,
   PointsLeaderboard,
   ReferredUsersLeaderboard,
+  ReferredVolumeResponse,
+  RevenueLeaderboard,
+  UpdateReferralCodeParams,
+  UseReferralCodeParams,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
   UserPointsByConversionResponse,
   UserPointsMovementsResponse,
   VolumeLeaderboard,
 } from './types/api';
-import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams } from './types/sdk';
-import { GetUserAffiliatesParams, UserAffiliate } from './user/types';
+import { AffiliateCodeParams, AffiliateLinkParams, EventArgs, FuulSettings, IdentifyUserParams, UpdateRebateRateParams } from './types/sdk';
+import { GetUserReferrerParams, GetUserReferrerResponse } from './user/types';
 import { UserService } from './user/UserService';
 
 const FUUL_API_DEFAULT_ENDPOINT_URI = 'https://api.fuul.xyz/api/v1/';
@@ -44,10 +84,13 @@ let _httpClient: HttpClient;
 let _conversionService: ConversionService;
 let _userService: UserService;
 let _affiliateService: AffiliateService;
+let _affiliatePortalService: AffiliatePortalService;
 let _eventService: EventService;
 let _payoutService: PayoutService;
 let _audienceService: AudienceService;
 let _leaderboardService: LeaderboardService;
+let _referralCodeService: ReferralCodeService;
+let _claimCheckService: ClaimCheckService;
 
 export function init(settings: FuulSettings) {
   _debug = !!settings.debug;
@@ -64,10 +107,13 @@ export function init(settings: FuulSettings) {
   _conversionService = new ConversionService({ httpClient: _httpClient, debug: _debug });
   _eventService = new EventService({ httpClient: _httpClient, debug: _debug });
   _affiliateService = new AffiliateService({ httpClient: _httpClient, debug: _debug });
+  _affiliatePortalService = new AffiliatePortalService({ httpClient: _httpClient });
   _payoutService = new PayoutService({ httpClient: _httpClient, debug: _debug });
   _userService = new UserService({ httpClient: _httpClient });
   _audienceService = new AudienceService({ httpClient: _httpClient, debug: _debug });
   _leaderboardService = new LeaderboardService({ httpClient: _httpClient });
+  _referralCodeService = new ReferralCodeService({ httpClient: _httpClient, debug: _debug });
+  _claimCheckService = new ClaimCheckService({ httpClient: _httpClient, debug: _debug });
 
   _initialized = true;
   _debug && console.debug(`Fuul SDK: init() complete`);
@@ -150,7 +196,8 @@ export async function sendPageview(pageName?: string, projectIds?: string[]): Pr
  *   identifier: '0x12345',
  *   identifierType: UserIdentifierType.EvmAddress,
  *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
- *   signatureMessage: 'Accept referral from Fuul'
+ *   message: 'Accept referral from Fuul',
+ *   signaturePublicKey: '<public-key>' // optional
  * })
  *
  *
@@ -159,7 +206,8 @@ export async function sendPageview(pageName?: string, projectIds?: string[]): Pr
  *  identifier: '0x12345',
  *  identifierType: UserIdentifierType.EvmAddress,
  *  signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
- *  signatureMessage: 'Accept referral from Fuul'
+ *  message: 'Accept referral from Fuul',
+ *  signaturePublicKey: '<public-key>', // optional
  *  accountChainId: 8453,
  * })
  * ```
@@ -189,6 +237,10 @@ export async function identifyUser(params: IdentifyUserParams, projectIds?: stri
     event.signature_message = params?.message;
   }
 
+  if (params?.signaturePublicKey) {
+    event.signature_public_key = params.signaturePublicKey;
+  }
+
   if (params?.accountChainId) {
     event.account_chain_id = params.accountChainId;
   }
@@ -203,20 +255,31 @@ export async function identifyUser(params: IdentifyUserParams, projectIds?: stri
  * @param {UserIdentifierType} params.identifierType The affiliate identifier type
  * @param {string} params.code Affiliate code to map address to
  * @param {string} params.signature Signed message authenticating address ownership. Message to be signed: `I confirm that I am creating the ${code} code on Fuul`
+ * @param {string} [params.signaturePublicKey] Public key used for signature verification
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
+ * @param {number} [params.userRebateRate] Percentage of rewards split to the user
  * @example
  * ```typescript
  * await Fuul.createAffiliateCode({
  *   userIdentifier: '0x12345',
  *   identifierType: UserIdentifierType.EvmAddress,
  *   code: 'my-cool-code',
- *   signature: '<signature>'
+ *   signature: '<signature>',
+ *   signaturePublicKey: '<public-key>' // optional
  * })
  * ```
  **/
-export async function createAffiliateCode(params: AffiliateCodeParams): Promise<void> {
+export async function createAffiliateCode(params: AffiliateCodeParams): Promise<CreateAffiliateResponse> {
   assertInitialized();
-  await _affiliateService.create(params.userIdentifier, params.identifierType, params.code, params.signature, params.accountChainId);
+  return _affiliateService.create(
+    params.userIdentifier,
+    params.identifierType,
+    params.code,
+    params.signature,
+    params.signaturePublicKey,
+    params.accountChainId,
+    params.userRebateRate,
+  );
 }
 
 /**
@@ -226,6 +289,7 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  * @param {UserIdentifierType} params.identifierType Affiliate identifier type
  * @param {string} params.code New affiliate code
  * @param {string} params.signature Signed message authenticating code update. Message to be signed: `I confirm that I am updating my code to ${code} on Fuul`
+ * @param {string} [params.signaturePublicKey] Public key used for signature verification
  * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
  * @example
  * ```typescript
@@ -233,26 +297,70 @@ export async function createAffiliateCode(params: AffiliateCodeParams): Promise<
  *   userIdentifier: '0x12345',
  *   identifierType: UserIdentifierType.EvmAddress,
  *   code: 'my-new-cool-code',
- *   signature: '<signature>'
+ *   signature: '<signature>',
+ *   signaturePublicKey: '<public-key>' // optional
  * })
  * ```
  **/
 export async function updateAffiliateCode(params: AffiliateCodeParams): Promise<void> {
   assertInitialized();
-  await _affiliateService.update(params.userIdentifier, params.identifierType, params.code, params.signature, params.accountChainId);
+  await _affiliateService.update(
+    params.userIdentifier,
+    params.identifierType,
+    params.code,
+    params.signature,
+    params.signaturePublicKey,
+    params.accountChainId,
+  );
 }
 
 /**
- * Gets the code registered to an affiliate
- * @param {string} userIdentifier Affiliate identifier
- * @param {UserIdentifierType} identifierType Affiliate identifier type
- * @returns {string} Affiliate code
+ * Updates the rebate rate for an affiliate code on a specific project
+ * @param {object} params Update rebate rate parameters
+ * @param {string} params.userIdentifier Affiliate identifier
+ * @param {UserIdentifierType} params.identifierType Affiliate identifier type
+ * @param {string} params.code Affiliate code
+ * @param {string} params.signature Signed message authenticating the update
+ * @param {number} params.rebateRate New rebate rate (0 to 0.2, max 2 decimal places)
+ * @param {string} [params.signaturePublicKey] Public key used for signature verification
+ * @param {number} [params.accountChainId] Account chain id (required for EIP-1271 signature validation)
+ * @param {string} [params.sourceProjectId] Project ID (used if no Bearer token is present)
  * @example
  * ```typescript
- * const code = await Fuul.getAffiliateCode('0x12345', UserIdentifierType.EvmAddress);
+ * await Fuul.updateRebateRate({
+ *   userIdentifier: '0x12345',
+ *   identifierType: UserIdentifierType.EvmAddress,
+ *   code: 'my-cool-code',
+ *   signature: '<signature>',
+ *   rebateRate: 0.1,
+ * })
  * ```
  **/
-export async function getAffiliateCode(userIdentifier: string, identifierType: UserIdentifierType): Promise<string | null> {
+export async function updateRebateRate(params: UpdateRebateRateParams): Promise<void> {
+  assertInitialized();
+  await _affiliateService.updateRebateRate(
+    params.userIdentifier,
+    params.identifierType,
+    params.code,
+    params.signature,
+    params.rebateRate,
+    params.signaturePublicKey,
+    params.accountChainId,
+    params.sourceProjectId,
+  );
+}
+
+/**
+ * Gets the affiliate code for a given identifier
+ * @param {string} userIdentifier Affiliate identifier
+ * @param {UserIdentifierType} identifierType Affiliate identifier type
+ * @returns {Affiliate | null} Affiliate code data
+ * @example
+ * ```typescript
+ * const affiliateCode = await Fuul.getAffiliateCode('0x12345', UserIdentifierType.EvmAddress);
+ * ```
+ **/
+export async function getAffiliateCode(userIdentifier: string, identifierType: UserIdentifierType): Promise<Affiliate | null> {
   assertInitialized();
   return await _affiliateService.getCode(userIdentifier, identifierType);
 }
@@ -271,6 +379,22 @@ export async function getAffiliateCode(userIdentifier: string, identifierType: U
 export async function isAffiliateCodeFree(code: string): Promise<boolean> {
   assertInitialized();
   return await _affiliateService.isCodeFree(code);
+}
+
+/**
+ * Checks if an affiliate code is available for use
+ * @param {string} code Affiliate code to check
+ * @returns {boolean} True if code exists and has remaining uses
+ * @example
+ * ```typescript
+ * if (await Fuul.isAffiliateCodeAvailable('my-cool-code')) {
+ *   // Code is available for use
+ * }
+ * ```
+ **/
+export async function isAffiliateCodeAvailable(code: string): Promise<boolean> {
+  assertInitialized();
+  return await _affiliateService.isCodeAvailable(code);
 }
 
 /**
@@ -294,9 +418,9 @@ export async function generateTrackingLink(
   params?: AffiliateLinkParams,
 ): Promise<string> {
   assertInitialized();
-  const affiliateCode = await _affiliateService.getCode(userIdentifier, identifierType);
+  const affiliate = await _affiliateService.getCode(userIdentifier, identifierType);
   const qp = new URLSearchParams({
-    af: affiliateCode ?? userIdentifier,
+    af: affiliate?.code ?? userIdentifier,
   });
 
   if (params?.title) {
@@ -352,6 +476,26 @@ export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardP
 }
 
 /**
+ * Gets the referred volume for a list of user identifiers
+ * @param {GetReferredVolumeParams} params The search params
+ * @param {string[]} params.user_identifiers Array of user identifiers to query (min 1, max 100)
+ * @param {UserIdentifierType} [params.identifier_type] The identifier type, defaults to 'evm_address'
+ * @param {boolean} [params.no_cache] Whether to bypass cache, defaults to false
+ * @returns {Promise<ReferredVolumeResponse>} Referred volume response with project_id, referred_volumes array, and total_count
+ * @example
+ * ```typescript
+ * const result = await Fuul.getReferredVolume({
+ *   user_identifiers: ['0x1234...', '0x5678...'],
+ *   identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * ```
+ */
+export function getReferredVolume(params: GetReferredVolumeParams): Promise<ReferredVolumeResponse> {
+  assertInitialized();
+  return _leaderboardService.getReferredVolume(params);
+}
+
+/**
  * Gets the project value leaderboard, the amounts are converted into UDSC
  * @param {GetVolumeLeaderboardParams} params The search params
  * @returns {LeaderboardResponse<VolumeLeaderboard>} Value leaderboard response
@@ -361,7 +505,22 @@ export function getReferredUsersLeaderboard(params: GetReferredUsersLeaderboardP
  * ```
  **/
 export function getVolumeLeaderboard(params: GetVolumeLeaderboardParams): Promise<LeaderboardResponse<VolumeLeaderboard>> {
-  return _payoutService.getVolumeLeaderboard(params);
+  assertInitialized();
+  return _leaderboardService.getVolumeLeaderboard(params);
+}
+
+/**
+ * Gets the project revenue leaderboard
+ * @param {GetRevenueLeaderboardParams} params The search params
+ * @returns {LeaderboardResponse<RevenueLeaderboard>} Revenue leaderboard response
+ * @example
+ * ```typescript
+ * const results = await Fuul.getRevenueLeaderboard({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress, user_type: 'end_user' });
+ * ```
+ **/
+export function getRevenueLeaderboard(params: GetRevenueLeaderboardParams): Promise<LeaderboardResponse<RevenueLeaderboard>> {
+  assertInitialized();
+  return _leaderboardService.getRevenueLeaderboard(params);
 }
 
 /**
@@ -417,6 +576,20 @@ export function getUserPointsMovements(params: GetUserPointsMovementsParams): Pr
 }
 
 /**
+ * Gets payouts and volumes by referrer
+ * @param {GetPayoutsByReferrerParams} params The search params
+ * @returns {PayoutsByReferrerResponse} Object where each key is a referrer address with volume and earnings
+ * @example
+ * ```typescript
+ * const results = await Fuul.getPayoutsByReferrer({ user_identifier: '0x12345', user_identifier_type: UserIdentifierType.EvmAddress });
+ * ```
+ **/
+export function getPayoutsByReferrer(params: GetPayoutsByReferrerParams): Promise<PayoutsByReferrerResponse> {
+  assertInitialized();
+  return _payoutService.getPayoutsByReferrer(params);
+}
+
+/**
  * Gets user point movements
  * @param {GetConversionsParams} params The search params
  * @returns {Conversion[]} List of conversions
@@ -431,31 +604,319 @@ export async function getConversions(params?: GetConversionsParams): Promise<Con
 }
 
 /**
- *
- * @param {GetUserAffiliatesParams} params The query params
- * @returns {Promise<UserAffiliate[]>} List of user affiliates
+ * Gets the referrer information for a user
+ * @param {GetUserReferrerParams} params The query params
+ * @returns {Promise<GetUserReferrerResponse>} User referrer information
  * @example
  * ```typescript
- * const results = await Fuul.getUserAffiliates({ user_address: '0x12345' });
+ * const result = await Fuul.getUserReferrer({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * // result: { user_identifier: '0x12345', referrer_identifier: '0xabcde' }
  * ```
  */
-export async function getUserAffiliates(params: GetUserAffiliatesParams): Promise<UserAffiliate[]> {
+export async function getUserReferrer(params: GetUserReferrerParams): Promise<GetUserReferrerResponse> {
   assertInitialized();
-  return _userService.getUserAffiliates(params);
+  return _userService.getUserReferrer(params);
 }
 
 /**
  *
  * @param {GetUserAudiencesParams} params The query params
  * @returns {Promise<GetUserAudiencesResponse>} List of user audiences
+ * @example
  * ```typescript
- * const results = await Fuul.getUserAudiences({ user_address: '0x12345' });
+ * const results = await Fuul.getUserAudiences({ user_identifier: '0x12345', user_identifier_type: 'evm_address' });
  * ```
  *
  */
 export async function getUserAudiences(params: GetUserAudiencesParams): Promise<GetUserAudiencesResponse> {
   assertInitialized();
   return _audienceService.getUserAudiences(params);
+}
+
+/**
+ * Lists referral codes for a user
+ * @param {ListUserReferralCodesParams} params List user referral codes parameters
+ * @returns {Promise<ListUserReferralCodesResponse>} List of user referral codes with pagination
+ * @example
+ * ```typescript
+ * const result = await Fuul.listUserReferralCodes({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   page: 1,
+ *   page_size: 25
+ * });
+ * ```
+ */
+export async function listUserReferralCodes(params: ListUserReferralCodesParams): Promise<ListUserReferralCodesResponse> {
+  assertInitialized();
+  return _referralCodeService.listUserReferralCodes(params);
+}
+
+/**
+ * Generates referral codes for a user
+ * @param {GenerateReferralCodesParams} params Generate referral codes parameters
+ * @returns {Promise<GenerateReferralCodesResponse[]>} Generated referral codes
+ * @example
+ * ```typescript
+ * const codes = await Fuul.generateReferralCodes({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   quantity: 5,
+ *   max_uses: 10
+ * });
+ * ```
+ */
+export async function generateReferralCodes(params: GenerateReferralCodesParams): Promise<GenerateReferralCodesResponse[]> {
+  assertInitialized();
+  return _referralCodeService.generateReferralCodes(params);
+}
+
+/**
+ * Gets the referral status for a user
+ * @param {GetReferralStatusParams} params Get referral status parameters
+ * @returns {Promise<GetReferralStatusResponse>} referral status
+ * @example
+ * ```typescript
+ * const status = await Fuul.getReferralStatus({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * if (status.referred) {
+ *   console.log('User was referred with code:', status.code);
+ * }
+ * ```
+ */
+export async function getReferralStatus(params: GetReferralStatusParams): Promise<GetReferralStatusResponse> {
+  assertInitialized();
+  return _referralCodeService.getReferralStatus(params);
+}
+
+/**
+ * Checks if an referral code is free to use
+ * @param {GetReferralCodeParams} params Check referral code parameters
+ * @returns {Promise<GetReferralCodeResponse>} Check result
+ * @example
+ * ```typescript
+ * const result = await Fuul.getReferralCode({ code: 'abc1234' });
+ * if (result.available) {
+ *   console.log('Referral code is available!');
+ * }
+ * ```
+ */
+export async function getReferralCode(params: GetReferralCodeParams): Promise<GetReferralCodeResponse> {
+  assertInitialized();
+  return _referralCodeService.getReferralCode(params);
+}
+
+/**
+ * Uses an referral code
+ * @param {UseReferralCodeParams} params Use referral code parameters
+ * @returns {Promise<void>}
+ * @example
+ * ```typescript
+ * await Fuul.useReferralCode({
+ *   code: 'abc1234',
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
+ *   signature_message: 'I am using referral code abc1234',
+ * });
+ * ```
+ */
+export async function useReferralCode(params: UseReferralCodeParams): Promise<void> {
+  assertInitialized();
+  return _referralCodeService.useReferralCode(params);
+}
+
+/**
+ * Updates the properties of an existing referral code
+ * @param {UpdateReferralCodeParams} params Update referral code parameters
+ * @returns {Promise<void>}
+ * @example
+ * ```typescript
+ * // Set maximum uses to 10
+ * await Fuul.updateReferralCode({
+ *   code: 'ABC1234',
+ *   max_uses: 10
+ * });
+ *
+ * // Set unlimited uses
+ * await Fuul.updateReferralCode({
+ *   code: 'ABC1234',
+ *   max_uses: null
+ * });
+ *
+ * // Disable code (set to 0 uses)
+ * await Fuul.updateReferralCode({
+ *   code: 'ABC1234',
+ *   max_uses: 0
+ * });
+ * ```
+ */
+export async function updateReferralCode(params: UpdateReferralCodeParams): Promise<void> {
+  assertInitialized();
+  return _referralCodeService.updateReferralCode(params);
+}
+
+/**
+ * Deletes a referral relationship between a user and a referrer
+ * @param {DeleteReferralParams} params Delete referral parameters
+ * @returns {Promise<void>}
+ * @example
+ * ```typescript
+ * await Fuul.deleteReferral({
+ *   code: 'abc1234',
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   referrer_identifier: '0xabcde',
+ *   referrer_identifier_type: UserIdentifierType.EvmAddress,
+ *   signature: '0xaad9a0b62f87c15a248cb99ca926785b828b5',
+ *   signature_message: 'I am deleting referral for user 0x12345 from code abc1234',
+ * });
+ * ```
+ */
+export async function deleteReferral(params: DeleteReferralParams): Promise<void> {
+  assertInitialized();
+  return _referralCodeService.deleteReferral(params);
+}
+
+/**
+ * Gets affiliate statistics including earnings, volume, revenue and referred users
+ * @param {GetAffiliateStatsParams} params Get affiliate stats parameters
+ * @returns {Promise<GetAffiliateStatsResponse>} Affiliate statistics
+ * @example
+ * ```typescript
+ * const stats = await Fuul.getAffiliateStats({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * ```
+ */
+export async function getAffiliateStats(params: GetAffiliateStatsParams): Promise<GetAffiliateStatsResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getAffiliateStats(params);
+}
+
+/**
+ * Gets new traders for an affiliate within a date range
+ * @param {GetNewTradersParams} params Get new traders parameters
+ * @returns {Promise<NewTraderResponse[]>} New traders response
+ * @example
+ * ```typescript
+ * const newTraders = await Fuul.getAffiliateNewTraders({
+ *   user_identifier: '0x12345',
+ *   from: '2024-01-01',
+ *   to: '2024-12-31'
+ * });
+ * ```
+ */
+export async function getAffiliateNewTraders(params: GetNewTradersParams): Promise<NewTraderResponse[]> {
+  assertInitialized();
+  return _affiliatePortalService.getAffiliateNewTraders(params);
+}
+
+/**
+ * Gets total stats for the project's affiliate portal
+ * @param {GetAffiliateTotalStatsParams} params Optional filters (statuses, regions, audiences)
+ * @returns {Promise<GetAffiliateTotalStatsResponse>} Project total stats
+ * @example
+ * ```typescript
+ * const totalStats = await Fuul.getAffiliateTotalStats({});
+ * ```
+ */
+export async function getAffiliateTotalStats(params: GetAffiliateTotalStatsParams): Promise<GetAffiliateTotalStatsResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getAffiliateTotalStats(params);
+}
+
+/**
+ * Retrieves claim checks for a user with optional status filtering
+ * @param {GetClaimChecksParams} params Get claim checks parameters
+ * @returns {Promise<GetClaimChecksResponse>} List of claim checks
+ * @example
+ * ```typescript
+ * const result = await Fuul.getClaimChecks({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   status: ClaimCheckStatus.Open,
+ * });
+ * result.claim_checks.forEach(check => {
+ *   console.log(`${check.id}: ${check.amount} (${check.status})`);
+ * });
+ * ```
+ */
+export async function getClaimChecks(params: GetClaimChecksParams): Promise<GetClaimChecksResponse> {
+  assertInitialized();
+  return _claimCheckService.getClaimChecks(params);
+}
+
+/**
+ * Closes open claim checks, aggregating and signing them for on-chain claiming
+ * @param {CloseClaimChecksParams} params User identifier and claim check IDs to close
+ * @returns {Promise<CloseClaimChecksResponse>} Array of signed claim responses
+ * @example
+ * ```typescript
+ * const claims = await Fuul.closeClaimChecks({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   claim_check_ids: ['uuid-1', 'uuid-2'],
+ * });
+ * claims.forEach(claim => {
+ *   console.log(`Amount: ${claim.amount}, Proof: ${claim.proof}`);
+ * });
+ * ```
+ */
+export async function closeClaimChecks(params: CloseClaimChecksParams): Promise<CloseClaimChecksResponse> {
+  assertInitialized();
+  return _claimCheckService.closeClaimChecks(params);
+}
+
+/**
+ * Gets all claimable claim checks for a user within a project
+ * Returns only unclaimed checks with valid (non-expired) deadlines
+ * @param {GetClaimableChecksParams} params Get claimable checks parameters
+ * @returns {Promise<GetClaimableChecksResponse>} Array of claimable claim checks
+ * @example
+ * ```typescript
+ * const claimableChecks = await Fuul.getClaimableChecks({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * console.log('Claimable checks:', claimableChecks.length);
+ * claimableChecks.forEach(check => {
+ *   console.log(`Amount: ${check.amount}, Currency: ${check.currency}, Deadline: ${check.deadline}`);
+ * });
+ * ```
+ */
+export async function getClaimableChecks(params: GetClaimableChecksParams): Promise<GetClaimableChecksResponse> {
+  assertInitialized();
+  return _claimCheckService.getClaimableChecks(params);
+}
+
+/**
+ * Gets totals of claimed and unclaimed claim checks for a user
+ * Includes both expired and non-expired claims, aggregated by currency
+ * @param {GetClaimCheckTotalsParams} params Get claim check totals parameters
+ * @returns {Promise<GetClaimCheckTotalsResponse>} Claim check totals grouped by status and currency
+ * @example
+ * ```typescript
+ * const totals = await Fuul.getClaimCheckTotals({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress
+ * });
+ * console.log('Claimed totals:', totals.claimed);
+ * console.log('Unclaimed totals:', totals.unclaimed);
+ * totals.unclaimed.forEach(item => {
+ *   console.log(`${item.currency_name}: ${item.amount} (${item.currency_address})`);
+ * });
+ * ```
+ */
+export async function getClaimCheckTotals(params: GetClaimCheckTotalsParams): Promise<GetClaimCheckTotalsResponse> {
+  assertInitialized();
+  return _claimCheckService.getClaimCheckTotals(params);
 }
 
 function assertBrowserContext(): void {
@@ -466,7 +927,7 @@ function assertBrowserContext(): void {
 
 function detectAutomation(): void {
   if (navigator.webdriver) {
-    throw new Error(`Fuul SDK: You are using a browser automation tool`);
+    throw new Error(`Fuul SDK: Error`);
   }
 }
 
@@ -494,16 +955,35 @@ export default {
   getConversions,
   createAffiliateCode,
   updateAffiliateCode,
+  updateRebateRate,
   getAffiliateCode,
   isAffiliateCodeFree,
+  isAffiliateCodeAvailable,
   getPayoutsLeaderboard,
   getPointsLeaderboard,
   getReferredUsersLeaderboard,
+  getReferredVolume,
   getUserAudiences,
   getUserPayoutsByConversion,
   getUserPointsByConversion,
   getUserPointsMovements,
   getUserPayoutMovements,
-  getUserAffiliates,
+  getPayoutsByReferrer,
+  getUserReferrer,
   getVolumeLeaderboard,
+  getRevenueLeaderboard,
+  listUserReferralCodes,
+  generateReferralCodes,
+  getReferralStatus,
+  getReferralCode,
+  useReferralCode,
+  updateReferralCode,
+  deleteReferral,
+  getAffiliateStats,
+  getAffiliateNewTraders,
+  getAffiliateTotalStats,
+  getClaimChecks,
+  closeClaimChecks,
+  getClaimableChecks,
+  getClaimCheckTotals,
 };

@@ -1,5 +1,5 @@
 import { HttpClient } from '../HttpClient';
-import { GetUserAffiliatesParams, GetUserResponse, UserAffiliate } from './types';
+import { GetUserReferrerParams, GetUserReferrerResponse } from './types';
 
 export type UserServiceSettings = {
   httpClient: HttpClient;
@@ -14,8 +14,8 @@ export class UserService {
     this.httpClient = settings.httpClient;
   }
 
-  public async getUserAffiliates(params: GetUserAffiliatesParams): Promise<UserAffiliate[]> {
-    const results = await this.httpClient.get<GetUserResponse>({ path: basePath, queryParams: { ...params } });
-    return results.data.affiliates;
+  public async getUserReferrer(params: GetUserReferrerParams): Promise<GetUserReferrerResponse> {
+    const result = await this.httpClient.get<GetUserReferrerResponse>({ path: `${basePath}/referrer`, queryParams: { ...params } });
+    return result.data;
   }
 }

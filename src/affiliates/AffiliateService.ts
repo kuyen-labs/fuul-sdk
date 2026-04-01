@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 
 import { UserIdentifierType } from '..';
 import { HttpClient } from '../HttpClient';
-import { Affiliate } from '../types/api';
+import { Affiliate, CheckAffiliateCodeAvailabilityResponse, CheckAffiliateCodeAvailableResponse, CreateAffiliateResponse } from '../types/api';
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
 export type AffiliateServiceSettings = {
@@ -19,9 +19,17 @@ export class AffiliateService {
     this._debug = settings.debug;
   }
 
-  public async create(address: string, identifier_type: UserIdentifierType, code: string, signature: string, accountChainId?: number): Promise<void> {
+  public async create(
+    address: string,
+    identifier_type: UserIdentifierType,
+    code: string,
+    signature: string,
+    signaturePublicKey?: string,
+    accountChainId?: number,
+    userRebateRate?: number,
+  ): Promise<CreateAffiliateResponse> {
     try {
-      await this.httpClient.post<void>({
+      const response = await this.httpClient.post<CreateAffiliateResponse>({
         path: `/affiliates`,
         postData: {
           address,
@@ -29,9 +37,12 @@ export class AffiliateService {
           name: code,
           code,
           signature,
+          signature_public_key: signaturePublicKey,
           account_chain_id: accountChainId,
+          user_rebate_rate: userRebateRate,
         },
       });
+      return response.data;
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
         const data = e.response?.data;
@@ -61,6 +72,7 @@ export class AffiliateService {
     identifier_type: UserIdentifierType,
     code: string,
     signature: string,
+    signaturePublicKey?: string,
     accountChainId?: number,
   ): Promise<void> {
     try {
@@ -71,6 +83,7 @@ export class AffiliateService {
           user_identifier,
           identifier_type,
           signature,
+          signature_public_key: signaturePublicKey,
           account_chain_id: accountChainId,
         },
       });
@@ -98,25 +111,73 @@ export class AffiliateService {
     }
   }
 
-  public async isCodeFree(code: string): Promise<boolean> {
+  public async updateRebateRate(
+    user_identifier: string,
+    identifier_type: UserIdentifierType,
+    code: string,
+    signature: string,
+    rebateRate: number,
+    signaturePublicKey?: string,
+    accountChainId?: number,
+    sourceProjectId?: string,
+  ): Promise<void> {
     try {
-      await this.httpClient.get<Affiliate>({ path: `/affiliates/codes/${code}` });
-      return false;
-    } catch (e) {
+      await this.httpClient.post<void>({
+        path: `/affiliates/${user_identifier}/rebate-rate`,
+        postData: {
+          identifier_type,
+          code,
+          signature,
+          signature_public_key: signaturePublicKey,
+          account_chain_id: accountChainId,
+          source_project_id: sourceProjectId,
+          rebate_rate: rebateRate,
+        },
+      });
+    } catch (e: unknown) {
       if (e instanceof AxiosError) {
-        if (e.response?.status === 404) {
-          return true;
+        const data = e.response?.data;
+        if (typeof data?.message === 'string') {
+          const message = data.message.toLowerCase();
+
+          if (message == 'invalid signature') {
+            throw new InvalidSignatureError();
+          } else {
+            throw new Error(message);
+          }
+        } else if (data?.message instanceof Array) {
+          throw new ValidationError(data.message);
         }
       }
+
+      throw e;
+    }
+  }
+
+  public async isCodeFree(code: string): Promise<boolean> {
+    try {
+      const res = await this.httpClient.get<CheckAffiliateCodeAvailabilityResponse>({ path: `/affiliates/codes/${code}` });
+      return res.data.free;
+    } catch (e) {
       console.error(`Fuul SDK: Could not check affiliate code`, e);
       throw e;
     }
   }
 
-  public async getCode(address: string, identifier_type: UserIdentifierType): Promise<string | null> {
+  public async isCodeAvailable(code: string): Promise<boolean> {
+    try {
+      const res = await this.httpClient.get<CheckAffiliateCodeAvailableResponse>({ path: `/affiliates/codes/${code}/availability` });
+      return res.data.available;
+    } catch (e) {
+      console.error(`Fuul SDK: Could not check affiliate code availability`, e);
+      throw e;
+    }
+  }
+
+  public async getCode(address: string, identifier_type: UserIdentifierType): Promise<Affiliate | null> {
     try {
       const res = await this.httpClient.get<Affiliate>({ path: `/affiliates/${address}`, queryParams: { identifier_type } });
-      return res.data.code;
+      return res.data;
     } catch (e) {
       if (e instanceof AxiosError) {
         if (e.response?.status === 404) {

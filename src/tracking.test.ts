@@ -33,7 +33,7 @@ describe('tracking', () => {
         if (key === 'source') {
           return 'some-source';
         }
-        
+
         return null;
       });
 
@@ -51,7 +51,7 @@ describe('tracking', () => {
         if (key === 'source') {
           return null;
         }
-        
+
         throw new Error(`Unexpected key: ${key}`);
       });
 
@@ -59,7 +59,7 @@ describe('tracking', () => {
       const detectedSource = tracking.getTrafficSource();
 
       // Assert
-      expect(detectedSource).toBeUndefined()
+      expect(detectedSource).toBeUndefined();
     });
   });
 });
