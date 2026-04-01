@@ -50,6 +50,50 @@ export interface NewTraderResponse {
   total_new_traders: string;
 }
 
+export interface GetReferralTreeParams {
+  user_identifier: string;
+}
+
+export interface ReferralTreeNodeResponse {
+  user_identifier: string;
+  project_affiliate_id: string | null;
+  traders: number;
+  total_volume: number;
+  total_revenue: number;
+  children: ReferralTreeNodeResponse[];
+}
+
+export type GroupByPeriod = 'day' | 'week' | 'month';
+
+export type DateRangePreset = '7d' | '30d' | 'MTD' | 'QTD' | 'custom';
+
+export interface GetAffiliateStatsBreakdownParams {
+  user_identifier: string;
+  group_by: GroupByPeriod;
+  date_range?: DateRangePreset;
+  from?: string;
+  to?: string;
+  conversion_external_id?: number;
+  conversion_name?: string;
+  currency_id?: string;
+}
+
+export interface StatsBreakdownResult {
+  date: string;
+  r1_volume: number;
+  r2_volume: number;
+  r3_volume: number;
+  revenue: number;
+  attributions: number;
+  referred_users: number;
+  earnings: number;
+  earnings_currency: string | null;
+}
+
+export interface GetAffiliateStatsBreakdownResponse {
+  results: StatsBreakdownResult[];
+}
+
 export interface GetAffiliateTotalStatsParams {
   statuses?: AffiliateStatus[];
   regions?: AffiliateRegion[];

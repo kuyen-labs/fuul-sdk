@@ -8,8 +8,15 @@ export type {
   GetAffiliateStatsResponse,
   GetAffiliateTotalStatsParams,
   GetAffiliateTotalStatsResponse,
+  GetAffiliateStatsBreakdownParams,
+  GetAffiliateStatsBreakdownResponse,
   GetNewTradersParams,
+  GetReferralTreeParams,
+  GroupByPeriod,
+  DateRangePreset,
   NewTraderResponse,
+  ReferralTreeNodeResponse,
+  StatsBreakdownResult,
 } from './affiliate-portal/types';
 export * from './affiliates/errors';
 export type {

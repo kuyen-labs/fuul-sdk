@@ -12,6 +12,50 @@ describe('AffiliatePortalService', () => {
     return { service, httpClientMock };
   };
 
+  describe('getReferralTree', () => {
+    it('passes user_identifier as query param', async () => {
+      const { service, httpClientMock } = createService();
+
+      await service.getReferralTree({
+        user_identifier: '0x123',
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/affiliate-portal/referral-tree',
+          queryParams: expect.objectContaining({
+            user_identifier: '0x123',
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('getStatsBreakdown', () => {
+    it('passes all query params', async () => {
+      const { service, httpClientMock } = createService();
+
+      await service.getStatsBreakdown({
+        user_identifier: '0x123',
+        group_by: 'month',
+        date_range: '30d',
+        currency_id: 'some-uuid',
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/affiliate-portal/stats-breakdown',
+          queryParams: expect.objectContaining({
+            user_identifier: '0x123',
+            group_by: 'month',
+            date_range: '30d',
+            currency_id: 'some-uuid',
+          }),
+        }),
+      );
+    });
+  });
+
   describe('getAffiliateStats', () => {
     it('passes conversion_external_id as query param', async () => {
       const { service, httpClientMock } = createService();
