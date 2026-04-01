@@ -30,6 +30,7 @@ export class AffiliatePortalService {
         to: params.to,
         this_month: params.this_month,
         conversion_id: params.conversion_id,
+        conversion_external_id: params.conversion_external_id,
         conversion_name: params.conversion_name,
       },
     });

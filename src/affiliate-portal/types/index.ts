@@ -7,7 +7,9 @@ export interface GetAffiliateStatsParams {
   from?: string;
   to?: string;
   this_month?: boolean;
+  /** @deprecated Use `conversion_external_id` instead. Will be removed in the next major version. */
   conversion_id?: string;
+  conversion_external_id?: number;
   conversion_name?: string;
 }
 
