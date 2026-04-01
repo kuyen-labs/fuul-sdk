@@ -1,5 +1,9 @@
 import { UserIdentifierType } from '../../types/user';
 
+export type AffiliateStatus = 'Active' | 'Paused' | 'Flagged' | 'Terminated';
+
+export type AffiliateRegion = 'All' | 'CN' | 'JP' | 'KR' | 'SEA' | 'EN' | 'LATAM' | 'Other';
+
 export interface GetAffiliateStatsParams {
   user_identifier: string;
   /** @deprecated Not supported by the server. Will be removed in the next major version. */
@@ -23,8 +27,15 @@ export interface GetAffiliateStatsResponse {
   user_identifier_type: UserIdentifierType;
   total_earnings: AffiliateEarning[];
   referred_volume: number;
+  r2_volume: number;
+  r3_volume: number;
+  multilevel_volume: number;
+  total_volume: number;
   referred_revenue: number;
   referred_users: number;
+  status: AffiliateStatus;
+  region: AffiliateRegion | null;
+  referral_codes: string[];
 }
 
 export interface GetNewTradersParams {
@@ -40,8 +51,8 @@ export interface NewTraderResponse {
 }
 
 export interface GetAffiliateTotalStatsParams {
-  statuses?: string[];
-  regions?: string[];
+  statuses?: AffiliateStatus[];
+  regions?: AffiliateRegion[];
   audiences?: string[];
 }
 

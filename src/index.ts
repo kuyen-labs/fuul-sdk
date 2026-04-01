@@ -2,6 +2,8 @@ import Fuul from './core';
 
 export type {
   AffiliateEarning,
+  AffiliateRegion,
+  AffiliateStatus,
   GetAffiliateStatsParams,
   GetAffiliateStatsResponse,
   GetAffiliateTotalStatsParams,
