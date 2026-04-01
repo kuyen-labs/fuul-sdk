@@ -1,12 +1,16 @@
 import { UserIdentifierType } from '.';
 import { AffiliatePortalService } from './affiliate-portal/AffiliatePortalService';
 import {
+  GetAffiliateStatsBreakdownParams,
+  GetAffiliateStatsBreakdownResponse,
   GetAffiliateStatsParams,
   GetAffiliateStatsResponse,
   GetAffiliateTotalStatsParams,
   GetAffiliateTotalStatsResponse,
   GetNewTradersParams,
+  GetReferralTreeParams,
   NewTraderResponse,
+  ReferralTreeNodeResponse,
 } from './affiliate-portal/types';
 import { AffiliateService } from './affiliates/AffiliateService';
 import { AudienceService } from './audiences/AudienceService';
@@ -833,6 +837,42 @@ export async function getAffiliateTotalStats(params: GetAffiliateTotalStatsParam
 }
 
 /**
+ * Gets the multi-level referral tree for a user (up to R4 depth)
+ * @param {GetReferralTreeParams} params Referral tree parameters
+ * @returns {Promise<ReferralTreeNodeResponse>} Recursive referral tree
+ * @example
+ * ```typescript
+ * const tree = await Fuul.getReferralTree({
+ *   user_identifier: '0x12345',
+ * });
+ * ```
+ */
+export async function getReferralTree(params: GetReferralTreeParams): Promise<ReferralTreeNodeResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getReferralTree(params);
+}
+
+/**
+ * Gets a time-series breakdown of an affiliate's stats (volume, revenue, earnings by day/week/month)
+ * @param {GetAffiliateStatsBreakdownParams} params Stats breakdown parameters
+ * @returns {Promise<GetAffiliateStatsBreakdownResponse>} Time-series breakdown
+ * @example
+ * ```typescript
+ * const breakdown = await Fuul.getStatsBreakdown({
+ *   user_identifier: '0x12345',
+ *   group_by: 'month',
+ *   date_range: '30d',
+ * });
+ * ```
+ */
+export async function getStatsBreakdown(
+  params: GetAffiliateStatsBreakdownParams,
+): Promise<GetAffiliateStatsBreakdownResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getStatsBreakdown(params);
+}
+
+/**
  * Retrieves claim checks for a user with optional status filtering
  * @param {GetClaimChecksParams} params Get claim checks parameters
  * @returns {Promise<GetClaimChecksResponse>} List of claim checks
@@ -982,6 +1022,8 @@ export default {
   getAffiliateStats,
   getAffiliateNewTraders,
   getAffiliateTotalStats,
+  getReferralTree,
+  getStatsBreakdown,
   getClaimChecks,
   closeClaimChecks,
   getClaimableChecks,

@@ -1,11 +1,15 @@
 import { HttpClient } from '../HttpClient';
 import {
+  GetAffiliateStatsBreakdownParams,
+  GetAffiliateStatsBreakdownResponse,
   GetAffiliateStatsParams,
   GetAffiliateStatsResponse,
   GetAffiliateTotalStatsParams,
   GetAffiliateTotalStatsResponse,
   GetNewTradersParams,
+  GetReferralTreeParams,
   NewTraderResponse,
+  ReferralTreeNodeResponse,
 } from './types';
 
 export type AffiliatePortalServiceSettings = {
@@ -44,6 +48,35 @@ export class AffiliatePortalService {
         statuses: params.statuses,
         regions: params.regions,
         audiences: params.audiences,
+      },
+    });
+    return result.data;
+  }
+
+  public async getReferralTree(params: GetReferralTreeParams): Promise<ReferralTreeNodeResponse> {
+    const result = await this.httpClient.get<ReferralTreeNodeResponse>({
+      path: `${basePath}/referral-tree`,
+      queryParams: {
+        user_identifier: params.user_identifier,
+      },
+    });
+    return result.data;
+  }
+
+  public async getStatsBreakdown(
+    params: GetAffiliateStatsBreakdownParams,
+  ): Promise<GetAffiliateStatsBreakdownResponse> {
+    const result = await this.httpClient.get<GetAffiliateStatsBreakdownResponse>({
+      path: `${basePath}/stats-breakdown`,
+      queryParams: {
+        user_identifier: params.user_identifier,
+        group_by: params.group_by,
+        date_range: params.date_range,
+        from: params.from,
+        to: params.to,
+        conversion_external_id: params.conversion_external_id,
+        conversion_name: params.conversion_name,
+        currency_id: params.currency_id,
       },
     });
     return result.data;

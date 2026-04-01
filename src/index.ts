@@ -2,12 +2,21 @@ import Fuul from './core';
 
 export type {
   AffiliateEarning,
+  AffiliateRegion,
+  AffiliateStatus,
+  DateRangePreset,
+  GetAffiliateStatsBreakdownParams,
+  GetAffiliateStatsBreakdownResponse,
   GetAffiliateStatsParams,
   GetAffiliateStatsResponse,
   GetAffiliateTotalStatsParams,
   GetAffiliateTotalStatsResponse,
   GetNewTradersParams,
+  GetReferralTreeParams,
+  GroupByPeriod,
   NewTraderResponse,
+  ReferralTreeNodeResponse,
+  StatsBreakdownResult,
 } from './affiliate-portal/types';
 export * from './affiliates/errors';
 export type {
