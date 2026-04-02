@@ -632,6 +632,7 @@ export interface ReferrerPayoutData {
   date_joined: string;
   event_referrer_identifier: string;
   user_rebate_rate?: number | null;
+  referral_code: string | null;
 }
 
 export type PayoutsByReferrerResponse = Array<Record<string, ReferrerPayoutData>>;
