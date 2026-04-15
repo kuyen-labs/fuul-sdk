@@ -98,10 +98,13 @@ export type Affiliate = {
   uses: number;
   clicks: number;
   total_users: number;
+  /** USD. */
   total_earnings: number;
-  /** @deprecated Use rebate_rates instead. Kept for backward compatibility. */
-  user_rebate_rate: number | null;
-  rebate_rates: { project_id: string; rebate_rate: number | null }[];
+  rebate_rate: number | null;
+  /** @deprecated No longer returned by the server. Use `rebate_rate`. */
+  user_rebate_rate?: number | null;
+  /** @deprecated No longer returned by the server. Use `rebate_rate`. */
+  rebate_rates?: { project_id: string; rebate_rate: number | null }[];
   region: string;
 };
 
