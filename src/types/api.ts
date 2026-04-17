@@ -164,19 +164,19 @@ interface ProjectOtherLink {
   url: string;
 }
 
-interface PayoutTermTriggerArgument {
+interface DeprecatedPayoutTermTriggerArgument {
   trigger_id: string;
   amount_argument: string;
   currency_argument: string;
 }
-interface PayoutTermPayoutGroup {
+interface DeprecatedPayoutTermPayoutGroup {
   id: string;
   affiliate_amount?: string;
   end_user_amount?: string;
   affiliate_amount_percentage?: number;
   end_user_amount_percentage?: number;
 }
-interface PayoutTermResponse {
+interface DeprecatedPayoutTermResponse {
   /**
    * @deprecated This parameter will be removed after front-end migration
    */
@@ -194,9 +194,93 @@ interface PayoutTermResponse {
    * @deprecated This parameter will be removed after front-end migration
    */
   payment_argument?: string | null;
-  trigger_arguments?: PayoutTermTriggerArgument[];
+  trigger_arguments?: DeprecatedPayoutTermTriggerArgument[];
 
+  payout_groups: DeprecatedPayoutTermPayoutGroup[];
+}
+
+export type PayoutScheme = 'pay-per-attribution' | 'pool' | 'rank';
+export type TierType = 'audience' | 'event';
+export type PayoutType = 'point' | 'onchain-currency';
+export type PayoutCalculationStrategy = 'fixed' | 'variable';
+export type TriggerAmountSource = 'volume' | 'revenue';
+export type BaseCurrency = 'usd' | 'eth' | 'btc' | 'none';
+export type AmountSource = 'volume' | 'revenue' | 'attribution-count';
+export type PayeeType = 'affiliate' | 'end-user' | 'both';
+export type PoolDistributionMode = 'linear' | 'square_root';
+
+export interface RankPayoutSchemeConfig {
+  ranks: Record<number, { prizeAmount: string }>;
+}
+
+export interface PayoutTermPayoutGroup {
+  id: string;
+  name?: string;
+  description?: string;
+  affiliate_amount?: string;
+  end_user_amount?: string;
+  affiliate_amount_percentage?: number;
+  end_user_amount_percentage?: number;
+  affiliate2_amount?: string | null;
+  affiliate3_amount?: string | null;
+  affiliate4_amount?: string | null;
+  affiliate2_amount_percentage?: number | null;
+  affiliate3_amount_percentage?: number | null;
+  affiliate4_amount_percentage?: number | null;
+  audience?: { id: string; name: string } | null;
+  project_tier?: {
+    id: string;
+    name: string;
+    slug: string;
+    rank: number;
+    description: string | null;
+  } | null;
+  payout_cap_enabled?: boolean;
+  enduser_cap_enabled?: boolean;
+  wallet_cap_enabled?: boolean;
+  dynamic_referral_cap_enabled?: boolean;
+}
+
+export interface PayoutTermResponse {
+  id: string;
+  scheme: PayoutScheme;
+  tier_type: TierType;
+  conversion_id: string;
+  type: PayoutType;
+  calculation_strategy: PayoutCalculationStrategy | null;
+  trigger_amount_source: TriggerAmountSource | null;
+  base_currency: BaseCurrency | null;
+  payout_currency_address: string | null;
+  payout_currency_chain_id: number | null;
+  require_affiliate: boolean;
+  require_approval: boolean;
+  referral_amount?: string;
+  referrer_amount?: string;
+  referrer2_amount?: string;
+  referrer3_amount?: string;
+  referrer4_amount?: string;
+  max_payout_amount?: string | null;
+  end_user_cap_amount?: string | null;
+  end_user_cap_window_days?: number | null;
+  wallet_cap_amount?: string | null;
+  wallet_cap_window_days?: number | null;
+  dynamic_referral_cap_multiplier?: number | null;
   payout_groups: PayoutTermPayoutGroup[];
+  amount_source?: AmountSource;
+  payee_type?: PayeeType;
+  pool_amount?: string | null;
+  pool_calculation_day_cron?: string;
+  pool_duration?: number;
+  pool_start_date?: string;
+  pool_end_date?: string | null;
+  pool_distribution_mode?: PoolDistributionMode | null;
+  rank_scheme_config?: RankPayoutSchemeConfig | null;
+  payout_condition_expression?: string | null;
+}
+
+export interface ConversionMetrics {
+  tvl: number;
+  apr: number;
 }
 
 export interface Conversion {
@@ -204,11 +288,14 @@ export interface Conversion {
   external_id: number;
   name: string;
   slug: string;
+  enabled?: boolean;
   /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   conversion_window?: number;
   /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   attribution_type?: string;
   triggers: Trigger[];
+  payout_terms?: PayoutTermResponse[];
+  metrics?: ConversionMetrics;
   created_at: Date;
   updated_at: Date;
   /** @deprecated No longer returned by the server. Will be removed in the next major version. */
@@ -230,13 +317,15 @@ export interface Conversion {
     assets_url?: string;
     documentation_url?: string;
     other_links?: ProjectOtherLink[];
+    description?: string;
+    twitter_handle?: string;
   };
   /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   action_id?: string;
   /** @deprecated No longer returned by the server. Will be removed in the next major version. */
   action_type?: string;
   /** @deprecated No longer returned by the server. Will be removed in the next major version. */
-  action_args?: PayoutTermResponse;
+  action_args?: DeprecatedPayoutTermResponse;
   conversion_rate?: number;
   total_converted?: number;
   total_payout?: {
@@ -511,7 +600,9 @@ export interface UserPointsMovement {
 }
 
 export interface GetConversionsParams {
+  /** @deprecated The server does not accept this parameter. Will be removed in the next major version. */
   user_identifier?: string;
+  /** @deprecated The server does not accept this parameter. Will be removed in the next major version. */
   identifier_type?: UserIdentifierType;
 }
 

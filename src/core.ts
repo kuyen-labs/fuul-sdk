@@ -594,13 +594,23 @@ export function getPayoutsByReferrer(params: GetPayoutsByReferrerParams): Promis
 }
 
 /**
- * Gets user point movements
- * @param {GetConversionsParams} params The search params
- * @returns {Conversion[]} List of conversions
+ * Gets all incentives (conversions) configured for the project associated with the API key.
+ * @returns {Promise<Conversion[]>} List of incentives
  * @example
  * ```typescript
- * const results = await Fuul.getConversions({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
+ * const incentives = await Fuul.getIncentives();
  * ```
+ **/
+export async function getIncentives(): Promise<Conversion[]> {
+  assertInitialized();
+  return _conversionService.getAll();
+}
+
+/**
+ * Gets all incentives (conversions) configured for the project associated with the API key.
+ * @deprecated Use {@link getIncentives} instead. The `params` argument is ignored by the server.
+ * @param {GetConversionsParams} params Ignored — the server accepts no query parameters.
+ * @returns {Promise<Conversion[]>} List of incentives
  **/
 export async function getConversions(params?: GetConversionsParams): Promise<Conversion[]> {
   assertInitialized();
@@ -865,9 +875,7 @@ export async function getReferralTree(params: GetReferralTreeParams): Promise<Re
  * });
  * ```
  */
-export async function getStatsBreakdown(
-  params: GetAffiliateStatsBreakdownParams,
-): Promise<GetAffiliateStatsBreakdownResponse> {
+export async function getStatsBreakdown(params: GetAffiliateStatsBreakdownParams): Promise<GetAffiliateStatsBreakdownResponse> {
   assertInitialized();
   return _affiliatePortalService.getStatsBreakdown(params);
 }
@@ -993,6 +1001,7 @@ export default {
   identifyUser,
   generateTrackingLink,
   getConversions,
+  getIncentives,
   createAffiliateCode,
   updateAffiliateCode,
   updateRebateRate,
