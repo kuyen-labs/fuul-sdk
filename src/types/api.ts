@@ -87,6 +87,13 @@ type ProjectTeamMember = {
   enabled: boolean;
 };
 
+export interface CurrentTier {
+  id: string;
+  name: string;
+  slug: string;
+  rank: number;
+}
+
 export type Affiliate = {
   id: string;
   name: string;
@@ -106,6 +113,7 @@ export type Affiliate = {
   /** @deprecated No longer returned by the server. Use `rebate_rate`. */
   rebate_rates?: { project_id: string; rebate_rate: number | null }[];
   region: string;
+  current_tier: CurrentTier | null;
 };
 
 export type CreateAffiliateResponse = {

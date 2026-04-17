@@ -38,6 +38,7 @@ export type {
   Affiliate,
   Conversion,
   CreateAffiliateResponse,
+  CurrentTier,
   DeleteReferralParams,
   EarningItem,
   GenerateReferralCodesParams,
