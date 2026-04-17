@@ -357,14 +357,26 @@ export async function updateRebateRate(params: UpdateRebateRateParams): Promise<
 }
 
 /**
- * Gets the affiliate code for a given identifier
+ * Gets the affiliate profile (code, stats, and current tier) for a given identifier.
  * @param {string} userIdentifier Affiliate identifier
  * @param {UserIdentifierType} identifierType Affiliate identifier type
- * @returns {Affiliate | null} Affiliate code data
+ * @returns {Promise<Affiliate | null>} Affiliate profile data, or null if not found
  * @example
  * ```typescript
- * const affiliateCode = await Fuul.getAffiliateCode('0x12345', UserIdentifierType.EvmAddress);
+ * const affiliate = await Fuul.getAffiliateInfo('0x12345', UserIdentifierType.EvmAddress);
  * ```
+ **/
+export async function getAffiliateInfo(userIdentifier: string, identifierType: UserIdentifierType): Promise<Affiliate | null> {
+  assertInitialized();
+  return await _affiliateService.getCode(userIdentifier, identifierType);
+}
+
+/**
+ * Gets the affiliate profile (code, stats, and current tier) for a given identifier.
+ * @deprecated Use {@link getAffiliateInfo} instead.
+ * @param {string} userIdentifier Affiliate identifier
+ * @param {UserIdentifierType} identifierType Affiliate identifier type
+ * @returns {Promise<Affiliate | null>} Affiliate profile data, or null if not found
  **/
 export async function getAffiliateCode(userIdentifier: string, identifierType: UserIdentifierType): Promise<Affiliate | null> {
   assertInitialized();
@@ -1030,6 +1042,7 @@ export default {
   updateAffiliateCode,
   updateRebateRate,
   getAffiliateCode,
+  getAffiliateInfo,
   isAffiliateCodeFree,
   isAffiliateCodeAvailable,
   getPayoutsLeaderboard,
