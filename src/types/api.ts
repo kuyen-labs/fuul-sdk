@@ -599,6 +599,44 @@ export interface UserPointsMovement {
   payout_status_details: string | null;
 }
 
+export interface GetIncentivesByTierParams {
+  /**
+   * Filter to specific tiers. Each entry is either a tier UUID or the literal string `'null'`
+   * to include the default (no-tier) bucket. Omit to return all tiers plus the default bucket.
+   */
+  tier_ids?: string[];
+}
+
+export interface PayoutTermRate {
+  amount: string | null;
+  currency: string | null;
+  unit: string;
+}
+
+export interface PayoutTermByTier {
+  conversion_name: string;
+  payout_type: 'variable' | 'fixed';
+  payee_type: 'affiliate' | 'end-user' | 'both';
+  is_multi_level: boolean;
+  affiliate_rate: PayoutTermRate;
+  affiliate2_rate: PayoutTermRate;
+  affiliate3_rate: PayoutTermRate;
+  end_user_rate: PayoutTermRate;
+}
+
+export interface TierPayoutTerms {
+  tier_id: string | null;
+  tier_name: string | null;
+  tier_description: string | null;
+  tier_slug: string | null;
+  tier_rank: number | null;
+  payout_terms: PayoutTermByTier[];
+}
+
+export interface GetIncentivesByTierResponse {
+  tiers: TierPayoutTerms[];
+}
+
 export interface GetConversionsParams {
   /** @deprecated The server does not accept this parameter. Will be removed in the next major version. */
   user_identifier?: string;

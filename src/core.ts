@@ -41,6 +41,8 @@ import {
   GenerateReferralCodesParams,
   GenerateReferralCodesResponse,
   GetConversionsParams,
+  GetIncentivesByTierParams,
+  GetIncentivesByTierResponse,
   GetPayoutsByReferrerParams,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
@@ -594,6 +596,27 @@ export function getPayoutsByReferrer(params: GetPayoutsByReferrerParams): Promis
 }
 
 /**
+ * Gets payout terms grouped by project tier, with display-ready amount/currency/unit strings.
+ * Reads from the latest published project metadata — the same source as {@link getIncentives}.
+ * @param {GetIncentivesByTierParams} [params] Optional filter by tier IDs. Each entry is either a
+ *   tier UUID or the literal string `'null'` to include the default (no-tier) bucket. Omit or pass
+ *   an empty array to return all tiers plus the default bucket.
+ * @returns {Promise<GetIncentivesByTierResponse>} Response with a `tiers` array, each entry grouping payout terms for one tier
+ * @example
+ * ```typescript
+ * // All tiers
+ * const { tiers } = await Fuul.getIncentivesByTier();
+ *
+ * // Specific tiers + default bucket
+ * const { tiers } = await Fuul.getIncentivesByTier({ tier_ids: ['3fa8...', 'null'] });
+ * ```
+ **/
+export async function getIncentivesByTier(params?: GetIncentivesByTierParams): Promise<GetIncentivesByTierResponse> {
+  assertInitialized();
+  return _payoutService.getIncentivesByTier(params);
+}
+
+/**
  * Gets all incentives (conversions) configured for the project associated with the API key.
  * @returns {Promise<Conversion[]>} List of incentives
  * @example
@@ -1002,6 +1025,7 @@ export default {
   generateTrackingLink,
   getConversions,
   getIncentives,
+  getIncentivesByTier,
   createAffiliateCode,
   updateAffiliateCode,
   updateRebateRate,

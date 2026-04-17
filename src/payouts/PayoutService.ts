@@ -1,5 +1,7 @@
 import { HttpClient } from '../HttpClient';
 import {
+  GetIncentivesByTierParams,
+  GetIncentivesByTierResponse,
   GetPayoutsByReferrerParams,
   GetUserPayoutMovementsParams,
   GetUserPayoutsByConversionParams,
@@ -67,6 +69,15 @@ export class PayoutService {
         user_identifier: params.user_identifier,
         user_identifier_type: params.user_identifier_type,
       },
+    });
+    return results.data;
+  }
+
+  public async getIncentivesByTier(params?: GetIncentivesByTierParams): Promise<GetIncentivesByTierResponse> {
+    const queryParams = params?.tier_ids && params.tier_ids.length > 0 ? { tier_ids: params.tier_ids.join(',') } : undefined;
+    const results = await this.httpClient.get<GetIncentivesByTierResponse>({
+      path: `${basePath}/terms-by-tier`,
+      queryParams,
     });
     return results.data;
   }
