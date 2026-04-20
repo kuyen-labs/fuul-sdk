@@ -258,6 +258,7 @@ describe('SDK core', () => {
           total_earnings: 0,
           rebate_rate: null,
           region: 'Other',
+          current_tier: null,
         };
       });
 

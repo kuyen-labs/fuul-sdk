@@ -41,6 +41,8 @@ import {
   GenerateReferralCodesParams,
   GenerateReferralCodesResponse,
   GetConversionsParams,
+  GetIncentivesByTierParams,
+  GetIncentivesByTierResponse,
   GetPayoutsByReferrerParams,
   GetPayoutsLeaderboardParams,
   GetPointsLeaderboardParams,
@@ -355,14 +357,26 @@ export async function updateRebateRate(params: UpdateRebateRateParams): Promise<
 }
 
 /**
- * Gets the affiliate code for a given identifier
+ * Gets the affiliate profile (code, stats, and current tier) for a given identifier.
  * @param {string} userIdentifier Affiliate identifier
  * @param {UserIdentifierType} identifierType Affiliate identifier type
- * @returns {Affiliate | null} Affiliate code data
+ * @returns {Promise<Affiliate | null>} Affiliate profile data, or null if not found
  * @example
  * ```typescript
- * const affiliateCode = await Fuul.getAffiliateCode('0x12345', UserIdentifierType.EvmAddress);
+ * const affiliate = await Fuul.getAffiliateInfo('0x12345', UserIdentifierType.EvmAddress);
  * ```
+ **/
+export async function getAffiliateInfo(userIdentifier: string, identifierType: UserIdentifierType): Promise<Affiliate | null> {
+  assertInitialized();
+  return await _affiliateService.getCode(userIdentifier, identifierType);
+}
+
+/**
+ * Gets the affiliate profile (code, stats, and current tier) for a given identifier.
+ * @deprecated Use {@link getAffiliateInfo} instead.
+ * @param {string} userIdentifier Affiliate identifier
+ * @param {UserIdentifierType} identifierType Affiliate identifier type
+ * @returns {Promise<Affiliate | null>} Affiliate profile data, or null if not found
  **/
 export async function getAffiliateCode(userIdentifier: string, identifierType: UserIdentifierType): Promise<Affiliate | null> {
   assertInitialized();
@@ -594,13 +608,44 @@ export function getPayoutsByReferrer(params: GetPayoutsByReferrerParams): Promis
 }
 
 /**
- * Gets user point movements
- * @param {GetConversionsParams} params The search params
- * @returns {Conversion[]} List of conversions
+ * Gets payout terms grouped by project tier, with display-ready amount/currency/unit strings.
+ * Reads from the latest published project metadata — the same source as {@link getIncentives}.
+ * @param {GetIncentivesByTierParams} [params] Optional filter by tier IDs. Each entry is either a
+ *   tier UUID or the literal string `'null'` to include the default (no-tier) bucket. Omit or pass
+ *   an empty array to return all tiers plus the default bucket.
+ * @returns {Promise<GetIncentivesByTierResponse>} Response with a `tiers` array, each entry grouping payout terms for one tier
  * @example
  * ```typescript
- * const results = await Fuul.getConversions({ user_identifier: '0x12345', identifier_type: UserIdentifierType.EvmAddress });
+ * // All tiers
+ * const { tiers } = await Fuul.getIncentivesByTier();
+ *
+ * // Specific tiers + default bucket
+ * const { tiers } = await Fuul.getIncentivesByTier({ tier_ids: ['3fa8...', 'null'] });
  * ```
+ **/
+export async function getIncentivesByTier(params?: GetIncentivesByTierParams): Promise<GetIncentivesByTierResponse> {
+  assertInitialized();
+  return _payoutService.getIncentivesByTier(params);
+}
+
+/**
+ * Gets all incentives (conversions) configured for the project associated with the API key.
+ * @returns {Promise<Conversion[]>} List of incentives
+ * @example
+ * ```typescript
+ * const incentives = await Fuul.getIncentives();
+ * ```
+ **/
+export async function getIncentives(): Promise<Conversion[]> {
+  assertInitialized();
+  return _conversionService.getAll();
+}
+
+/**
+ * Gets all incentives (conversions) configured for the project associated with the API key.
+ * @deprecated Use {@link getIncentives} instead. The `params` argument is ignored by the server.
+ * @param {GetConversionsParams} params Ignored — the server accepts no query parameters.
+ * @returns {Promise<Conversion[]>} List of incentives
  **/
 export async function getConversions(params?: GetConversionsParams): Promise<Conversion[]> {
   assertInitialized();
@@ -865,9 +910,7 @@ export async function getReferralTree(params: GetReferralTreeParams): Promise<Re
  * });
  * ```
  */
-export async function getStatsBreakdown(
-  params: GetAffiliateStatsBreakdownParams,
-): Promise<GetAffiliateStatsBreakdownResponse> {
+export async function getStatsBreakdown(params: GetAffiliateStatsBreakdownParams): Promise<GetAffiliateStatsBreakdownResponse> {
   assertInitialized();
   return _affiliatePortalService.getStatsBreakdown(params);
 }
@@ -993,10 +1036,13 @@ export default {
   identifyUser,
   generateTrackingLink,
   getConversions,
+  getIncentives,
+  getIncentivesByTier,
   createAffiliateCode,
   updateAffiliateCode,
   updateRebateRate,
   getAffiliateCode,
+  getAffiliateInfo,
   isAffiliateCodeFree,
   isAffiliateCodeAvailable,
   getPayoutsLeaderboard,

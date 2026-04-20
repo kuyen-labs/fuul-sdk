@@ -63,9 +63,7 @@ export class AffiliatePortalService {
     return result.data;
   }
 
-  public async getStatsBreakdown(
-    params: GetAffiliateStatsBreakdownParams,
-  ): Promise<GetAffiliateStatsBreakdownResponse> {
+  public async getStatsBreakdown(params: GetAffiliateStatsBreakdownParams): Promise<GetAffiliateStatsBreakdownResponse> {
     const result = await this.httpClient.get<GetAffiliateStatsBreakdownResponse>({
       path: `${basePath}/stats-breakdown`,
       queryParams: {
