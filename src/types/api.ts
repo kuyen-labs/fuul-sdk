@@ -629,6 +629,7 @@ export interface PayoutTermByTier {
   affiliate_rate: PayoutTermRate;
   affiliate2_rate: PayoutTermRate;
   affiliate3_rate: PayoutTermRate;
+  affiliate4_rate: PayoutTermRate;
   end_user_rate: PayoutTermRate;
 }
 
