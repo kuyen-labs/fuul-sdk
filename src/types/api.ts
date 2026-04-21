@@ -94,13 +94,8 @@ export interface CurrentTier {
   rank: number;
 }
 
-export type Affiliate = {
-  id: string;
-  name: string;
+export interface AffiliateCodeWithStats {
   code: string;
-  user_identifier: string;
-  user_identifier_type: string;
-  updated_at: string;
   created_at: string;
   uses: number;
   clicks: number;
@@ -108,12 +103,38 @@ export type Affiliate = {
   /** USD. */
   total_earnings: number;
   rebate_rate: number | null;
+  current_tier: CurrentTier | null;
+}
+
+export type Affiliate = {
+  id: string;
+  name: string;
+  user_identifier: string;
+  user_identifier_type: string;
+  updated_at: string;
+  region: string;
+  /** All referral codes owned by this affiliate, ordered oldest-first. */
+  codes: AffiliateCodeWithStats[];
+  /** @deprecated No longer returned at the root by the server. Read `codes[0].code`. Populated from `codes[0]` for backward compatibility. */
+  code: string;
+  /** @deprecated No longer returned at the root by the server. Read `codes[0].created_at`. Populated from `codes[0]` for backward compatibility. */
+  created_at: string;
+  /** @deprecated No longer returned at the root by the server. Read `codes[0].uses`. Populated from `codes[0]` for backward compatibility. */
+  uses: number;
+  /** @deprecated No longer returned at the root by the server. Read `codes[0].clicks`. Populated from `codes[0]` for backward compatibility. */
+  clicks: number;
+  /** @deprecated No longer returned at the root by the server. Read `codes[0].total_users`. Populated from `codes[0]` for backward compatibility. */
+  total_users: number;
+  /** @deprecated No longer returned at the root by the server. Read `codes[0].total_earnings`. Populated from `codes[0]` for backward compatibility. */
+  total_earnings: number;
+  /** @deprecated No longer returned at the root by the server. Read `codes[0].rebate_rate`. Populated from `codes[0]` for backward compatibility. */
+  rebate_rate: number | null;
+  /** @deprecated No longer returned at the root by the server. Read `codes[0].current_tier`. Populated from `codes[0]` for backward compatibility. */
+  current_tier: CurrentTier | null;
   /** @deprecated No longer returned by the server. Use `rebate_rate`. */
   user_rebate_rate?: number | null;
   /** @deprecated No longer returned by the server. Use `rebate_rate`. */
   rebate_rates?: { project_id: string; rebate_rate: number | null }[];
-  region: string;
-  current_tier: CurrentTier | null;
 };
 
 export type CreateAffiliateResponse = {

@@ -36,6 +36,7 @@ export type {
 export { ClaimCheckStatus } from './claim-checks/types';
 export type {
   Affiliate,
+  AffiliateCodeWithStats,
   Conversion,
   CreateAffiliateResponse,
   CurrentTier,

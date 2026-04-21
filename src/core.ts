@@ -368,7 +368,7 @@ export async function updateRebateRate(params: UpdateRebateRateParams): Promise<
  **/
 export async function getAffiliateInfo(userIdentifier: string, identifierType: UserIdentifierType): Promise<Affiliate | null> {
   assertInitialized();
-  return await _affiliateService.getCode(userIdentifier, identifierType);
+  return await _affiliateService.getReferral(userIdentifier, identifierType);
 }
 
 /**
@@ -380,7 +380,7 @@ export async function getAffiliateInfo(userIdentifier: string, identifierType: U
  **/
 export async function getAffiliateCode(userIdentifier: string, identifierType: UserIdentifierType): Promise<Affiliate | null> {
   assertInitialized();
-  return await _affiliateService.getCode(userIdentifier, identifierType);
+  return await _affiliateService.getReferral(userIdentifier, identifierType);
 }
 
 /**
@@ -436,7 +436,7 @@ export async function generateTrackingLink(
   params?: AffiliateLinkParams,
 ): Promise<string> {
   assertInitialized();
-  const affiliate = await _affiliateService.getCode(userIdentifier, identifierType);
+  const affiliate = await _affiliateService.getReferral(userIdentifier, identifierType);
   const qp = new URLSearchParams({
     af: affiliate?.code ?? userIdentifier,
   });

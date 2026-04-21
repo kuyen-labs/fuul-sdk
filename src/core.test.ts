@@ -217,7 +217,7 @@ describe('SDK core', () => {
 
     it('generates basic tracking link', async () => {
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
-      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
+      affiliateServiceMock.prototype.getReferral.mockImplementation(async () => {
         return null;
       });
 
@@ -228,7 +228,7 @@ describe('SDK core', () => {
 
     it('generates link with tracking params', async () => {
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
-      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
+      affiliateServiceMock.prototype.getReferral.mockImplementation(async () => {
         return null;
       });
 
@@ -243,7 +243,7 @@ describe('SDK core', () => {
 
     it('generates link with affiliate code', async () => {
       const affiliateServiceMock = AffiliateService as jest.MockedClass<typeof AffiliateService>;
-      affiliateServiceMock.prototype.getCode.mockImplementation(async () => {
+      affiliateServiceMock.prototype.getReferral.mockImplementation(async () => {
         return {
           id: '123',
           name: 'test',
@@ -259,6 +259,18 @@ describe('SDK core', () => {
           rebate_rate: null,
           region: 'Other',
           current_tier: null,
+          codes: [
+            {
+              code: 'my-affiliate-code',
+              created_at: '2024-01-01',
+              uses: 0,
+              clicks: 0,
+              total_users: 0,
+              total_earnings: 0,
+              rebate_rate: null,
+              current_tier: null,
+            },
+          ],
         };
       });
 

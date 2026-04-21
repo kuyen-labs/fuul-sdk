@@ -2,7 +2,23 @@ import { AxiosError } from 'axios';
 
 import { UserIdentifierType } from '..';
 import { HttpClient } from '../HttpClient';
-import { Affiliate, CheckAffiliateCodeAvailabilityResponse, CheckAffiliateCodeAvailableResponse, CreateAffiliateResponse } from '../types/api';
+import {
+  Affiliate,
+  AffiliateCodeWithStats,
+  CheckAffiliateCodeAvailabilityResponse,
+  CheckAffiliateCodeAvailableResponse,
+  CreateAffiliateResponse,
+} from '../types/api';
+
+type GetAffiliateApiResponse = {
+  id: string;
+  name: string;
+  user_identifier: string;
+  user_identifier_type: string;
+  updated_at: string;
+  region?: string;
+  codes: AffiliateCodeWithStats[];
+};
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
 
 export type AffiliateServiceSettings = {
@@ -174,17 +190,36 @@ export class AffiliateService {
     }
   }
 
-  public async getCode(address: string, identifier_type: UserIdentifierType): Promise<Affiliate | null> {
+  public async getReferral(address: string, identifier_type: UserIdentifierType): Promise<Affiliate | null> {
     try {
-      const res = await this.httpClient.get<Affiliate>({ path: `/affiliates/${address}`, queryParams: { identifier_type } });
-      return res.data;
+      const res = await this.httpClient.get<GetAffiliateApiResponse>({ path: `/affiliates/${address}`, queryParams: { identifier_type } });
+      const data = res.data;
+      const codes = data.codes ?? [];
+      const first = codes[0];
+      return {
+        id: data.id,
+        name: data.name,
+        user_identifier: data.user_identifier,
+        user_identifier_type: data.user_identifier_type,
+        updated_at: data.updated_at,
+        region: data.region ?? '',
+        codes,
+        code: first?.code ?? '',
+        created_at: first?.created_at ?? '',
+        uses: first?.uses ?? 0,
+        clicks: first?.clicks ?? 0,
+        total_users: first?.total_users ?? 0,
+        total_earnings: first?.total_earnings ?? 0,
+        rebate_rate: first?.rebate_rate ?? null,
+        current_tier: first?.current_tier ?? null,
+      };
     } catch (e) {
       if (e instanceof AxiosError) {
         if (e.response?.status === 404) {
           return null;
         }
       }
-      console.error(`Fuul SDK: Could not get affiliate code`, e);
+      console.error(`Fuul SDK: Could not get affiliate referral`, e);
       throw e;
     }
   }
