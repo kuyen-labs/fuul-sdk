@@ -31,6 +31,7 @@ export interface GetAffiliateStatsResponse {
   r3_volume: number;
   multilevel_volume: number;
   total_volume: number;
+  end_user_volume: number;
   referred_revenue: number;
   referred_users: number;
   status: AffiliateStatus;
