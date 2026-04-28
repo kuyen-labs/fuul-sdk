@@ -840,7 +840,7 @@ export async function deleteReferral(params: DeleteReferralParams): Promise<void
  * ```typescript
  * const stats = await Fuul.getAffiliateStats({
  *   user_identifier: '0x12345',
- *   user_identifier_type: UserIdentifierType.EvmAddress
+ *   conversion_external_id: 1,
  * });
  * ```
  */

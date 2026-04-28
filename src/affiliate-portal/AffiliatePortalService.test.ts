@@ -1,4 +1,5 @@
 import { HttpClient } from '../HttpClient';
+import { UserIdentifierType } from '../types/user';
 import { AffiliatePortalService } from './AffiliatePortalService';
 
 describe('AffiliatePortalService', () => {
@@ -76,7 +77,7 @@ describe('AffiliatePortalService', () => {
       );
     });
 
-    it('still passes deprecated conversion_id for backward compatibility', async () => {
+    it('does not forward the deprecated conversion_id even when callers pass it', async () => {
       const { service, httpClientMock } = createService();
 
       await service.getAffiliateStats({
@@ -84,13 +85,8 @@ describe('AffiliatePortalService', () => {
         conversion_id: 'some-uuid',
       });
 
-      expect(httpClientMock.get).toHaveBeenCalledWith(
-        expect.objectContaining({
-          queryParams: expect.objectContaining({
-            conversion_id: 'some-uuid',
-          }),
-        }),
-      );
+      const [callArg] = httpClientMock.get.mock.calls[0];
+      expect(callArg.queryParams).not.toHaveProperty('conversion_id');
     });
 
     it('passes conversion_name as query param', async () => {
@@ -107,6 +103,26 @@ describe('AffiliatePortalService', () => {
             conversion_name: 'my-conversion',
           }),
         }),
+      );
+    });
+
+    it('only forwards server-supported params, even when deprecated fields are passed', async () => {
+      const { service, httpClientMock } = createService();
+
+      await service.getAffiliateStats({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        from: '2026-01-01',
+        to: '2026-01-31',
+        this_month: true,
+        conversion_id: 'some-uuid',
+        conversion_external_id: 42,
+        conversion_name: 'my-conversion',
+      });
+
+      const [callArg] = httpClientMock.get.mock.calls[0];
+      expect(Object.keys(callArg.queryParams).sort()).toEqual(
+        ['conversion_external_id', 'conversion_name', 'from', 'this_month', 'to', 'user_identifier'].sort(),
       );
     });
   });
