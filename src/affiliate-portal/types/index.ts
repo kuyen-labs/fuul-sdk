@@ -33,7 +33,14 @@ export interface GetAffiliateStatsResponse {
   total_volume: number;
   end_user_volume: number;
   referred_revenue: number;
+  /** Analytics-based referred-user count (existing semantics). Same value as `active_referrers`. */
   referred_users: number;
+  /** Same as `referred_users` (analytics pipeline). */
+  active_referrers: number;
+  /** DISTINCT union of OLTP `user_referrers` and eligible `attribution` rows. All-time; not scoped by from/to or this_month. */
+  total_referrers: number;
+  /** DISTINCT referred users in `user_referrers` for this affiliate (OLTP). All-time; not scoped by from/to or this_month. */
+  assigned_referrers: number;
   status: AffiliateStatus;
   region: AffiliateRegion | null;
   referral_codes: string[];
