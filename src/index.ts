@@ -62,6 +62,7 @@ export type {
   ReferredVolumeItem,
   ReferredVolumeResponse,
   ReferrerPayoutData,
+  ReferrerPayoutsScope,
   RevenueLeaderboard,
   TierPayoutTerms,
   UpdateReferralCodeParams,
