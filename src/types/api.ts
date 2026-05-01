@@ -791,7 +791,8 @@ export interface EarningItem {
 export interface ReferrerPayoutData {
   volume: number;
   earnings: EarningItem[];
-  date_joined: string;
+  /** `null` when the referred user has no confirmed attributions (only present in `user_referrers` — returned when `referrer_scope=all`). */
+  date_joined: string | null;
   event_referrer_identifier: string;
   user_rebate_rate?: number | null;
   referral_code: string | null;
@@ -799,9 +800,13 @@ export interface ReferrerPayoutData {
 
 export type PayoutsByReferrerResponse = Array<Record<string, ReferrerPayoutData>>;
 
+export type ReferrerPayoutsScope = 'active' | 'all';
+
 export interface GetPayoutsByReferrerParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
+  /** `active` (default): only referred users with non-zero volume or earnings. `all`: also includes referred users present only in `user_referrers` (volume `0`, empty `earnings`, `date_joined: null`). */
+  referrer_scope?: ReferrerPayoutsScope;
 }
 
 // Referred Volume types
