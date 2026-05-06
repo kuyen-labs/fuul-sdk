@@ -103,7 +103,6 @@ export interface AffiliateCodeWithStats {
   /** USD. */
   total_earnings: number;
   rebate_rate: number | null;
-  current_tier: CurrentTier | null;
 }
 
 export type Affiliate = {
@@ -129,7 +128,12 @@ export type Affiliate = {
   total_earnings: number;
   /** @deprecated No longer returned at the root by the server. Read `codes[0].rebate_rate`. Populated from `codes[0]` for backward compatibility. */
   rebate_rate: number | null;
-  /** @deprecated No longer returned at the root by the server. Read `codes[0].current_tier`. Populated from `codes[0]` for backward compatibility. */
+  /**
+   * Tier the affiliate currently has in the project the API key is scoped to.
+   * `null` when the project has no tier configuration, or when the response
+   * does not include project-scoped stats (no API key sent, or no codes linked
+   * to the project).
+   */
   current_tier: CurrentTier | null;
   /** @deprecated No longer returned by the server. Use `rebate_rate`. */
   user_rebate_rate?: number | null;

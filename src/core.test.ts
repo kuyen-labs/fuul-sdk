@@ -268,7 +268,6 @@ describe('SDK core', () => {
               total_users: 0,
               total_earnings: 0,
               rebate_rate: null,
-              current_tier: null,
             },
           ],
         };
