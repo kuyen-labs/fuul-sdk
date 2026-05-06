@@ -8,6 +8,7 @@ import {
   CheckAffiliateCodeAvailabilityResponse,
   CheckAffiliateCodeAvailableResponse,
   CreateAffiliateResponse,
+  CurrentTier,
 } from '../types/api';
 
 type GetAffiliateApiResponse = {
@@ -17,6 +18,7 @@ type GetAffiliateApiResponse = {
   user_identifier_type: string;
   updated_at: string;
   region?: string;
+  current_tier?: CurrentTier | null;
   codes: AffiliateCodeWithStats[];
 };
 import { AddressInUseError, CodeInUseError, InvalidSignatureError, ValidationError } from './errors';
@@ -211,7 +213,7 @@ export class AffiliateService {
         total_users: first?.total_users ?? 0,
         total_earnings: first?.total_earnings ?? 0,
         rebate_rate: first?.rebate_rate ?? null,
-        current_tier: first?.current_tier ?? null,
+        current_tier: data.current_tier ?? null,
       };
     } catch (e) {
       if (e instanceof AxiosError) {
