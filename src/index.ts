@@ -2,6 +2,7 @@ import Fuul from './core';
 
 export type {
   AffiliateEarning,
+  AffiliatePortalTierView,
   AffiliateRegion,
   AffiliateStatus,
   DateRangePreset,

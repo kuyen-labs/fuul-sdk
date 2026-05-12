@@ -1,8 +1,25 @@
+import { CurrentTier } from '../../types/api';
 import { UserIdentifierType } from '../../types/user';
 
 export type AffiliateStatus = 'Active' | 'Paused' | 'Flagged' | 'Terminated';
 
-export type AffiliateRegion = 'All' | 'CN' | 'JP' | 'KR' | 'SEA' | 'EN' | 'LATAM' | 'Other';
+export type AffiliateRegion =
+  | 'All'
+  | 'CN'
+  | 'JP'
+  | 'KR'
+  | 'SEA'
+  | 'IND'
+  | 'EN'
+  | 'LATAM'
+  | 'CIS'
+  | 'GE'
+  | 'SP'
+  | 'SA'
+  | 'EU'
+  | 'Other';
+
+export type AffiliatePortalTierView = CurrentTier;
 
 export interface GetAffiliateStatsParams {
   user_identifier: string;
@@ -25,14 +42,36 @@ export interface AffiliateEarning {
 export interface GetAffiliateStatsResponse {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
+  /**
+   * Movement-based commission totals per currency, across ALL referrer levels combined.
+   * Native token units (already divided by decimals). Includes POINT rewards.
+   */
   total_earnings: AffiliateEarning[];
+  /** USD volume attributed to this affiliate as the direct (L1) referrer. */
   referred_volume: number;
   r2_volume: number;
   r3_volume: number;
+  r4_volume: number;
+  /** Sum of r2_volume + r3_volume + r4_volume. */
   multilevel_volume: number;
+  /** referred_volume + multilevel_volume. */
   total_volume: number;
   end_user_volume: number;
+  /** USD attributed revenue for L1 direct referrals. */
   referred_revenue: number;
+  r2_revenue: number;
+  r3_revenue: number;
+  r4_revenue: number;
+  /** Count of L1 attribution events for this affiliate, scoped to the same date range as volumes. */
+  referred_attributions: number;
+  /** Confirmed payout commissions in USD for L1 (direct) referrals. Excludes POINT-denomination payouts. */
+  r1_earnings: number;
+  /** Confirmed payout commissions in USD for L2 referrals. Excludes POINT-denomination payouts. */
+  r2_earnings: number;
+  /** Confirmed payout commissions in USD for L3 referrals. Excludes POINT-denomination payouts. */
+  r3_earnings: number;
+  /** Confirmed payout commissions in USD for L4 referrals. Excludes POINT-denomination payouts. */
+  r4_earnings: number;
   /** Analytics-based referred-user count (existing semantics). Same value as `active_referrers`. */
   referred_users: number;
   /** Same as `referred_users` (analytics pipeline). */
@@ -44,6 +83,10 @@ export interface GetAffiliateStatsResponse {
   status: AffiliateStatus;
   region: AffiliateRegion | null;
   referral_codes: string[];
+  /** Tier after audience/default rules; no tier-protection overlay. */
+  effective_tier: AffiliatePortalTierView | null;
+  /** Tier shown to the affiliate; includes tier-protection overlay when active. */
+  current_tier: AffiliatePortalTierView | null;
 }
 
 export interface GetNewTradersParams {
