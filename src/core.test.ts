@@ -738,6 +738,114 @@ describe('SDK core', () => {
     });
   });
 
+  describe('getClaimHistory()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-api-key' });
+    });
+
+    it('should return paginated claim history', async () => {
+      const getClaimHistorySpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimHistory').mockResolvedValue({
+        results: [
+          {
+            hash: '0xabc123',
+            chain_id: '1',
+            claimed_at: '2026-05-12T08:30:00.000Z',
+            totals: [
+              {
+                currency_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+                currency_chain_id: '1',
+                currency_name: 'USDC',
+                currency_decimals: 6,
+                amount: '50000000',
+              },
+            ],
+          },
+        ],
+        total_count: 1,
+        next_page: 2,
+      });
+
+      const result = await Fuul.getClaimHistory({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        page: 1,
+        page_size: 25,
+      });
+
+      expect(getClaimHistorySpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        page: 1,
+        page_size: 25,
+      });
+
+      expect(result.results).toHaveLength(1);
+      expect(result.results[0].hash).toBe('0xabc123');
+      expect(result.results[0].chain_id).toBe('1');
+      expect(result.results[0].totals[0].currency_name).toBe('USDC');
+      expect(result.results[0].totals[0].amount).toBe('50000000');
+      expect(result.total_count).toBe(1);
+      expect(result.next_page).toBe(2);
+    });
+
+    it('should handle empty results with next_page null', async () => {
+      jest.spyOn(ClaimCheckService.prototype, 'getClaimHistory').mockResolvedValue({
+        results: [],
+        total_count: 0,
+        next_page: null,
+      });
+
+      const result = await Fuul.getClaimHistory({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(result.results).toEqual([]);
+      expect(result.total_count).toBe(0);
+      expect(result.next_page).toBeNull();
+    });
+
+    it('should omit pagination params when not provided', async () => {
+      const getClaimHistorySpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimHistory').mockResolvedValue({
+        results: [],
+        total_count: 0,
+        next_page: null,
+      });
+
+      await Fuul.getClaimHistory({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(getClaimHistorySpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+    });
+
+    it('should pass pagination params through', async () => {
+      const getClaimHistorySpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimHistory').mockResolvedValue({
+        results: [],
+        total_count: 0,
+        next_page: null,
+      });
+
+      await Fuul.getClaimHistory({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        page: 2,
+        page_size: 50,
+      });
+
+      expect(getClaimHistorySpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        page: 2,
+        page_size: 50,
+      });
+    });
+  });
+
   describe('closeClaimChecks()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-api-key' });

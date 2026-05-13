@@ -113,3 +113,48 @@ export interface GetClaimCheckTotalsResponse {
   claimed: ClaimCheckTotalItem[];
   unclaimed: ClaimCheckTotalItem[];
 }
+
+export interface UserClaimHistoryCurrencyTotalItem {
+  currency_address: string;
+  currency_chain_id: string;
+  currency_name: string;
+  currency_decimals: number;
+
+  /**
+   * Raw integer amount. Divide by 10 ** currency_decimals before display.
+   */
+  amount: string;
+}
+
+export interface UserClaimHistoryTransactionItem {
+  hash: string;
+  chain_id: string;
+
+  /**
+   * ISO 8601 UTC date-time string.
+   */
+  claimed_at: string;
+
+  totals: UserClaimHistoryCurrencyTotalItem[];
+}
+
+export interface GetClaimHistoryParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+
+  /**
+   * 1-indexed page number. Server default: 1.
+   */
+  page?: number;
+
+  /**
+   * Items per page (1-100). Server default: 25.
+   */
+  page_size?: number;
+}
+
+export interface GetClaimHistoryResponse {
+  results: UserClaimHistoryTransactionItem[];
+  total_count: number;
+  next_page: number | null;
+}

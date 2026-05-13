@@ -33,6 +33,10 @@ export type {
   GetClaimChecksResponse,
   GetClaimCheckTotalsParams,
   GetClaimCheckTotalsResponse,
+  GetClaimHistoryParams,
+  GetClaimHistoryResponse,
+  UserClaimHistoryCurrencyTotalItem,
+  UserClaimHistoryTransactionItem,
 } from './claim-checks/types';
 export { ClaimCheckStatus } from './claim-checks/types';
 export type {
