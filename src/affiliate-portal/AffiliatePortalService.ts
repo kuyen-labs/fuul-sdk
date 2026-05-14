@@ -1,5 +1,7 @@
 import { HttpClient } from '../HttpClient';
 import {
+  GetAffiliatePaidVolumesByLevelParams,
+  GetAffiliatePaidVolumesByLevelResponse,
   GetAffiliateStatsBreakdownParams,
   GetAffiliateStatsBreakdownResponse,
   GetAffiliateStatsParams,
@@ -82,6 +84,19 @@ export class AffiliatePortalService {
   public async getAffiliateNewTraders(params: GetNewTradersParams): Promise<NewTraderResponse[]> {
     const result = await this.httpClient.get<NewTraderResponse[]>({
       path: `${basePath}/new-traders`,
+      queryParams: {
+        user_identifier: params.user_identifier,
+        from: params.from,
+        to: params.to,
+        this_month: params.this_month,
+      },
+    });
+    return result.data;
+  }
+
+  public async getAffiliatePaidVolumesByLevel(params: GetAffiliatePaidVolumesByLevelParams): Promise<GetAffiliatePaidVolumesByLevelResponse> {
+    const result = await this.httpClient.get<GetAffiliatePaidVolumesByLevelResponse>({
+      path: `${basePath}/paid-volumes-by-level`,
       queryParams: {
         user_identifier: params.user_identifier,
         from: params.from,

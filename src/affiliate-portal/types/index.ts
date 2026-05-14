@@ -3,21 +3,7 @@ import { UserIdentifierType } from '../../types/user';
 
 export type AffiliateStatus = 'Active' | 'Paused' | 'Flagged' | 'Terminated';
 
-export type AffiliateRegion =
-  | 'All'
-  | 'CN'
-  | 'JP'
-  | 'KR'
-  | 'SEA'
-  | 'IND'
-  | 'EN'
-  | 'LATAM'
-  | 'CIS'
-  | 'GE'
-  | 'SP'
-  | 'SA'
-  | 'EU'
-  | 'Other';
+export type AffiliateRegion = 'All' | 'CN' | 'JP' | 'KR' | 'SEA' | 'IND' | 'EN' | 'LATAM' | 'CIS' | 'GE' | 'SP' | 'SA' | 'EU' | 'Other';
 
 export type AffiliatePortalTierView = CurrentTier;
 
@@ -161,4 +147,40 @@ export interface GetAffiliateTotalStatsResponse {
   total_attributions: number;
   total_referred_users: number;
   total_earnings: AffiliateEarning[];
+}
+
+export interface GetAffiliatePaidVolumesByLevelParams {
+  user_identifier: string;
+  from?: string;
+  to?: string;
+  this_month?: boolean;
+}
+
+export interface GetAffiliatePaidVolumesByLevelResponse {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  /** Payout-eligible trading volume driven by this affiliate's direct (L1) referrals, in USD. */
+  payout_eligible_l1_volume: number;
+  /** Payout-eligible volume from second-level (L2) referrals, in USD. */
+  payout_eligible_l2_volume: number;
+  /** Payout-eligible volume from third-level (L3) referrals, in USD. */
+  payout_eligible_l3_volume: number;
+  /** Payout-eligible volume from fourth-level (L4) referrals, in USD. */
+  payout_eligible_l4_volume: number;
+  /** Attributed revenue at L1, in USD. */
+  payout_eligible_l1_revenue: number;
+  /** Attributed revenue at L2, in USD. */
+  payout_eligible_l2_revenue: number;
+  /** Attributed revenue at L3, in USD. */
+  payout_eligible_l3_revenue: number;
+  /** Attributed revenue at L4, in USD. */
+  payout_eligible_l4_revenue: number;
+  /** Number of payout-eligible attribution events at L1. */
+  payout_eligible_l1_attributions: number;
+  /** Number of payout-eligible attribution events at L2. */
+  payout_eligible_l2_attributions: number;
+  /** Number of payout-eligible attribution events at L3. */
+  payout_eligible_l3_attributions: number;
+  /** Number of payout-eligible attribution events at L4. */
+  payout_eligible_l4_attributions: number;
 }
