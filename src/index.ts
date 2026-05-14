@@ -6,6 +6,8 @@ export type {
   AffiliateRegion,
   AffiliateStatus,
   DateRangePreset,
+  GetAffiliatePaidVolumesByLevelParams,
+  GetAffiliatePaidVolumesByLevelResponse,
   GetAffiliateStatsBreakdownParams,
   GetAffiliateStatsBreakdownResponse,
   GetAffiliateStatsParams,

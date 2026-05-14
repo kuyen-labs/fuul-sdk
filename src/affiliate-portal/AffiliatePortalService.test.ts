@@ -57,6 +57,48 @@ describe('AffiliatePortalService', () => {
     });
   });
 
+  describe('getAffiliatePaidVolumesByLevel', () => {
+    it('passes all query params', async () => {
+      const { service, httpClientMock } = createService();
+
+      await service.getAffiliatePaidVolumesByLevel({
+        user_identifier: '0x123',
+        from: '2026-01-01',
+        to: '2026-01-31',
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/affiliate-portal/paid-volumes-by-level',
+          queryParams: expect.objectContaining({
+            user_identifier: '0x123',
+            from: '2026-01-01',
+            to: '2026-01-31',
+          }),
+        }),
+      );
+    });
+
+    it('passes this_month flag', async () => {
+      const { service, httpClientMock } = createService();
+
+      await service.getAffiliatePaidVolumesByLevel({
+        user_identifier: '0x123',
+        this_month: true,
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/affiliate-portal/paid-volumes-by-level',
+          queryParams: expect.objectContaining({
+            user_identifier: '0x123',
+            this_month: true,
+          }),
+        }),
+      );
+    });
+  });
+
   describe('getAffiliateStats', () => {
     it('passes conversion_external_id as query param', async () => {
       const { service, httpClientMock } = createService();

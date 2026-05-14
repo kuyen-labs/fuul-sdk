@@ -1,6 +1,8 @@
 import { UserIdentifierType } from '.';
 import { AffiliatePortalService } from './affiliate-portal/AffiliatePortalService';
 import {
+  GetAffiliatePaidVolumesByLevelParams,
+  GetAffiliatePaidVolumesByLevelResponse,
   GetAffiliateStatsBreakdownParams,
   GetAffiliateStatsBreakdownResponse,
   GetAffiliateStatsParams,
@@ -918,6 +920,26 @@ export async function getStatsBreakdown(params: GetAffiliateStatsBreakdownParams
 }
 
 /**
+ * Gets payout-eligible volume, revenue, and attribution counts for an affiliate, broken down by referral tree level (L1–L4).
+ * Scope is one of: all-time (omit `from`/`to`/`this_month`), current calendar month (`this_month: true`),
+ * or a custom date range (provide both `from` and `to`). Mixing `this_month` with `from`/`to` returns HTTP 400.
+ * @param {GetAffiliatePaidVolumesByLevelParams} params Paid volumes by level parameters
+ * @returns {Promise<GetAffiliatePaidVolumesByLevelResponse>} Payout-eligible volumes, revenues, and attribution counts per level
+ * @example
+ * ```typescript
+ * const volumes = await Fuul.getAffiliatePaidVolumesByLevel({
+ *   user_identifier: '0x12345',
+ *   this_month: true,
+ * });
+ * console.log(volumes.payout_eligible_l1_volume, volumes.payout_eligible_l2_volume);
+ * ```
+ */
+export async function getAffiliatePaidVolumesByLevel(params: GetAffiliatePaidVolumesByLevelParams): Promise<GetAffiliatePaidVolumesByLevelResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getAffiliatePaidVolumesByLevel(params);
+}
+
+/**
  * Retrieves claim checks for a user with optional status filtering
  * @param {GetClaimChecksParams} params Get claim checks parameters
  * @returns {Promise<GetClaimChecksResponse>} List of claim checks
@@ -1105,6 +1127,7 @@ export default {
   getAffiliateTotalStats,
   getReferralTree,
   getStatsBreakdown,
+  getAffiliatePaidVolumesByLevel,
   getClaimChecks,
   closeClaimChecks,
   getClaimableChecks,
