@@ -743,26 +743,39 @@ describe('SDK core', () => {
       Fuul.init({ apiKey: 'test-api-key' });
     });
 
-    it('should return paginated claim history', async () => {
+    it('should return paginated flat (hash, currency) rows', async () => {
       const getClaimHistorySpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimHistory').mockResolvedValue({
         results: [
           {
             hash: '0xabc123',
-            chain_id: '1',
             claimed_at: '2026-05-12T08:30:00.000Z',
-            totals: [
-              {
-                currency_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-                currency_chain_id: '1',
-                currency_name: 'USDC',
-                currency_decimals: 6,
-                amount: '50000000',
-              },
-            ],
+            currency_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+            currency_chain_id: '1',
+            currency_name: 'USDC',
+            currency_decimals: 6,
+            amount: '50000000',
+          },
+          {
+            hash: '0xdef456',
+            claimed_at: '2026-05-10T12:00:00.000Z',
+            currency_address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+            currency_chain_id: '137',
+            currency_name: 'USDC',
+            currency_decimals: 6,
+            amount: '25000000',
+          },
+          {
+            hash: '0xdef456',
+            claimed_at: '2026-05-10T12:00:00.000Z',
+            currency_address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+            currency_chain_id: '137',
+            currency_name: 'WETH',
+            currency_decimals: 18,
+            amount: '2000000000000000000',
           },
         ],
-        total_count: 1,
-        next_page: 2,
+        total_count: 3,
+        next_page: null,
       });
 
       const result = await Fuul.getClaimHistory({
@@ -779,13 +792,61 @@ describe('SDK core', () => {
         page_size: 25,
       });
 
-      expect(result.results).toHaveLength(1);
-      expect(result.results[0].hash).toBe('0xabc123');
-      expect(result.results[0].chain_id).toBe('1');
-      expect(result.results[0].totals[0].currency_name).toBe('USDC');
-      expect(result.results[0].totals[0].amount).toBe('50000000');
-      expect(result.total_count).toBe(1);
-      expect(result.next_page).toBe(2);
+      expect(result.results).toHaveLength(3);
+
+      // First row — all seven flat fields present, none of the removed ones.
+      const firstRow = result.results[0];
+      expect(firstRow.hash).toBe('0xabc123');
+      expect(firstRow.claimed_at).toBe('2026-05-12T08:30:00.000Z');
+      expect(firstRow.currency_address).toBe('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
+      expect(firstRow.currency_chain_id).toBe('1');
+      expect(firstRow.currency_name).toBe('USDC');
+      expect(firstRow.currency_decimals).toBe(6);
+      expect(firstRow.amount).toBe('50000000');
+      expect(firstRow).not.toHaveProperty('chain_id');
+      expect(firstRow).not.toHaveProperty('totals');
+
+      // total_count counts (hash, currency) rows, not distinct hashes: 2 hashes → 3 rows.
+      expect(result.total_count).toBe(3);
+      expect(result.next_page).toBeNull();
+    });
+
+    it('should return two separate rows when one transaction settled multiple currencies', async () => {
+      jest.spyOn(ClaimCheckService.prototype, 'getClaimHistory').mockResolvedValue({
+        results: [
+          {
+            hash: '0xdef456',
+            claimed_at: '2026-05-10T12:00:00.000Z',
+            currency_address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+            currency_chain_id: '137',
+            currency_name: 'USDC',
+            currency_decimals: 6,
+            amount: '25000000',
+          },
+          {
+            hash: '0xdef456',
+            claimed_at: '2026-05-10T12:00:00.000Z',
+            currency_address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+            currency_chain_id: '137',
+            currency_name: 'WETH',
+            currency_decimals: 18,
+            amount: '2000000000000000000',
+          },
+        ],
+        total_count: 2,
+        next_page: null,
+      });
+
+      const result = await Fuul.getClaimHistory({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+      });
+
+      expect(result.results).toHaveLength(2);
+      expect(result.results[0].hash).toBe('0xdef456');
+      expect(result.results[1].hash).toBe('0xdef456');
+      expect(result.results[0].currency_name).toBe('USDC');
+      expect(result.results[1].currency_name).toBe('WETH');
     });
 
     it('should handle empty results with next_page null', async () => {

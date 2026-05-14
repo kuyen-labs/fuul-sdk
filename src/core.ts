@@ -1005,15 +1005,18 @@ export async function getClaimCheckTotals(params: GetClaimCheckTotalsParams): Pr
 }
 
 /**
- * Returns a paginated list of a user's completed on-chain claim transactions for the project,
- * grouped by transaction hash. Only transactions where `status = 'claimed'` are included.
- * Results are ordered by `claimed_at DESC`.
+ * Returns a paginated list of a user's completed on-chain claim rows for the project.
+ * Each row corresponds to one `(transaction hash, currency)` pair — when a single
+ * transaction settled multiple currencies, the same `hash` will appear in multiple
+ * consecutive rows. Only claim checks where `status = 'claimed'` are included.
+ * Results are ordered by `claimed_at DESC`, with ties broken by `hash` then `currency`.
  *
- * `amount` values in each currency total are raw integer strings — divide by
+ * `total_count` reflects the number of `(hash, currency)` rows, not distinct
+ * transaction hashes. `amount` is a raw integer string — divide by
  * `10 ** currency_decimals` before displaying to users.
  *
  * @param {GetClaimHistoryParams} params Get claim history parameters
- * @returns {Promise<GetClaimHistoryResponse>} Paginated claim history grouped by transaction
+ * @returns {Promise<GetClaimHistoryResponse>} Paginated `(hash, currency)` claim history
  * @example
  * ```typescript
  * const history = await Fuul.getClaimHistory({
@@ -1022,9 +1025,10 @@ export async function getClaimCheckTotals(params: GetClaimCheckTotalsParams): Pr
  *   page: 1,
  *   page_size: 25,
  * });
- * history.results.forEach(tx => {
- *   console.log(`${tx.hash} on chain ${tx.chain_id} at ${tx.claimed_at}`);
- *   tx.totals.forEach(t => console.log(`  ${t.currency_name}: ${t.amount}`));
+ * history.results.forEach(row => {
+ *   console.log(
+ *     `${row.hash} — ${row.currency_name} on chain ${row.currency_chain_id}: ${row.amount} at ${row.claimed_at}`,
+ *   );
  * });
  * ```
  */

@@ -109,15 +109,18 @@ export class ClaimCheckService {
   }
 
   /**
-   * Returns a paginated list of a user's completed on-chain claim transactions
-   * for the project, grouped by (hash, chain_id). Only transactions with
+   * Returns a paginated list of a user's completed on-chain claim rows for the
+   * project. Each row corresponds to one (transaction hash, currency) pair —
+   * a single transaction that settled multiple currencies produces multiple
+   * consecutive rows sharing the same `hash`. Only claim checks with
    * status = 'claimed' are returned, ordered by claimed_at DESC.
    *
-   * Amount values in totals are raw integer strings — divide by
-   * 10 ** currency_decimals before displaying to users.
+   * `total_count` counts (hash, currency) rows, not distinct transactions.
+   * `amount` is a raw integer string — divide by 10 ** currency_decimals
+   * before displaying to users.
    *
    * @param {GetClaimHistoryParams} params - User identifier and pagination
-   * @returns {Promise<GetClaimHistoryResponse>} Paginated transaction-grouped claim history
+   * @returns {Promise<GetClaimHistoryResponse>} Paginated (hash, currency) claim history
    */
   public async getClaimHistory(params: GetClaimHistoryParams): Promise<GetClaimHistoryResponse> {
     const queryParams: Record<string, string | number> = {
