@@ -8,6 +8,8 @@ import {
   GetClaimChecksResponse,
   GetClaimCheckTotalsParams,
   GetClaimCheckTotalsResponse,
+  GetClaimHistoryParams,
+  GetClaimHistoryResponse,
 } from './types';
 
 export type ClaimCheckServiceSettings = {
@@ -102,6 +104,40 @@ export class ClaimCheckService {
         user_identifier: params.user_identifier,
         user_identifier_type: params.user_identifier_type,
       },
+    });
+    return response.data;
+  }
+
+  /**
+   * Returns a paginated list of a user's completed on-chain claim rows for the
+   * project. Each row corresponds to one (transaction hash, currency) pair —
+   * a single transaction that settled multiple currencies produces multiple
+   * consecutive rows sharing the same `hash`. Only claim checks with
+   * status = 'claimed' are returned, ordered by claimed_at DESC.
+   *
+   * `total_count` counts (hash, currency) rows, not distinct transactions.
+   * `amount` is a raw integer string — divide by 10 ** currency_decimals
+   * before displaying to users.
+   *
+   * @param {GetClaimHistoryParams} params - User identifier and pagination
+   * @returns {Promise<GetClaimHistoryResponse>} Paginated (hash, currency) claim history
+   */
+  public async getClaimHistory(params: GetClaimHistoryParams): Promise<GetClaimHistoryResponse> {
+    const queryParams: Record<string, string | number> = {
+      user_identifier: params.user_identifier,
+      user_identifier_type: params.user_identifier_type,
+    };
+
+    if (params.page !== undefined) {
+      queryParams.page = params.page;
+    }
+    if (params.page_size !== undefined) {
+      queryParams.page_size = params.page_size;
+    }
+
+    const response = await this.httpClient.get<GetClaimHistoryResponse>({
+      path: `${basePath}/claim-history`,
+      queryParams,
     });
     return response.data;
   }

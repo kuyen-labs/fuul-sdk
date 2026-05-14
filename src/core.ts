@@ -24,6 +24,8 @@ import {
   GetClaimChecksResponse,
   GetClaimCheckTotalsParams,
   GetClaimCheckTotalsResponse,
+  GetClaimHistoryParams,
+  GetClaimHistoryResponse,
 } from './claim-checks/types';
 import { ConversionService } from './ConversionService';
 import { EventService } from './EventService';
@@ -1002,6 +1004,39 @@ export async function getClaimCheckTotals(params: GetClaimCheckTotalsParams): Pr
   return _claimCheckService.getClaimCheckTotals(params);
 }
 
+/**
+ * Returns a paginated list of a user's completed on-chain claim rows for the project.
+ * Each row corresponds to one `(transaction hash, currency)` pair — when a single
+ * transaction settled multiple currencies, the same `hash` will appear in multiple
+ * consecutive rows. Only claim checks where `status = 'claimed'` are included.
+ * Results are ordered by `claimed_at DESC`, with ties broken by `hash` then `currency`.
+ *
+ * `total_count` reflects the number of `(hash, currency)` rows, not distinct
+ * transaction hashes. `amount` is a raw integer string — divide by
+ * `10 ** currency_decimals` before displaying to users.
+ *
+ * @param {GetClaimHistoryParams} params Get claim history parameters
+ * @returns {Promise<GetClaimHistoryResponse>} Paginated `(hash, currency)` claim history
+ * @example
+ * ```typescript
+ * const history = await Fuul.getClaimHistory({
+ *   user_identifier: '0x12345',
+ *   user_identifier_type: UserIdentifierType.EvmAddress,
+ *   page: 1,
+ *   page_size: 25,
+ * });
+ * history.results.forEach(row => {
+ *   console.log(
+ *     `${row.hash} — ${row.currency_name} on chain ${row.currency_chain_id}: ${row.amount} at ${row.claimed_at}`,
+ *   );
+ * });
+ * ```
+ */
+export async function getClaimHistory(params: GetClaimHistoryParams): Promise<GetClaimHistoryResponse> {
+  assertInitialized();
+  return _claimCheckService.getClaimHistory(params);
+}
+
 function assertBrowserContext(): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error(`Fuul SDK: Browser context required`);
@@ -1074,4 +1109,5 @@ export default {
   closeClaimChecks,
   getClaimableChecks,
   getClaimCheckTotals,
+  getClaimHistory,
 };

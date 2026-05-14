@@ -113,3 +113,58 @@ export interface GetClaimCheckTotalsResponse {
   claimed: ClaimCheckTotalItem[];
   unclaimed: ClaimCheckTotalItem[];
 }
+
+export interface UserClaimHistoryItem {
+  /**
+   * On-chain transaction hash. The same hash may appear in multiple consecutive
+   * rows when a single transaction settled more than one currency.
+   */
+  hash: string;
+
+  /**
+   * ISO 8601 UTC date-time string. MAX(claimed_at) over all claim checks in
+   * this (hash, currency) group.
+   */
+  claimed_at: string;
+
+  currency_address: string;
+  currency_chain_id: string;
+  currency_name: string;
+  currency_decimals: number;
+
+  /**
+   * Raw integer amount summed over all claim checks in this (hash, currency)
+   * group. Divide by 10 ** currency_decimals before display.
+   */
+  amount: string;
+}
+
+export interface GetClaimHistoryParams {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+
+  /**
+   * 1-indexed page number. Server default: 1.
+   */
+  page?: number;
+
+  /**
+   * Items per page (1-100). Server default: 25.
+   */
+  page_size?: number;
+}
+
+export interface GetClaimHistoryResponse {
+  results: UserClaimHistoryItem[];
+
+  /**
+   * Count of distinct (hash, currency) rows for this user — not transaction
+   * count. A transaction that settled three currencies counts as three.
+   */
+  total_count: number;
+
+  /**
+   * `page + 1` when `page * page_size < total_count`; otherwise `null`.
+   */
+  next_page: number | null;
+}
