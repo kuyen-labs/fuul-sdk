@@ -183,4 +183,10 @@ export interface GetAffiliatePaidVolumesByLevelResponse {
   payout_eligible_l3_attributions: number;
   /** Number of payout-eligible attribution events at L4. */
   payout_eligible_l4_attributions: number;
+  /** Sum of L1+L2+L3+L4 payout-eligible volume, in USD. */
+  payout_eligible_total_volume: number;
+  /** Sum of L1+L2+L3+L4 payout-eligible revenue, in USD. */
+  payout_eligible_total_revenue: number;
+  /** Sum of L1+L2+L3+L4 payout-eligible attribution counts. */
+  payout_eligible_total_attributions: number;
 }
