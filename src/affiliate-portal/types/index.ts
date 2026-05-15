@@ -62,6 +62,12 @@ export interface GetAffiliateStatsResponse {
   referred_users: number;
   /** Same as `referred_users` (analytics pipeline). */
   active_referrers: number;
+  /** Distinct referred end-users with attributed volume at tree depth R2 (same `from`/`to`/`this_month`/conversion scope as volumes). */
+  active_referred_users_r2: number;
+  /** Same, depth R3. */
+  active_referred_users_r3: number;
+  /** Same, depth R4. */
+  active_referred_users_r4: number;
   /** DISTINCT union of OLTP `user_referrers` and eligible `attribution` rows. All-time; not scoped by from/to or this_month. */
   total_referrers: number;
   /** DISTINCT referred users in `user_referrers` for this affiliate (OLTP). All-time; not scoped by from/to or this_month. */
