@@ -811,6 +811,10 @@ export interface GetPayoutsByReferrerParams {
   user_identifier_type: UserIdentifierType;
   /** `active` (default): only referred users with non-zero volume or earnings. `all`: also includes referred users present only in `user_referrers` (volume `0`, empty `earnings`, `date_joined: null`). */
   referrer_scope?: ReferrerPayoutsScope;
+  /** ISO 8601 date (`YYYY-MM-DD`). Must be provided together with `to_date`. When both are omitted, the endpoint returns all-time totals. `date_joined` is always all-time and not affected by this window. */
+  from_date?: string;
+  /** ISO 8601 date (`YYYY-MM-DD`). Inclusive upper bound. Must be provided together with `from_date`. */
+  to_date?: string;
 }
 
 // Referred Volume types
