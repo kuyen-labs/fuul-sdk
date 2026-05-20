@@ -69,6 +69,8 @@ export class PayoutService {
         user_identifier: params.user_identifier,
         user_identifier_type: params.user_identifier_type,
         referrer_scope: params.referrer_scope,
+        from_date: params.from_date,
+        to_date: params.to_date,
       },
     });
     return results.data;
