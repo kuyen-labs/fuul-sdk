@@ -50,14 +50,14 @@ export interface GetAffiliateStatsResponse {
   r4_revenue: number;
   /** Count of L1 attribution events for this affiliate, scoped to the same date range as volumes. */
   referred_attributions: number;
-  /** Confirmed payout commissions in USD for L1 (direct) referrals. Excludes POINT-denomination payouts. */
-  r1_earnings: number;
-  /** Confirmed payout commissions in USD for L2 referrals. Excludes POINT-denomination payouts. */
-  r2_earnings: number;
-  /** Confirmed payout commissions in USD for L3 referrals. Excludes POINT-denomination payouts. */
-  r3_earnings: number;
-  /** Confirmed payout commissions in USD for L4 referrals. Excludes POINT-denomination payouts. */
-  r4_earnings: number;
+  /** Confirmed payout commissions per currency for L1 (direct) referrals (native units). Excludes POINT-denomination payouts; empty array when only POINT payouts exist. */
+  r1_earnings: AffiliateEarning[];
+  /** Confirmed payout commissions per currency for L2 referrals (native units). Excludes POINT-denomination payouts; empty array when only POINT payouts exist. */
+  r2_earnings: AffiliateEarning[];
+  /** Confirmed payout commissions per currency for L3 referrals (native units). Excludes POINT-denomination payouts; empty array when only POINT payouts exist. */
+  r3_earnings: AffiliateEarning[];
+  /** Confirmed payout commissions per currency for L4 referrals (native units). Excludes POINT-denomination payouts; empty array when only POINT payouts exist. */
+  r4_earnings: AffiliateEarning[];
   /** Analytics-based referred-user count (existing semantics). Same value as `active_referrers`. */
   referred_users: number;
   /** Same as `referred_users` (analytics pipeline). */
