@@ -794,7 +794,14 @@ export interface EarningItem {
 
 export interface ReferrerPayoutData {
   volume: number;
+  /** L1 trading volume from this referred user that is eligible for commission. */
+  direct_eligible_volume: number;
+  /** Eligible volume from this user's downline (L2-L4), mapped to this L1 user. */
+  indirect_eligible_volume: number;
+  /** L1-only commission, by currency. */
   earnings: EarningItem[];
+  /** Combined direct + indirect (L1-L4) commission, by currency. */
+  total_commission_earned: EarningItem[];
   /** `null` when the referred user has no confirmed attributions (only present in `user_referrers` — returned when `referrer_scope=all`). */
   date_joined: string | null;
   event_referrer_identifier: string;
