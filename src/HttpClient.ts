@@ -1,3 +1,4 @@
+// axios is pinned to >=1.17.0 to clear the security advisory cluster (FUU-1795).
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 import release from './release.json';
