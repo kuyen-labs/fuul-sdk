@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 const TRACKING_ID_KEY = 'fuul.tracking_id';
 
 export const getTrackingId = () => getStoredOrcurrent(TRACKING_ID_KEY, () => nanoid());
+// Affiliate id can arrive via either the ?af= or the ?referrer= query param.
 export const getAffiliateId = () => getQueryParam('af') || getQueryParam('referrer');
 export const getReferrerUrl = () => document.referrer;
 export const getTrafficSource = () => detectSource();
