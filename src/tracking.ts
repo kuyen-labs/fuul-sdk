@@ -32,8 +32,5 @@ export const getQueryParam = (key: string) => {
 };
 
 export const detectSource = (): string | undefined => {
-  const sourceParam = getQueryParam('source');
-  if (sourceParam) {
-    return sourceParam;
-  }
+  return getQueryParam('source') || undefined;
 };
