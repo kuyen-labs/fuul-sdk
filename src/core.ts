@@ -9,7 +9,11 @@ import {
   GetAffiliateStatsResponse,
   GetAffiliateTotalStatsParams,
   GetAffiliateTotalStatsResponse,
+  GetHighVolumeTakerBonusParams,
+  GetHighVolumeTakerBonusResponse,
   GetNewTradersParams,
+  GetQualifiedUserBonusParams,
+  GetQualifiedUserBonusResponse,
   GetReferralTreeParams,
   NewTraderResponse,
   ReferralTreeNodeResponse,
@@ -940,6 +944,59 @@ export async function getAffiliatePaidVolumesByLevel(params: GetAffiliatePaidVol
 }
 
 /**
+ * Gets the qualified-user bonus for an affiliate over a date range.
+ * Counts referred users that qualified for the configured trigger refs and returns the total USD bonus owed.
+ * @param {GetQualifiedUserBonusParams} params Qualified user bonus parameters
+ * @param {string} params.user_identifier Affiliate identifier
+ * @param {string} params.from Inclusive start of the qualifying window, `YYYY-MM-DD`
+ * @param {string} params.to Inclusive end of the qualifying window, `YYYY-MM-DD`
+ * @param {string} params.trigger_refs Comma-separated list of trigger refs defining the qualifying conversions
+ * @param {string} [params.claimable_date] Optional date the bonus becomes claimable, `YYYY-MM-DD`
+ * @returns {Promise<GetQualifiedUserBonusResponse>} Qualified user count, USD bonus, and per-user rate
+ * @example
+ * ```typescript
+ * const bonus = await Fuul.getQualifiedUserBonus({
+ *   user_identifier: '0x12345',
+ *   from: '2026-01-01',
+ *   to: '2026-01-31',
+ *   trigger_refs: 'ref-1,ref-2',
+ * });
+ * console.log(bonus.qualified_user_count, bonus.bonus_usd);
+ * ```
+ */
+export async function getQualifiedUserBonus(params: GetQualifiedUserBonusParams): Promise<GetQualifiedUserBonusResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getQualifiedUserBonus(params);
+}
+
+/**
+ * Gets the high-volume taker bonus for an affiliate.
+ * Scope is either the current calendar month in UTC (`this_month`) or a custom date range (`from`/`to`);
+ * the two are mutually exclusive. The returned `bonus` is a server-formatted display string
+ * (e.g. the literal text `"$16,000 USDT0"`), or an em dash when below the 50M threshold — it is NOT a number.
+ * @param {GetHighVolumeTakerBonusParams} params High volume taker bonus parameters
+ * @param {string} params.user_identifier Affiliate identifier
+ * @param {string} params.trigger_refs Comma-separated list of trigger refs defining the qualifying taker volume
+ * @param {string} [params.this_month] When set, scopes to the current calendar month in UTC. Mutually exclusive with `from`/`to`
+ * @param {string} [params.from] Inclusive start of a custom window, `YYYY-MM-DD`. Mutually exclusive with `this_month`
+ * @param {string} [params.to] Inclusive end of a custom window, `YYYY-MM-DD`. Mutually exclusive with `this_month`
+ * @returns {Promise<GetHighVolumeTakerBonusResponse>} Aggregate taker volume and the formatted bonus string
+ * @example
+ * ```typescript
+ * const bonus = await Fuul.getHighVolumeTakerBonus({
+ *   user_identifier: '0x12345',
+ *   trigger_refs: 'ref-1,ref-2',
+ *   this_month: 'true',
+ * });
+ * console.log(bonus.aggregate_taker_volume, bonus.bonus);
+ * ```
+ */
+export async function getHighVolumeTakerBonus(params: GetHighVolumeTakerBonusParams): Promise<GetHighVolumeTakerBonusResponse> {
+  assertInitialized();
+  return _affiliatePortalService.getHighVolumeTakerBonus(params);
+}
+
+/**
  * Retrieves claim checks for a user with optional status filtering
  * @param {GetClaimChecksParams} params Get claim checks parameters
  * @returns {Promise<GetClaimChecksResponse>} List of claim checks
@@ -1128,6 +1185,8 @@ export default {
   getReferralTree,
   getStatsBreakdown,
   getAffiliatePaidVolumesByLevel,
+  getQualifiedUserBonus,
+  getHighVolumeTakerBonus,
   getClaimChecks,
   closeClaimChecks,
   getClaimableChecks,

@@ -99,6 +99,121 @@ describe('AffiliatePortalService', () => {
     });
   });
 
+  describe('getQualifiedUserBonus', () => {
+    it('passes all query params', async () => {
+      const { service, httpClientMock } = createService();
+
+      await service.getQualifiedUserBonus({
+        user_identifier: '0x123',
+        from: '2026-01-01',
+        to: '2026-01-31',
+        trigger_refs: 'ref-1,ref-2',
+        claimable_date: '2026-02-15',
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/affiliate-portal/qualified-user-bonus',
+          queryParams: expect.objectContaining({
+            user_identifier: '0x123',
+            from: '2026-01-01',
+            to: '2026-01-31',
+            trigger_refs: 'ref-1,ref-2',
+            claimable_date: '2026-02-15',
+          }),
+        }),
+      );
+    });
+
+    it('returns result.data', async () => {
+      const { service, httpClientMock } = createService();
+      const data = {
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        qualified_user_count: 5,
+        bonus_usd: 500,
+        rate_per_user: 100,
+        note: 'computed',
+      };
+      httpClientMock.get.mockResolvedValueOnce({ data });
+
+      const result = await service.getQualifiedUserBonus({
+        user_identifier: '0x123',
+        from: '2026-01-01',
+        to: '2026-01-31',
+        trigger_refs: 'ref-1',
+      });
+
+      expect(result).toBe(data);
+    });
+  });
+
+  describe('getHighVolumeTakerBonus', () => {
+    it('passes all query params', async () => {
+      const { service, httpClientMock } = createService();
+
+      await service.getHighVolumeTakerBonus({
+        user_identifier: '0x123',
+        trigger_refs: 'ref-1,ref-2',
+        from: '2026-01-01',
+        to: '2026-01-31',
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/affiliate-portal/high-volume-taker-bonus',
+          queryParams: expect.objectContaining({
+            user_identifier: '0x123',
+            trigger_refs: 'ref-1,ref-2',
+            from: '2026-01-01',
+            to: '2026-01-31',
+          }),
+        }),
+      );
+    });
+
+    it('passes this_month flag', async () => {
+      const { service, httpClientMock } = createService();
+
+      await service.getHighVolumeTakerBonus({
+        user_identifier: '0x123',
+        trigger_refs: 'ref-1',
+        this_month: 'true',
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/affiliate-portal/high-volume-taker-bonus',
+          queryParams: expect.objectContaining({
+            user_identifier: '0x123',
+            trigger_refs: 'ref-1',
+            this_month: 'true',
+          }),
+        }),
+      );
+    });
+
+    it('returns result.data', async () => {
+      const { service, httpClientMock } = createService();
+      const data = {
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        aggregate_taker_volume: 60000000,
+        bonus: '$16,000 USDT0',
+        note: 'computed',
+      };
+      httpClientMock.get.mockResolvedValueOnce({ data });
+
+      const result = await service.getHighVolumeTakerBonus({
+        user_identifier: '0x123',
+        trigger_refs: 'ref-1',
+        this_month: 'true',
+      });
+
+      expect(result).toBe(data);
+    });
+  });
+
   describe('getAffiliateStats', () => {
     it('passes conversion_external_id as query param', async () => {
       const { service, httpClientMock } = createService();

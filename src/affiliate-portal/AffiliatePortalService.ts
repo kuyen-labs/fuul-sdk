@@ -8,7 +8,11 @@ import {
   GetAffiliateStatsResponse,
   GetAffiliateTotalStatsParams,
   GetAffiliateTotalStatsResponse,
+  GetHighVolumeTakerBonusParams,
+  GetHighVolumeTakerBonusResponse,
   GetNewTradersParams,
+  GetQualifiedUserBonusParams,
+  GetQualifiedUserBonusResponse,
   GetReferralTreeParams,
   NewTraderResponse,
   ReferralTreeNodeResponse,
@@ -102,6 +106,34 @@ export class AffiliatePortalService {
         from: params.from,
         to: params.to,
         this_month: params.this_month,
+      },
+    });
+    return result.data;
+  }
+
+  public async getQualifiedUserBonus(params: GetQualifiedUserBonusParams): Promise<GetQualifiedUserBonusResponse> {
+    const result = await this.httpClient.get<GetQualifiedUserBonusResponse>({
+      path: `${basePath}/qualified-user-bonus`,
+      queryParams: {
+        user_identifier: params.user_identifier,
+        from: params.from,
+        to: params.to,
+        trigger_refs: params.trigger_refs,
+        claimable_date: params.claimable_date,
+      },
+    });
+    return result.data;
+  }
+
+  public async getHighVolumeTakerBonus(params: GetHighVolumeTakerBonusParams): Promise<GetHighVolumeTakerBonusResponse> {
+    const result = await this.httpClient.get<GetHighVolumeTakerBonusResponse>({
+      path: `${basePath}/high-volume-taker-bonus`,
+      queryParams: {
+        user_identifier: params.user_identifier,
+        trigger_refs: params.trigger_refs,
+        this_month: params.this_month,
+        from: params.from,
+        to: params.to,
       },
     });
     return result.data;
