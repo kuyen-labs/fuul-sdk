@@ -196,3 +196,54 @@ export interface GetAffiliatePaidVolumesByLevelResponse {
   /** Sum of L1+L2+L3+L4 payout-eligible attribution counts. */
   payout_eligible_total_attributions: number;
 }
+
+export interface GetQualifiedUserBonusParams {
+  user_identifier: string;
+  /** Inclusive start of the qualifying window, `YYYY-MM-DD`. */
+  from: string;
+  /** Inclusive end of the qualifying window, `YYYY-MM-DD`. */
+  to: string;
+  /** Comma-separated list of trigger refs that define the qualifying conversions. */
+  trigger_refs: string;
+  /** Optional date the bonus becomes claimable, `YYYY-MM-DD`. */
+  claimable_date?: string;
+}
+
+export interface GetQualifiedUserBonusResponse {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  /** Number of referred users that qualified for the bonus within the window. */
+  qualified_user_count: number;
+  /** Total bonus owed for the qualified users, in USD. */
+  bonus_usd: number;
+  /** Bonus rate applied per qualified user, in USD. */
+  rate_per_user: number;
+  /** Human-readable note describing how the bonus was computed. */
+  note: string;
+}
+
+export interface GetHighVolumeTakerBonusParams {
+  user_identifier: string;
+  /** Comma-separated list of trigger refs that define the qualifying taker volume. */
+  trigger_refs: string;
+  /** When set, the server scopes to the current calendar month in UTC. Mutually exclusive with `from`/`to`. */
+  this_month?: string;
+  /** Inclusive start of a custom window, `YYYY-MM-DD`. Mutually exclusive with `this_month`. */
+  from?: string;
+  /** Inclusive end of a custom window, `YYYY-MM-DD`. Mutually exclusive with `this_month`. */
+  to?: string;
+}
+
+export interface GetHighVolumeTakerBonusResponse {
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  /** Aggregate taker volume attributed to this affiliate, in USD. */
+  aggregate_taker_volume: number;
+  /**
+   * Server-formatted display value for the bonus (e.g. the literal text `"$16,000 USDT0"`), or an
+   * em dash when the aggregate taker volume is below the 50M threshold. This is a STRING, not a number.
+   */
+  bonus: string;
+  /** Human-readable note describing how the bonus was computed. */
+  note: string;
+}
