@@ -40,8 +40,11 @@ EventService uses localStorage (`SENT_EVENT_ID_KEY`) with 60-second validity per
 ### Multi-Project Support
 Events can be sent to multiple projects: `sendEvent(event, ['projectId1', 'projectId2'])` — sends one HTTP call per project.
 
+### Multi-Chain Support
+`UserIdentifierType` enum values: `evm_address`, `solana_address`, `xrpl_address`, `sui_address`, `stellar_address`, `email`.
+
 ### Signature Verification
-Affiliate operations require EIP-191 signatures. Smart contract signatures supported via EIP-1271 with `accountChainId` parameter.
+Affiliate operations require EIP-191 signatures (EVM). Smart contract signatures supported via EIP-1271 (EVM) with `accountChainId` parameter. Non-EVM identifiers use their chain's native scheme (Stellar → ed25519, no `accountChainId`); the SDK forwards signature bytes untouched without validation.
 
 ## Testing
 
