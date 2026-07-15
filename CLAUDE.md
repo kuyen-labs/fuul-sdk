@@ -84,13 +84,15 @@ constructor(settings: { httpClient: HttpClient; debug?: boolean })
 
 ### Multi-Chain Support
 
-`UserIdentifierType` enum values: `evm_address`, `solana_address`, `xrpl_address`, `sui_address`, `email`.
+`UserIdentifierType` enum values: `evm_address`, `solana_address`, `xrpl_address`, `sui_address`, `stellar_address`, `email`.
 
 ### Signature Verification
 
 Affiliate code creation and referral code usage require message signatures:
-- EIP-191 standard signatures
-- EIP-1271 smart contract signatures (requires `accountChainId` parameter)
+- EIP-191 standard signatures (EVM)
+- EIP-1271 smart contract signatures (EVM, requires `accountChainId` parameter)
+
+Non-EVM identifiers authenticate with their chain's native scheme (e.g. Stellar `G…` addresses sign with ed25519 — a StrKey-encoded ed25519 public key — and take no `accountChainId`). The SDK is a pure pass-through: it forwards `signature` / `signaturePublicKey` / `accountChainId` untouched and performs no scheme validation, so any scheme works at runtime.
 
 ### Key Types
 
