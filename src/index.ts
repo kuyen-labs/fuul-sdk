@@ -63,6 +63,7 @@ export type {
   GetReferralStatusResponse,
   GetReferredVolumeParams,
   GetRevenueLeaderboardParams,
+  GetUserPayoutMovementsParams,
   LeaderboardResponse,
   ListUserReferralCodesParams,
   ListUserReferralCodesResponse,
@@ -77,6 +78,8 @@ export type {
   TierPayoutTerms,
   UpdateReferralCodeParams,
   UseReferralCodeParams,
+  UserPayoutMovement,
+  UserPayoutMovementsResponse,
   UserReferralCode,
 } from './types/api';
 export type { EventArgs, FuulSettings, IdentifyUserParams, UpdateRebateRateParams } from './types/sdk';
