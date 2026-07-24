@@ -48,6 +48,11 @@ export enum ClaimCheckReason {
 }
 
 export interface ClaimResponse {
+  /**
+   * Unique identifier of the claim check (UUID)
+   */
+  id: string;
+
   project_address: string;
 
   /**

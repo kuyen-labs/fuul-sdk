@@ -517,6 +517,7 @@ describe('SDK core', () => {
     it('should return claimable checks', async () => {
       const getClaimableChecksSpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimableChecks').mockResolvedValue([
         {
+          id: '11111111-1111-1111-1111-111111111111',
           project_address: '0xproject',
           to: '0x123',
           currency: '0xtoken',
@@ -542,6 +543,7 @@ describe('SDK core', () => {
 
       expect(checks).toEqual([
         {
+          id: '11111111-1111-1111-1111-111111111111',
           project_address: '0xproject',
           to: '0x123',
           currency: '0xtoken',
@@ -570,6 +572,7 @@ describe('SDK core', () => {
     it('should work with email identifier', async () => {
       jest.spyOn(ClaimCheckService.prototype, 'getClaimableChecks').mockResolvedValue([
         {
+          id: '22222222-2222-2222-2222-222222222222',
           project_address: '0xproject',
           to: 'user@example.com',
           currency: '0xtoken',
@@ -915,6 +918,7 @@ describe('SDK core', () => {
     it('should close claim checks and return signed responses', async () => {
       const closeClaimChecksSpy = jest.spyOn(ClaimCheckService.prototype, 'closeClaimChecks').mockResolvedValue([
         {
+          id: '33333333-3333-3333-3333-333333333333',
           project_address: '0xproject',
           to: '0x123',
           currency: '0xtoken',
