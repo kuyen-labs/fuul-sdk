@@ -84,7 +84,9 @@ constructor(settings: { httpClient: HttpClient; debug?: boolean })
 
 ### Multi-Chain Support
 
-`UserIdentifierType` enum values: `evm_address`, `solana_address`, `xrpl_address`, `sui_address`, `stellar_address`, `email`.
+`UserIdentifierType` enum values: `evm_address`, `solana_address`, `xrpl_address`, `sui_address`, `stellar_address`, `stellar_contract`, `email`.
+
+`stellar_contract` (Soroban SAC / SEP-41 `C…` StrKey) is scoped to currencies on the API side — user-identifier endpoints validate against wallet/opaque types and reject it. It is exported for completeness with the backend enum, not as a valid user identifier.
 
 ### Signature Verification
 
