@@ -593,15 +593,21 @@ export interface UserPayoutMovementsResponse {
 
 export interface UserPayoutMovement {
   date: string;
+  payout_id: string;
   currency_address: string;
-  chain_id: number;
+  chain_id: string;
   is_referrer: boolean;
   conversion_id: string;
   conversion_name: string;
   total_amount: string;
+  volume_usd: string;
   project_name: string;
   payout_status: string;
   payout_status_details: string | null;
+  enduser_address: string;
+  user_identifier: string;
+  referrer_identifier: string;
+  dedup_id: string;
 }
 
 export interface GetUserPointsMovementsParams {
