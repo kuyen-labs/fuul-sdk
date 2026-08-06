@@ -76,7 +76,7 @@ export interface GetAffiliateStatsResponse {
   region: AffiliateRegion | null;
   referral_codes: string[];
   /** Tier after audience/default rules; no tier-protection overlay. */
-  effective_tier: AffiliatePortalTierView | null;
+  effective_tier?: AffiliatePortalTierView | null;
   /** Tier shown to the affiliate; includes tier-protection overlay when active. */
   current_tier: AffiliatePortalTierView | null;
 }
@@ -101,7 +101,9 @@ export interface ReferralTreeNodeResponse {
   user_identifier: string;
   project_affiliate_id: string | null;
   traders: number;
+  users: number;
   total_volume: number;
+  referrer_volume: number;
   total_revenue: number;
   children: ReferralTreeNodeResponse[];
 }
@@ -110,6 +112,9 @@ export type GroupByPeriod = 'day' | 'week' | 'month';
 
 export type DateRangePreset = '7d' | '30d' | 'MTD' | 'QTD' | 'custom';
 
+/**
+ * Either `date_range` or both `from` and `to` are required.
+ */
 export interface GetAffiliateStatsBreakdownParams {
   user_identifier: string;
   group_by: GroupByPeriod;
@@ -123,10 +128,10 @@ export interface GetAffiliateStatsBreakdownParams {
 
 export interface StatsBreakdownResult {
   date: string;
-  r1_volume: number;
-  r2_volume: number;
-  r3_volume: number;
-  revenue: number;
+  direct_volume: number;
+  indirect_volume: number;
+  direct_revenue: number;
+  indirect_revenue: number;
   attributions: number;
   referred_users: number;
   earnings: number;
@@ -218,6 +223,8 @@ export interface GetQualifiedUserBonusResponse {
   bonus_usd: number;
   /** Bonus rate applied per qualified user, in USD. */
   rate_per_user: number;
+  /** Server-formatted display value for the bonus (e.g. the literal text `"$240 USDT0"`). This is a STRING, not a number. */
+  bonus: string;
   /** Human-readable note describing how the bonus was computed. */
   note: string;
 }

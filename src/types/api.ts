@@ -380,7 +380,7 @@ type LeaderboardUserType = 'affiliate' | 'end_user';
 export interface GetPayoutsLeaderboardParams {
   page?: number;
   page_size?: number;
-  currency_address?: string;
+  currency_address: string;
   /** @deprecated Use user_identifier instead */
   user_address?: string;
   user_identifier?: string;
@@ -482,7 +482,7 @@ export interface VolumeLeaderboard {
   address: string;
   user_identifier: string;
   user_identifier_type: string;
-  affiliate_code: string | null;
+  affiliate_code?: string | null;
   total_amount: string;
   chain_id: string | null;
   rank: number;
@@ -490,9 +490,11 @@ export interface VolumeLeaderboard {
 
 export interface RevenueLeaderboard {
   address: string;
+  user_identifier: string;
+  user_identifier_type: string;
   total_amount: string;
   rank: number;
-  affiliate_code: string | null;
+  affiliate_code?: string | null;
   attributions?: number;
   volume_usd?: number;
   points?: number;
@@ -500,7 +502,10 @@ export interface RevenueLeaderboard {
 
 export interface PointsLeaderboard {
   address: string;
+  user_identifier: string;
+  user_identifier_type: string;
   affiliate_code?: string;
+  affiliate_name: string | null;
   total_amount: number;
   rank: number;
   total_attributions: number;
@@ -554,7 +559,7 @@ export interface UserPayoutsByConversionResponse {
 export interface UserConversionPayout {
   is_referrer: boolean;
   total_amount: string;
-  conversion_id: string;
+  conversion_id: number;
   conversion_name: string;
   currency_address: string;
   chain_id: string;
@@ -570,7 +575,7 @@ export interface UserPointsByConversionResponse {
 export interface UserConversionPoints {
   is_referrer: boolean;
   total_amount: string;
-  conversion_id: string;
+  conversion_id: number;
   conversion_name: string;
 }
 
@@ -600,14 +605,14 @@ export interface UserPayoutMovement {
   conversion_id: string;
   conversion_name: string;
   total_amount: string;
-  volume_usd: string;
+  volume_usd: number;
   project_name: string;
   payout_status: string;
   payout_status_details: string | null;
   enduser_address: string;
   user_identifier: string;
-  referrer_identifier: string;
-  dedup_id: string;
+  referrer_identifier: string | null;
+  dedup_id: string | null;
 }
 
 export interface GetUserPointsMovementsParams {
@@ -629,6 +634,7 @@ export interface UserPointsMovementsResponse {
 
 export interface UserPointsMovement {
   date: string;
+  payout_id: string;
   is_referrer: boolean;
   conversion_id: string;
   conversion_name: string;
@@ -636,6 +642,10 @@ export interface UserPointsMovement {
   project_name: string;
   payout_status: string;
   payout_status_details: string | null;
+  enduser_address: string;
+  user_identifier: string;
+  referrer_identifier: string | null;
+  dedup_id: string | null;
 }
 
 export interface GetIncentivesByTierParams {
@@ -810,7 +820,7 @@ export interface ReferrerPayoutData {
   total_commission_earned: EarningItem[];
   /** `null` when the referred user has no confirmed attributions (only present in `user_referrers` — returned when `referrer_scope=all`). */
   date_joined: string | null;
-  event_referrer_identifier: string;
+  event_referrer_identifier: string | null;
   user_rebate_rate?: number | null;
   referral_code: string | null;
 }
