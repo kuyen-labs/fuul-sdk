@@ -297,7 +297,7 @@ describe('SDK core', () => {
           {
             is_referrer: true,
             total_amount: '100',
-            conversion_id: 'conversion-1',
+            conversion_id: 1,
             conversion_name: 'buy',
             currency_address: '0x1',
             chain_id: '1',
@@ -327,7 +327,7 @@ describe('SDK core', () => {
           {
             is_referrer: true,
             total_amount: '100',
-            conversion_id: 'conversion-1',
+            conversion_id: 1,
             conversion_name: 'buy',
             currency_address: '0x1',
             chain_id: '1',
@@ -351,7 +351,7 @@ describe('SDK core', () => {
           {
             is_referrer: true,
             total_amount: '100',
-            conversion_id: 'conversion-1',
+            conversion_id: 1,
             conversion_name: 'buy',
           },
         ],
@@ -379,7 +379,7 @@ describe('SDK core', () => {
           {
             is_referrer: true,
             total_amount: '100',
-            conversion_id: 'conversion-1',
+            conversion_id: 1,
             conversion_name: 'buy',
           },
         ],
