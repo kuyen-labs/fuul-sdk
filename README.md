@@ -93,10 +93,12 @@ The response includes all the data needed for on-chain claim verification includ
 
 ### Get Claim Check Totals
 
-Get aggregated totals of claimed and unclaimed claim checks for a user, grouped by currency.
+Get aggregated totals of claim checks for a user, one row per currency per state.
+
+Every row carries a `status` label. The `unclaimed` array is the **umbrella** for two states: `'open'` (still accumulating rewards — must be closed before it can be claimed) and `'closed'` (ready to claim on-chain right now). A "ready to claim" figure must only sum rows with `status: 'closed'`. Note: other endpoints (e.g. `getClaimChecks`) use the stored status value `unclaimed` to mean what this endpoint labels `closed`.
 
 ```tsx
-import { Fuul, UserIdentifierType } from '@fuul/sdk';
+import { ClaimCheckTotalsStatusFilter, Fuul, UserIdentifierType } from '@fuul/sdk';
 
 const totals = await Fuul.getClaimCheckTotals({
   user_identifier: '0xe06099DbbF626892397f9A74C7f42F16748292Db',
@@ -109,11 +111,22 @@ totals.claimed.forEach(item => {
   console.log(`  ${item.currency_name}: ${item.amount} (${item.currency_address})`);
 });
 
-// Display unclaimed totals
-console.log('Unclaimed:');
-totals.unclaimed.forEach(item => {
-  console.log(`  ${item.currency_name}: ${item.amount} (${item.currency_address})`);
-});
+// Display unclaimed totals, split by state
+console.log('Ready to claim:');
+totals.unclaimed
+  .filter(item => item.status === 'closed')
+  .forEach(item => {
+    console.log(`  ${item.currency_name}: ${item.amount} (${item.currency_address})`);
+  });
+
+console.log('Still accumulating:');
+totals.unclaimed
+  .filter(item => item.status === 'open')
+  .forEach(item => {
+    console.log(`  ${item.currency_name}: ${item.amount} (${item.currency_address})`);
+  });
 ```
 
-This endpoint includes both expired and non-expired claims, providing a complete view of all historical and current claim checks.
+An optional `status` filter of type `ClaimCheckTotalsStatusFilter` limits the response to a single state — for example `status: ClaimCheckTotalsStatusFilter.Closed` returns only the ready-to-claim rows. `ClaimCheckTotalsStatusFilter.Unclaimed` filters to the umbrella (both `open` and `closed` rows). The enum members map to the wire values `'claimed' | 'unclaimed' | 'open' | 'closed'`; invalid values return a `400` listing the valid ones.
+
+Expired checks are excluded from `open` and `closed` rows, so `closed` sums are always claimable right now. Claimed totals are the user's claim history.

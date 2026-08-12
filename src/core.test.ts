@@ -17,7 +17,7 @@ jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
-import { Fuul, UserIdentifierType } from './index';
+import { ClaimCheckTotalsStatusFilter, Fuul, UserIdentifierType } from './index';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
 
@@ -601,7 +601,7 @@ describe('SDK core', () => {
       Fuul.init({ apiKey: 'test-api-key' });
     });
 
-    it('should return claim check totals', async () => {
+    it('should return claim check totals with per-row status labels', async () => {
       const getClaimCheckTotalsSpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimCheckTotals').mockResolvedValue({
         claimed: [
           {
@@ -610,6 +610,7 @@ describe('SDK core', () => {
             currency_name: 'USDC',
             currency_decimals: 6,
             amount: '1000000',
+            status: 'claimed',
           },
         ],
         unclaimed: [
@@ -619,6 +620,15 @@ describe('SDK core', () => {
             currency_name: 'USDT',
             currency_decimals: 6,
             amount: '2000000',
+            status: 'open',
+          },
+          {
+            currency_address: '0xtoken2',
+            currency_chain_id: '1',
+            currency_name: 'USDT',
+            currency_decimals: 6,
+            amount: '3000000',
+            status: 'closed',
           },
         ],
       });
@@ -641,6 +651,7 @@ describe('SDK core', () => {
             currency_name: 'USDC',
             currency_decimals: 6,
             amount: '1000000',
+            status: 'claimed',
           },
         ],
         unclaimed: [
@@ -650,8 +661,45 @@ describe('SDK core', () => {
             currency_name: 'USDT',
             currency_decimals: 6,
             amount: '2000000',
+            status: 'open',
+          },
+          {
+            currency_address: '0xtoken2',
+            currency_chain_id: '1',
+            currency_name: 'USDT',
+            currency_decimals: 6,
+            amount: '3000000',
+            status: 'closed',
           },
         ],
+      });
+    });
+
+    it('should pass the status filter through to the service', async () => {
+      const getClaimCheckTotalsSpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimCheckTotals').mockResolvedValue({
+        claimed: [],
+        unclaimed: [
+          {
+            currency_address: '0xtoken2',
+            currency_chain_id: '1',
+            currency_name: 'USDT',
+            currency_decimals: 6,
+            amount: '3000000',
+            status: 'closed',
+          },
+        ],
+      });
+
+      await Fuul.getClaimCheckTotals({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        status: ClaimCheckTotalsStatusFilter.Closed,
+      });
+
+      expect(getClaimCheckTotalsSpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        status: ClaimCheckTotalsStatusFilter.Closed,
       });
     });
 
