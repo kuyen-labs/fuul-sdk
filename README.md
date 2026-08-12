@@ -98,7 +98,7 @@ Get aggregated totals of claim checks for a user, one row per currency per state
 Every row carries a `status` label. The `unclaimed` array is the **umbrella** for two states: `'open'` (still accumulating rewards — must be closed before it can be claimed) and `'closed'` (ready to claim on-chain right now). A "ready to claim" figure must only sum rows with `status: 'closed'`. Note: other endpoints (e.g. `getClaimChecks`) use the stored status value `unclaimed` to mean what this endpoint labels `closed`.
 
 ```tsx
-import { Fuul, UserIdentifierType } from '@fuul/sdk';
+import { ClaimCheckTotalsStatusFilter, Fuul, UserIdentifierType } from '@fuul/sdk';
 
 const totals = await Fuul.getClaimCheckTotals({
   user_identifier: '0xe06099DbbF626892397f9A74C7f42F16748292Db',
@@ -127,6 +127,6 @@ totals.unclaimed
   });
 ```
 
-An optional `status` filter (`'claimed' | 'unclaimed' | 'open' | 'closed'`) limits the response to a single state — for example `status: 'closed'` returns only the ready-to-claim rows. `'unclaimed'` filters to the umbrella (both `open` and `closed` rows). Invalid values return a `400` listing the valid ones.
+An optional `status` filter of type `ClaimCheckTotalsStatusFilter` limits the response to a single state — for example `status: ClaimCheckTotalsStatusFilter.Closed` returns only the ready-to-claim rows. `ClaimCheckTotalsStatusFilter.Unclaimed` filters to the umbrella (both `open` and `closed` rows). The enum members map to the wire values `'claimed' | 'unclaimed' | 'open' | 'closed'`; invalid values return a `400` listing the valid ones.
 
 Expired checks are excluded from `open` and `closed` rows, so `closed` sums are always claimable right now. Claimed totals are the user's claim history.

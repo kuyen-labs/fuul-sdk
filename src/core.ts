@@ -1069,8 +1069,10 @@ export async function getClaimableChecks(params: GetClaimableChecksParams): Prom
  * must only sum rows with `status: 'closed'` — or pass `status: 'closed'` to
  * filter server-side. Expired checks are excluded from open/closed rows.
  *
- * The optional `status` filter accepts `'claimed' | 'unclaimed' | 'open' | 'closed'`,
- * where `'unclaimed'` means the umbrella (open + closed). Invalid values return a 400.
+ * The optional `status` filter takes a `ClaimCheckTotalsStatusFilter` member, where
+ * `ClaimCheckTotalsStatusFilter.Unclaimed` means the umbrella (open + closed). The
+ * members map to the wire values `'claimed' | 'unclaimed' | 'open' | 'closed'`;
+ * invalid values return a 400.
  * @param {GetClaimCheckTotalsParams} params Get claim check totals parameters
  * @returns {Promise<GetClaimCheckTotalsResponse>} Claim check totals grouped by status and currency
  * @example
