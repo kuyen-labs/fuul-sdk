@@ -93,10 +93,37 @@ export interface ClaimResponse {
 
 export type GetClaimableChecksResponse = ClaimResponse[];
 
+/**
+ * Status filter for claim check totals. Unlike the stored `ClaimCheckStatus`,
+ * `Unclaimed` here means the umbrella (open + closed rows); use `Closed` to
+ * filter to rows that are ready to claim on-chain right now.
+ */
+export enum ClaimCheckTotalsStatusFilter {
+  Claimed = 'claimed',
+  Unclaimed = 'unclaimed',
+  Open = 'open',
+  Closed = 'closed',
+}
+
 export interface GetClaimCheckTotalsParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
+
+  /**
+   * Filter totals to a single state. `open`, `closed`, and `claimed` return only
+   * rows of that state (the other array is empty). `unclaimed` returns both `open`
+   * and `closed` rows with `claimed` empty. When omitted, all states are returned.
+   */
+  status?: ClaimCheckTotalsStatusFilter;
 }
+
+/**
+ * State of a totals row: `closed` rows are ready to claim on-chain right now,
+ * `open` rows are still accumulating and must be closed first, `claimed` rows
+ * were already claimed. Note: `closed` corresponds to the stored status
+ * `unclaimed` used by other endpoints.
+ */
+export type ClaimCheckTotalItemStatus = 'claimed' | 'open' | 'closed';
 
 export interface ClaimCheckTotalItem {
   currency_address: string;
@@ -112,6 +139,8 @@ export interface ClaimCheckTotalItem {
    * Total amount as string (summed across all claim checks)
    */
   amount: string;
+
+  status: ClaimCheckTotalItemStatus;
 }
 
 export interface GetClaimCheckTotalsResponse {

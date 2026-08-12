@@ -91,19 +91,28 @@ export class ClaimCheckService {
   }
 
   /**
-   * Gets aggregated totals of claimed and unclaimed claim checks for a user
-   * Includes both expired and non-expired claims, grouped by currency
+   * Gets aggregated totals of claim checks for a user, one row per currency per
+   * state. The `unclaimed` array is the umbrella: it contains rows labeled
+   * `status: 'open'` (still accumulating, not claimable yet) and
+   * `status: 'closed'` (ready to claim on-chain). Expired checks are excluded
+   * from open/closed rows. Claimed checks are past claims (`status: 'claimed'`).
    *
-   * @param {GetClaimCheckTotalsParams} params - User identifier parameters
+   * @param {GetClaimCheckTotalsParams} params - User identifier and optional status filter
    * @returns {Promise<GetClaimCheckTotalsResponse>} Totals grouped by status and currency
    */
   public async getClaimCheckTotals(params: GetClaimCheckTotalsParams): Promise<GetClaimCheckTotalsResponse> {
+    const queryParams: Record<string, string> = {
+      user_identifier: params.user_identifier,
+      user_identifier_type: params.user_identifier_type,
+    };
+
+    if (params.status) {
+      queryParams.status = params.status;
+    }
+
     const response = await this.httpClient.get<GetClaimCheckTotalsResponse>({
       path: `${basePath}/totals`,
-      queryParams: {
-        user_identifier: params.user_identifier,
-        user_identifier_type: params.user_identifier_type,
-      },
+      queryParams,
     });
     return response.data;
   }

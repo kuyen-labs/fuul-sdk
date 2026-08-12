@@ -1061,8 +1061,16 @@ export async function getClaimableChecks(params: GetClaimableChecksParams): Prom
 }
 
 /**
- * Gets totals of claimed and unclaimed claim checks for a user
- * Includes both expired and non-expired claims, aggregated by currency
+ * Gets totals of claim checks for a user, one row per currency per state.
+ *
+ * The `unclaimed` array is the umbrella for two states, labeled per row via
+ * `status`: `'open'` (still accumulating, must be closed before claiming) and
+ * `'closed'` (ready to claim on-chain right now). A "ready to claim" figure
+ * must only sum rows with `status: 'closed'` — or pass `status: 'closed'` to
+ * filter server-side. Expired checks are excluded from open/closed rows.
+ *
+ * The optional `status` filter accepts `'claimed' | 'unclaimed' | 'open' | 'closed'`,
+ * where `'unclaimed'` means the umbrella (open + closed). Invalid values return a 400.
  * @param {GetClaimCheckTotalsParams} params Get claim check totals parameters
  * @returns {Promise<GetClaimCheckTotalsResponse>} Claim check totals grouped by status and currency
  * @example
@@ -1072,8 +1080,9 @@ export async function getClaimableChecks(params: GetClaimableChecksParams): Prom
  *   user_identifier_type: UserIdentifierType.EvmAddress
  * });
  * console.log('Claimed totals:', totals.claimed);
- * console.log('Unclaimed totals:', totals.unclaimed);
- * totals.unclaimed.forEach(item => {
+ * const readyToClaim = totals.unclaimed.filter(item => item.status === 'closed');
+ * const stillAccumulating = totals.unclaimed.filter(item => item.status === 'open');
+ * readyToClaim.forEach(item => {
  *   console.log(`${item.currency_name}: ${item.amount} (${item.currency_address})`);
  * });
  * ```
