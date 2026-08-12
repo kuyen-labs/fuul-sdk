@@ -21,6 +21,10 @@
             border-left: 4px solid #4caf50;
             margin: 20px 0;
         }
+        .status.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
         code {
             background: #f5f5f5;
             padding: 2px 6px;
@@ -38,11 +42,11 @@
 <body>
     <h1>🚀 Fuul SDK Browser Test</h1>
 
-    <div class="status">
-        ✅ SDK Loaded Successfully
+    <div class="status" id="status">
+        Checking SDK…
     </div>
 
-    <p>The Fuul SDK is now available as <code>window.Fuul</code>. Open your browser console to interact with it.</p>
+    <p id="status-detail">Open your browser console to interact with the SDK.</p>
 
     <h2>Quick Start</h2>
     <pre><code>// Initialize the SDK
@@ -80,7 +84,9 @@ Fuul.identifyUser({
 
     <script>
         // The UMD global is the module namespace; unwrap it to the SDK object.
-        window.Fuul = window.Fuul.Fuul;
+        if (window.Fuul && window.Fuul.Fuul) {
+            window.Fuul = window.Fuul.Fuul;
+        }
     </script>
 
     <!-- Optional: Load your custom test code -->
@@ -88,11 +94,20 @@ Fuul.identifyUser({
 
     <script>
         // Verify SDK is loaded
+        var statusEl = document.getElementById('status');
+        var statusDetailEl = document.getElementById('status-detail');
         if (typeof Fuul !== 'undefined' && typeof Fuul.init === 'function') {
             console.log('✅ Fuul SDK loaded successfully');
             console.log('Available as window.Fuul:', Fuul);
+            statusEl.textContent = '✅ SDK Loaded Successfully';
+            statusDetailEl.innerHTML =
+                'The Fuul SDK is now available as <code>window.Fuul</code>. Open your browser console to interact with it.';
         } else {
             console.error('❌ Fuul SDK failed to load');
+            statusEl.className = 'status error';
+            statusEl.textContent = '❌ Fuul SDK failed to load';
+            statusDetailEl.textContent =
+                'Run `npm run build` in the repo root, then reload. See the README troubleshooting section.';
         }
     </script>
 </body>
