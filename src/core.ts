@@ -1073,6 +1073,11 @@ export async function getClaimableChecks(params: GetClaimableChecksParams): Prom
  * `ClaimCheckTotalsStatusFilter.Unclaimed` means the umbrella (open + closed). The
  * members map to the wire values `'claimed' | 'unclaimed' | 'open' | 'closed'`;
  * invalid values return a 400.
+ *
+ * The optional `reason` filter takes a `ClaimCheckTotalsReasonFilter` member and
+ * narrows which rows are summed by earning type. It does not change the response
+ * shape — rows carry no `reason` field — so showing commission and rebate
+ * separately means calling twice. When omitted, all earning types are merged.
  * @param {GetClaimCheckTotalsParams} params Get claim check totals parameters
  * @returns {Promise<GetClaimCheckTotalsResponse>} Claim check totals grouped by status and currency
  * @example
@@ -1087,6 +1092,11 @@ export async function getClaimableChecks(params: GetClaimableChecksParams): Prom
  * readyToClaim.forEach(item => {
  *   console.log(`${item.currency_name}: ${item.amount} (${item.currency_address})`);
  * });
+ *
+ * // Commission earned for referring others, and rebates earned on own activity
+ * const ids = { user_identifier: '0x12345', user_identifier_type: UserIdentifierType.EvmAddress };
+ * const commission = await Fuul.getClaimCheckTotals({ ...ids, reason: ClaimCheckTotalsReasonFilter.AffiliatePayout });
+ * const rebate = await Fuul.getClaimCheckTotals({ ...ids, reason: ClaimCheckTotalsReasonFilter.EndUserPayout });
  * ```
  */
 export async function getClaimCheckTotals(params: GetClaimCheckTotalsParams): Promise<GetClaimCheckTotalsResponse> {

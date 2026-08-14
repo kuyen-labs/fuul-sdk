@@ -97,7 +97,11 @@ export class ClaimCheckService {
    * `status: 'closed'` (ready to claim on-chain). Expired checks are excluded
    * from open/closed rows. Claimed checks are past claims (`status: 'claimed'`).
    *
-   * @param {GetClaimCheckTotalsParams} params - User identifier and optional status filter
+   * The optional `reason` filter narrows which rows are summed by earning type
+   * without changing the response shape. When omitted, all earning types are
+   * merged into one figure per currency and state.
+   *
+   * @param {GetClaimCheckTotalsParams} params - User identifier and optional status and reason filters
    * @returns {Promise<GetClaimCheckTotalsResponse>} Totals grouped by status and currency
    */
   public async getClaimCheckTotals(params: GetClaimCheckTotalsParams): Promise<GetClaimCheckTotalsResponse> {
@@ -108,6 +112,10 @@ export class ClaimCheckService {
 
     if (params.status) {
       queryParams.status = params.status;
+    }
+
+    if (params.reason) {
+      queryParams.reason = params.reason;
     }
 
     const response = await this.httpClient.get<GetClaimCheckTotalsResponse>({
