@@ -44,7 +44,7 @@ export type {
   GetClaimHistoryResponse,
   UserClaimHistoryItem,
 } from './claim-checks/types';
-export { ClaimCheckStatus, ClaimCheckTotalsStatusFilter } from './claim-checks/types';
+export { ClaimCheckStatus, ClaimCheckTotalsReasonFilter, ClaimCheckTotalsStatusFilter } from './claim-checks/types';
 export type {
   Affiliate,
   AffiliateCodeWithStats,

@@ -129,4 +129,22 @@ totals.unclaimed
 
 An optional `status` filter of type `ClaimCheckTotalsStatusFilter` limits the response to a single state — for example `status: ClaimCheckTotalsStatusFilter.Closed` returns only the ready-to-claim rows. `ClaimCheckTotalsStatusFilter.Unclaimed` filters to the umbrella (both `open` and `closed` rows). The enum members map to the wire values `'claimed' | 'unclaimed' | 'open' | 'closed'`; invalid values return a `400` listing the valid ones.
 
+An optional `reason` filter of type `ClaimCheckTotalsReasonFilter` narrows which rows are summed by earning type: `AffiliatePayout` is commission earned for referring others, `EndUserPayout` is the rebate a user earned on their own activity, `AgencyPayout` is an agency's share. When omitted, all earning types are merged into one figure per currency and state.
+
+The filter does not change the response shape — rows carry no `reason` field — so showing commission and rebates as separate figures means calling twice:
+
+```tsx
+import { ClaimCheckTotalsReasonFilter, Fuul, UserIdentifierType } from '@fuul/sdk';
+
+const ids = {
+  user_identifier: '0xe06099DbbF626892397f9A74C7f42F16748292Db',
+  user_identifier_type: UserIdentifierType.EvmAddress
+};
+
+const commission = await Fuul.getClaimCheckTotals({ ...ids, reason: ClaimCheckTotalsReasonFilter.AffiliatePayout });
+const rebates = await Fuul.getClaimCheckTotals({ ...ids, reason: ClaimCheckTotalsReasonFilter.EndUserPayout });
+```
+
+`reason` combines with `status` — pass both to get, for example, only the ready-to-claim rebate rows.
+
 Expired checks are excluded from `open` and `closed` rows, so `closed` sums are always claimable right now. Claimed totals are the user's claim history.

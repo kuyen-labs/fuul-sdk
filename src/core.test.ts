@@ -17,7 +17,7 @@ jest.mock('nanoid', () => ({
   nanoid: () => '123',
 }));
 
-import { ClaimCheckTotalsStatusFilter, Fuul, UserIdentifierType } from './index';
+import { ClaimCheckTotalsReasonFilter, ClaimCheckTotalsStatusFilter, Fuul, UserIdentifierType } from './index';
 import { LeaderboardService } from './leaderboard/LeaderboardService';
 import { PayoutService } from './payouts/PayoutService';
 
@@ -700,6 +700,25 @@ describe('SDK core', () => {
         user_identifier: '0x123',
         user_identifier_type: UserIdentifierType.EvmAddress,
         status: ClaimCheckTotalsStatusFilter.Closed,
+      });
+    });
+
+    it('should pass the reason filter through to the service', async () => {
+      const getClaimCheckTotalsSpy = jest.spyOn(ClaimCheckService.prototype, 'getClaimCheckTotals').mockResolvedValue({
+        claimed: [],
+        unclaimed: [],
+      });
+
+      await Fuul.getClaimCheckTotals({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        reason: ClaimCheckTotalsReasonFilter.EndUserPayout,
+      });
+
+      expect(getClaimCheckTotalsSpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        reason: ClaimCheckTotalsReasonFilter.EndUserPayout,
       });
     });
 

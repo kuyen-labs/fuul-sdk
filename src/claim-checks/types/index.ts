@@ -105,6 +105,16 @@ export enum ClaimCheckTotalsStatusFilter {
   Closed = 'closed',
 }
 
+/**
+ * Earning type filter for claim check totals. Distinct from `ClaimCheckReason`,
+ * which is the numeric on-chain reason carried on `ClaimResponse`.
+ */
+export enum ClaimCheckTotalsReasonFilter {
+  AffiliatePayout = 'affiliate_payout',
+  EndUserPayout = 'end_user_payout',
+  AgencyPayout = 'agency_payout',
+}
+
 export interface GetClaimCheckTotalsParams {
   user_identifier: string;
   user_identifier_type: UserIdentifierType;
@@ -115,6 +125,17 @@ export interface GetClaimCheckTotalsParams {
    * and `closed` rows with `claimed` empty. When omitted, all states are returned.
    */
   status?: ClaimCheckTotalsStatusFilter;
+
+  /**
+   * Filter totals to a single earning type: `affiliate_payout` is commission earned
+   * for referring others, `end_user_payout` is the rebate a user earned on their own
+   * activity, `agency_payout` is an agency's share. When omitted, all types are summed
+   * into one figure per currency and state.
+   *
+   * This narrows which rows are summed — it does not change the response shape, and
+   * rows carry no `reason` field. To show commission and rebate separately, call twice.
+   */
+  reason?: ClaimCheckTotalsReasonFilter;
 }
 
 /**
