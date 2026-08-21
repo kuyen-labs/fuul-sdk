@@ -63,6 +63,63 @@ await Fuul.identifyUser({
 
 NOTE: Make sure to send the event when connecting a wallet for the first time as well as when changing wallets during the session.
 
+## Payouts
+
+### List Referral Earnings
+
+Cursor-paginated breakdown of a referrer's book, one row per **referred user**.
+
+`user_identifier` is the *referrer*. Each row is a user they referred directly (level 1): `volume`,
+`direct_eligible_volume` and `indirect_eligible_volume` describe that referred user's activity, while
+`earnings` and `total_commission_earned` are what the referrer earned from it.
+
+```tsx
+import { Fuul, UserIdentifierType } from '@fuul/sdk';
+
+const page = await Fuul.listReferralEarnings({
+  user_identifier: '0xe06099DbbF626892397f9A74C7f42F16748292Db',
+  user_identifier_type: UserIdentifierType.EvmAddress,
+  referrer_scope: 'all', // 'active' (default) skips referred users with no activity
+  limit: 1000,           // 1-1000, defaults to 500
+});
+
+console.log(page.results); // rows for this page
+console.log(page.count);   // rows in THIS page - not a grand total
+console.log(page.next_cursor);
+```
+
+Optionally pass `from_date` and `to_date` (ISO 8601, inclusive) to limit the amounts to a window.
+They must be sent **as a pair** — sending only one returns a 400. `date_joined` is always all-time.
+
+#### Walking every page
+
+Pass the previous page's `next_cursor` back as `after`, and stop when it comes back `null`. Cursors
+are opaque: forward them verbatim, don't parse or build them.
+
+```tsx
+const rows = [];
+let cursor = null;
+
+do {
+  const page = await Fuul.listReferralEarnings({
+    user_identifier: '0xe06099DbbF626892397f9A74C7f42F16748292Db',
+    user_identifier_type: UserIdentifierType.EvmAddress,
+    limit: 1000,
+    ...(cursor ? { after: cursor } : {}),
+  });
+
+  rows.push(...page.results);
+  cursor = page.next_cursor;
+} while (cursor);
+```
+
+NOTE: `next_cursor` is the only terminator. The server returns a cursor whenever a page is *full*, so
+the last page carrying rows can still come with one — the final request may return an empty `results`.
+Never stop just because a page came back shorter than `limit`.
+
+This replaces `getPayoutsByReferrer`, which is deprecated: it returns the entire referred-user list in
+a single response and fails for referrers with a large book.
+
 ## Claim Checks
 
 The SDK provides methods to retrieve claim checks for users - these are claimable rewards that users can redeem on-chain.

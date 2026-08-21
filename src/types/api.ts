@@ -840,6 +840,55 @@ export interface GetPayoutsByReferrerParams {
   to_date?: string;
 }
 
+/** One referred user in a {@link ListReferralEarningsResponse} page. */
+export interface ReferralEarningsRow {
+  /** The referred user's identifier. */
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  volume: number;
+  /** L1 trading volume from this referred user that is eligible for commission. */
+  direct_eligible_volume: number;
+  /** Eligible volume from this user's downline (L2-L4), mapped to this L1 user. */
+  indirect_eligible_volume: number;
+  /** L1-only commission, by currency. */
+  earnings: EarningItem[];
+  /** Combined direct + indirect (L1-L4) commission, by currency. */
+  total_commission_earned: EarningItem[];
+  /** First attribution date. Always all-time, even when `from_date`/`to_date` are set. `null` when the referred user has no confirmed attributions. */
+  date_joined: string | null;
+  user_rebate_rate: number | null;
+  referral_code: string | null;
+}
+
+export interface ListReferralEarningsParams {
+  /** The **referrer**. The rows returned are the users they referred. */
+  user_identifier: string;
+  user_identifier_type: UserIdentifierType;
+  /** `active` (default): only referred users with volume, earnings, eligible volume or commission. `all`: also includes dormant referred users with zeros and empty arrays. */
+  referrer_scope?: ReferrerPayoutsScope;
+  /** Rows per page. 1-1000, server default 500. */
+  limit?: number;
+  /** Opaque cursor taken from the previous page's `next_cursor`. Omit for the first page. */
+  after?: string;
+  /** ISO 8601 date (`YYYY-MM-DD`). Must be provided together with `to_date`. When both are omitted, the endpoint returns all-time totals. `date_joined` is always all-time and not affected by this window. */
+  from_date?: string;
+  /** ISO 8601 date (`YYYY-MM-DD`). Inclusive upper bound. Must be provided together with `from_date`. */
+  to_date?: string;
+}
+
+export interface ListReferralEarningsResponse {
+  results: ReferralEarningsRow[];
+  /**
+   * Pass back as `after` to fetch the next page; `null` means the walk is done.
+   * The server emits a cursor whenever a page is *full*, so the last page carrying rows can still
+   * return a non-null cursor and the final request may come back with an empty `results`.
+   * Terminate on `next_cursor` being `null` — never on a page being shorter than `limit`.
+   */
+  next_cursor: string | null;
+  /** Number of rows in **this page**, not a grand total. */
+  count: number;
+}
+
 // Referred Volume types
 export interface GetReferredVolumeParams {
   user_identifiers: string[];

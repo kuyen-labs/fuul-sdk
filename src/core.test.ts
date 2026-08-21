@@ -387,6 +387,52 @@ describe('SDK core', () => {
     });
   });
 
+  describe('listReferralEarnings()', () => {
+    beforeEach(() => {
+      Fuul.init({ apiKey: 'test-key' });
+    });
+
+    it('should call listReferralEarnings with correct arguments and return the envelope', async () => {
+      const page = {
+        results: [
+          {
+            user_identifier: '0x70b2ab9be62ce1a741ed166cbfc0555aec3b81b4',
+            user_identifier_type: UserIdentifierType.EvmAddress,
+            volume: 12480.55,
+            direct_eligible_volume: 12480.55,
+            indirect_eligible_volume: 0,
+            earnings: [{ currency: { address: '0x42', chainId: '57073' }, amount: 62.4 }],
+            total_commission_earned: [{ currency: { address: '0x42', chainId: '57073' }, amount: 62.4 }],
+            date_joined: '2025-01-14',
+            user_rebate_rate: 0.2,
+            referral_code: 'my-code',
+          },
+        ],
+        next_cursor: 'cursor-page-2==',
+        count: 1,
+      };
+      const listReferralEarningsSpy = jest.spyOn(PayoutService.prototype, 'listReferralEarnings').mockResolvedValueOnce(page);
+
+      const result = await Fuul.listReferralEarnings({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        referrer_scope: 'all',
+        limit: 1000,
+        after: 'cursor-page-1==',
+      });
+
+      expect(listReferralEarningsSpy).toHaveBeenCalledWith({
+        user_identifier: '0x123',
+        user_identifier_type: UserIdentifierType.EvmAddress,
+        referrer_scope: 'all',
+        limit: 1000,
+        after: 'cursor-page-1==',
+      });
+
+      expect(result).toEqual(page);
+    });
+  });
+
   describe('getPayoutsLeaderboard()', () => {
     beforeEach(() => {
       Fuul.init({ apiKey: 'test-key' });

@@ -7,6 +7,8 @@ import {
   GetUserPayoutsByConversionParams,
   GetUserPointsByConversionParams,
   GetUserPointsMovementsParams,
+  ListReferralEarningsParams,
+  ListReferralEarningsResponse,
   PayoutsByReferrerResponse,
   UserPayoutMovementsResponse,
   UserPayoutsByConversionResponse,
@@ -62,6 +64,10 @@ export class PayoutService {
     return results.data;
   }
 
+  /**
+   * @deprecated Use {@link listReferralEarnings} instead. Returns the whole referred-user list in one
+   *   response, which fails for large referrers.
+   */
   public async getPayoutsByReferrer(params: GetPayoutsByReferrerParams): Promise<PayoutsByReferrerResponse> {
     const results = await this.httpClient.get<PayoutsByReferrerResponse>({
       path: `${basePath}/by-referrer`,
@@ -69,6 +75,22 @@ export class PayoutService {
         user_identifier: params.user_identifier,
         user_identifier_type: params.user_identifier_type,
         referrer_scope: params.referrer_scope,
+        from_date: params.from_date,
+        to_date: params.to_date,
+      },
+    });
+    return results.data;
+  }
+
+  public async listReferralEarnings(params: ListReferralEarningsParams): Promise<ListReferralEarningsResponse> {
+    const results = await this.httpClient.get<ListReferralEarningsResponse>({
+      path: `${basePath}/referral-earnings`,
+      queryParams: {
+        user_identifier: params.user_identifier,
+        user_identifier_type: params.user_identifier_type,
+        referrer_scope: params.referrer_scope,
+        limit: params.limit,
+        after: params.after,
         from_date: params.from_date,
         to_date: params.to_date,
       },
