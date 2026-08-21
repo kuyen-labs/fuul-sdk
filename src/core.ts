@@ -69,6 +69,8 @@ import {
   GetUserPointsMovementsParams,
   GetVolumeLeaderboardParams,
   LeaderboardResponse,
+  ListReferralEarningsParams,
+  ListReferralEarningsResponse,
   ListUserReferralCodesParams,
   ListUserReferralCodesResponse,
   PayoutsByReferrerResponse,
@@ -603,6 +605,8 @@ export function getUserPointsMovements(params: GetUserPointsMovementsParams): Pr
 
 /**
  * Gets payouts and volumes by referrer
+ * @deprecated Use {@link listReferralEarnings} instead. This endpoint returns the whole referred-user
+ *   list in a single response and fails for referrers with a large book.
  * @param {GetPayoutsByReferrerParams} params The search params
  * @returns {PayoutsByReferrerResponse} Object where each key is a referrer address with volume and earnings
  * @example
@@ -613,6 +617,41 @@ export function getUserPointsMovements(params: GetUserPointsMovementsParams): Pr
 export function getPayoutsByReferrer(params: GetPayoutsByReferrerParams): Promise<PayoutsByReferrerResponse> {
   assertInitialized();
   return _payoutService.getPayoutsByReferrer(params);
+}
+
+/**
+ * Gets a cursor-paginated page of a referrer's earnings, one row per referred user.
+ *
+ * `user_identifier` is the **referrer**; each row is a user they referred directly (level 1) and
+ * carries what the referrer earned from that user. Replaces {@link getPayoutsByReferrer}.
+ *
+ * Walk the pages by passing the previous page's `next_cursor` back as `after`, and stop when
+ * `next_cursor` is `null`. The server emits a cursor whenever a page is full, so the last page
+ * carrying rows can still return one — the final request may come back with an empty `results`.
+ * Never terminate on a page being shorter than `limit`.
+ * @param {ListReferralEarningsParams} params The search params. `after` is an opaque cursor — pass it back verbatim.
+ * @returns {Promise<ListReferralEarningsResponse>} One page of rows, plus `next_cursor` and the page's `count`
+ * @example
+ * ```typescript
+ * const rows: ReferralEarningsRow[] = [];
+ * let cursor: string | null = null;
+ *
+ * do {
+ *   const page = await Fuul.listReferralEarnings({
+ *     user_identifier: '0x12345',
+ *     user_identifier_type: UserIdentifierType.EvmAddress,
+ *     limit: 1000,
+ *     ...(cursor ? { after: cursor } : {}),
+ *   });
+ *
+ *   rows.push(...page.results);
+ *   cursor = page.next_cursor;
+ * } while (cursor);
+ * ```
+ **/
+export function listReferralEarnings(params: ListReferralEarningsParams): Promise<ListReferralEarningsResponse> {
+  assertInitialized();
+  return _payoutService.listReferralEarnings(params);
 }
 
 /**
@@ -1190,6 +1229,7 @@ export default {
   getUserPointsMovements,
   getUserPayoutMovements,
   getPayoutsByReferrer,
+  listReferralEarnings,
   getUserReferrer,
   getVolumeLeaderboard,
   getRevenueLeaderboard,
